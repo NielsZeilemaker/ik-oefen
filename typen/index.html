@@ -1,0 +1,504 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>De Letterhof — blind leren typen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --papier:#ECF1E2;
+    --diepgroen:#1E3A28;
+    --blad:#3F7A3D;
+    --aarde:#6B4A31;
+    --radijs:#C8425F;
+    --wortel:#E07A2C;
+    --zon:#E8B830;
+    --lucht:#4C8FBF;
+    --aubergine:#7A4A86;
+    --boon:#2E8B84;
+    --lijn:rgba(30,58,40,.18);
+    --kaart:#FBFCF6;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:var(--papier);
+    color:var(--diepgroen);
+    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:16px;
+    line-height:1.5;
+    padding:20px 16px 48px;
+  }
+  .wrap{max-width:860px;margin:0 auto}
+
+  header{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:baseline;justify-content:space-between;margin-bottom:22px}
+  h1{
+    font-family:Fraunces,Georgia,serif;
+    font-weight:600;
+    font-size:clamp(28px,6vw,40px);
+    letter-spacing:-.01em;
+    margin:0;
+  }
+  .ondertitel{margin:2px 0 0;font-size:14px;opacity:.7}
+  .dagteller{font-size:14px;text-align:right;line-height:1.35}
+  .dagteller b{font-family:Fraunces,Georgia,serif;font-size:20px;font-weight:600}
+  .balk{width:150px;height:7px;border-radius:4px;background:rgba(30,58,40,.14);margin-top:6px;overflow:hidden}
+  .balk i{display:block;height:100%;background:var(--blad);width:0;transition:width .4s ease}
+
+  .kaart{background:var(--kaart);border:1px solid var(--lijn);border-radius:14px;padding:20px 18px}
+
+  .leskop{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:14px}
+  .leskop h2{font-family:Fraunces,Georgia,serif;font-weight:600;font-size:20px;margin:0}
+  .leskop span{font-size:13px;opacity:.65}
+
+  #regel{
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    font-size:clamp(20px,4.4vw,30px);
+    letter-spacing:.06em;
+    word-break:break-all;
+    min-height:2.4em;
+  }
+  #regel .goed{color:var(--blad)}
+  #regel .nu{background:var(--zon);border-radius:3px;box-shadow:0 2px 0 var(--wortel)}
+  #regel .rest{opacity:.42}
+  #regel.fout .nu{background:var(--radijs);color:#fff;box-shadow:0 2px 0 #8d2440}
+  @media (prefers-reduced-motion:no-preference){
+    #regel.fout{animation:wiebel .18s}
+  }
+  @keyframes wiebel{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+
+  .meters{display:flex;gap:22px;margin-top:14px;font-size:14px;opacity:.8}
+  .meters b{font-family:Fraunces,Georgia,serif;font-size:17px;font-weight:600}
+
+  .knoppen{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:16px}
+  button{
+    font:inherit;font-size:14px;cursor:pointer;
+    border:1px solid var(--diepgroen);background:transparent;color:var(--diepgroen);
+    border-radius:8px;padding:7px 14px;
+  }
+  button.vol{background:var(--diepgroen);color:var(--papier)}
+  button:hover{background:rgba(30,58,40,.08)}
+  button.vol:hover{background:#16301f}
+  :focus-visible{outline:3px solid var(--wortel);outline-offset:2px}
+  label.schakel{font-size:14px;display:flex;align-items:center;gap:6px;cursor:pointer;margin-left:auto}
+
+  /* toetsenbord */
+  #bord{margin-top:20px;display:flex;flex-direction:column;gap:6px;align-items:center}
+  #bord[hidden]{display:none}
+  .rij{display:flex;gap:6px}
+  .toets{
+    width:clamp(26px,7.4vw,42px);height:clamp(30px,8vw,42px);
+    display:flex;align-items:center;justify-content:center;
+    background:var(--kaart);border:1px solid var(--lijn);
+    border-bottom:4px solid var(--kleur,var(--lijn));
+    border-radius:7px;font-size:14px;
+  }
+  .toets.spatie{width:min(280px,52vw)}
+  .toets.aan{background:var(--kleur);color:#fff;border-bottom-color:rgba(0,0,0,.35)}
+  .vingerlegenda{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:12px;opacity:.7;margin-top:10px;justify-content:center}
+  .vingerlegenda i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px}
+
+  /* uitslag */
+  #uitslag{margin-top:18px;border-top:1px solid var(--lijn);padding-top:16px}
+  #uitslag h3{font-family:Fraunces,Georgia,serif;font-weight:600;font-size:19px;margin:0 0 8px}
+  #uitslag p{margin:0 0 10px;font-size:15px}
+  #uitslag .lastig{font-family:ui-monospace,monospace;background:var(--papier);border-radius:5px;padding:1px 6px}
+
+  /* tuin */
+  h2.tuinkop{font-family:Fraunces,Georgia,serif;font-weight:600;font-size:20px;margin:34px 0 4px}
+  .tuinuitleg{margin:0 0 12px;font-size:14px;opacity:.72}
+  #tuin{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:10px}
+  .bed{
+    background:var(--kaart);border:1px solid var(--lijn);border-radius:12px;
+    padding:8px 6px 6px;text-align:center;cursor:pointer;font:inherit;
+  }
+  .bed.actief{border-color:var(--diepgroen);box-shadow:0 0 0 2px var(--diepgroen) inset}
+  .bed .naam{display:block;font-size:12px;line-height:1.25;margin-top:4px}
+  .bed .nr{display:block;font-size:11px;opacity:.5}
+  .bed svg{display:block;margin:0 auto}
+
+  footer{margin-top:30px;font-size:13px;opacity:.65}
+  .alleen-groot{display:none}
+  @media (max-width:640px){ .alleen-groot{display:block} }
+</style>
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1>De Letterhof</h1>
+      <p class="ondertitel">Elke dag een kwartier, dan groeit je tuin.</p>
+    </div>
+    <div class="dagteller">
+      <b id="minuten">0</b> van de 15 minuten vandaag
+      <div class="balk"><i id="dagbalk"></i></div>
+      <div id="reeks" style="margin-top:6px"></div>
+    </div>
+  </header>
+
+  <p class="alleen-groot kaart" style="font-size:14px;margin:0 0 16px">
+    Pak er een laptop bij — blind typen leer je met tien vingers op een echt toetsenbord.
+  </p>
+
+  <div class="kaart">
+    <div class="leskop">
+      <h2 id="lestitel">Les 1</h2>
+      <span id="voortgang">regel 1 van 5</span>
+    </div>
+
+    <div id="regel"></div>
+
+    <div class="meters">
+      <div>tempo <b id="wpm">—</b> wpm</div>
+      <div>goed <b id="acc">—</b></div>
+      <div>fouten <b id="fouten">0</b></div>
+    </div>
+
+    <div class="knoppen">
+      <button id="opnieuw" class="vol">Begin opnieuw</button>
+      <button id="volgende">Volgende les</button>
+      <label class="schakel"><input type="checkbox" id="verberg"> toetsenbord verbergen</label>
+    </div>
+
+    <div id="bord"></div>
+
+    <div id="uitslag" hidden></div>
+  </div>
+
+  <h2 class="tuinkop">Jouw tuin</h2>
+  <p class="tuinuitleg">Elke les is een bedje. Hoe netter je typt, hoe verder het plantje groeit. Klik op een bedje om die les te doen.</p>
+  <div id="tuin"></div>
+
+  <footer>Voortgang wordt op dit apparaat bewaard. Fouten verbeteren gaat niet automatisch: typ de goede letter, dan gaat hij verder.</footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ---------- opslag ---------- */
+var BEWAAR = "letterhof-v1";
+var data = {lessen:{}, dagen:{}};
+
+async function laad(){
+  try{
+    if (window.storage){
+      var r = await window.storage.get(BEWAAR, false);
+      if (r && r.value) data = JSON.parse(r.value);
+    } else if (window.localStorage){
+      var s = localStorage.getItem(BEWAAR);
+      if (s) data = JSON.parse(s);
+    }
+  }catch(e){ /* nog niets bewaard */ }
+  if (!data.lessen) data.lessen = {};
+  if (!data.dagen) data.dagen = {};
+}
+async function bewaar(){
+  var s = JSON.stringify(data);
+  try{
+    if (window.storage) await window.storage.set(BEWAAR, s, false);
+    else if (window.localStorage) localStorage.setItem(BEWAAR, s);
+  }catch(e){}
+}
+function vandaag(){
+  var d = new Date();
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+}
+
+/* ---------- vingers ---------- */
+var VINGER = {
+  q:"aubergine", a:"aubergine", z:"aubergine",
+  w:"lucht", s:"lucht", x:"lucht",
+  e:"blad", d:"blad", c:"blad",
+  r:"zon", f:"zon", v:"zon", t:"zon", g:"zon", b:"zon",
+  y:"wortel", h:"wortel", n:"wortel", u:"wortel", j:"wortel", m:"wortel",
+  i:"radijs", k:"radijs", ",":"radijs",
+  o:"boon", l:"boon", ".":"boon",
+  p:"aarde", ";":"aarde", "/":"aarde",
+  " ":"diepgroen"
+};
+function kleur(ch){ return "var(--" + (VINGER[ch] || "lijn") + ")"; }
+
+/* ---------- lessen ---------- */
+var L = [
+  {nieuw:"fj",  titel:"f en j",            oud:""},
+  {nieuw:"dk",  titel:"d en k",            oud:"fj"},
+  {nieuw:"sl",  titel:"s en l",            oud:"fjdk"},
+  {nieuw:"a;",  titel:"a en ;",            oud:"fjdksl"},
+  {nieuw:"gh",  titel:"g en h",            oud:"fjdksla;"},
+  {woorden:["als dal das sla","laf half hals gaf","jas kaas glas sjaal","kalf lag afslag dag","sla das als half"], titel:"woorden op de thuisrij"},
+  {nieuw:"ei",  titel:"e en i",            oud:"fjdkslagh", woordenExtra:["is ik die dief","lied ijs eik kies","deeg adel hele gelijk"]},
+  {nieuw:"ru",  titel:"r en u",            oud:"fjdkslaghei", woordenExtra:["haar raar duur huis","duif huid geur kruid","ruig luier slurf idee"]},
+  {nieuw:"ty",  titel:"t en y",            oud:"fjdkslagheiru", woordenExtra:["tijd trui tafel staart","getal gluurt saai","dertig turfde last"]},
+  {nieuw:"ow",  titel:"o en w",            oud:"fjdkslagheiruty", woordenExtra:["wortel water sloot","toe wou woud goud","dat was groot werk"]},
+  {nieuw:"nm",  titel:"n en m",            oud:"fjdkslagheirutyow", woordenExtra:["maan mier moeder nu","tuinman morgen naam","niemand groeit meteen"]},
+  {nieuw:"vbc", titel:"v, b en c",         oud:"fjdkslagheirutyownm", woordenExtra:["boon bloem vaak vers","bietjes cavia club","bij ons in de vijver"]},
+  {nieuw:"pqxz",titel:"p, q, x en z",      oud:"fjdkslagheirutyownmvbc", woordenExtra:["plant pot zaad zon","zes plukjes peterselie","quiz export zwaluw"]},
+  {woorden:["De zon schijnt op de tuin.","Wij zaaien een rij worteltjes.","Het gras groeit vlug na de regen.","Pak de gieter en geef water.","Morgen plukken wij de eerste boon."], titel:"hoofdletters, punt en komma"}
+];
+
+function willekeurig(bron, lengte){
+  var s = "";
+  for (var i=0;i<lengte;i++) s += bron[Math.floor(Math.random()*bron.length)];
+  return s;
+}
+function groepen(bron, aantal, grootte){
+  var uit = [];
+  for (var i=0;i<aantal;i++) uit.push(willekeurig(bron, grootte));
+  return uit.join(" ");
+}
+function maakRegels(i){
+  var les = L[i];
+  if (les.woorden) return les.woorden.slice();
+  var n = les.nieuw, alles = les.nieuw + les.oud, r = [];
+  var a = "", b = "";
+  for (var k=0;k<n.length;k++){ a += n[k]+n[k]+n[k]+" "; b += n[k]+n[(k+1)%n.length]+" "; }
+  r.push((a+a).trim());
+  r.push((b+b+b).trim());
+  r.push(groepen(n, 7, 3));
+  r.push(groepen(alles, 7, 3));
+  r.push(groepen(alles, 6, 4));
+  if (les.woordenExtra) r = r.concat(les.woordenExtra);
+  return r;
+}
+
+/* ---------- toetsenbord tekenen ---------- */
+var RIJEN = [
+  ["q","w","e","r","t","y","u","i","o","p"],
+  ["a","s","d","f","g","h","j","k","l",";"],
+  ["z","x","c","v","b","n","m",",","."]
+];
+function tekenBord(){
+  var bord = document.getElementById("bord");
+  bord.innerHTML = "";
+  RIJEN.forEach(function(rij){
+    var div = document.createElement("div");
+    div.className = "rij";
+    rij.forEach(function(ch){
+      var t = document.createElement("div");
+      t.className = "toets";
+      t.dataset.toets = ch;
+      t.style.setProperty("--kleur", kleur(ch));
+      t.textContent = ch;
+      div.appendChild(t);
+    });
+    bord.appendChild(div);
+  });
+  var r = document.createElement("div");
+  r.className = "rij";
+  var sp = document.createElement("div");
+  sp.className = "toets spatie";
+  sp.dataset.toets = " ";
+  sp.style.setProperty("--kleur", kleur(" "));
+  sp.textContent = "duim";
+  r.appendChild(sp);
+  bord.appendChild(r);
+
+  var lg = document.createElement("div");
+  lg.className = "vingerlegenda";
+  [["aubergine","pink"],["lucht","ringvinger"],["blad","middelvinger"],["zon","wijsvinger links"],
+   ["wortel","wijsvinger rechts"],["radijs","middelvinger"],["boon","ringvinger"],["aarde","pink"]]
+   .forEach(function(p){
+     var s = document.createElement("span");
+     s.innerHTML = '<i style="background:var(--'+p[0]+')"></i>'+p[1];
+     lg.appendChild(s);
+   });
+  bord.appendChild(lg);
+}
+function markeer(ch){
+  var l = (ch||"").toLowerCase();
+  document.querySelectorAll(".toets").forEach(function(t){
+    t.classList.toggle("aan", t.dataset.toets === l);
+  });
+}
+
+/* ---------- plantjes ---------- */
+function plant(stap, tint){
+  var c = "var(--"+tint+")";
+  var g = '<svg viewBox="0 0 40 52" width="40" height="52" aria-hidden="true">';
+  g += '<path d="M2 47 H38" stroke="var(--aarde)" stroke-width="4" stroke-linecap="round"/>';
+  if (stap === 0){
+    g += '<ellipse cx="20" cy="43" rx="3.4" ry="2.4" fill="var(--aarde)" opacity=".55"/>';
+  } else {
+    var top = stap === 1 ? 32 : (stap === 2 ? 22 : 15);
+    g += '<path d="M20 45 V'+top+'" stroke="var(--blad)" stroke-width="2.6" stroke-linecap="round"/>';
+    g += '<path d="M20 38 C13 37 11 32 12 29 C17 29 20 33 20 38Z" fill="var(--blad)"/>';
+    g += '<path d="M20 35 C27 34 29 29 28 26 C23 26 20 30 20 35Z" fill="var(--blad)" opacity=".85"/>';
+    if (stap >= 2) g += '<path d="M20 28 C13 27 11 22 12 19 C17 19 20 23 20 28Z" fill="var(--blad)" opacity=".7"/>';
+    if (stap >= 3){
+      g += '<circle cx="20" cy="11" r="6" fill="'+c+'"/>';
+      g += '<circle cx="20" cy="11" r="2.2" fill="var(--zon)"/>';
+    }
+  }
+  return g + "</svg>";
+}
+var TINTEN = ["radijs","wortel","zon","lucht","aubergine","boon","blad","radijs","wortel","zon","lucht","aubergine","boon","radijs"];
+
+/* ---------- toestand ---------- */
+var lesIndex = 0, regels = [], regelNr = 0, positie = 0;
+var start = null, aanslagen = 0, goed = 0, foutenTotaal = 0, foutPerToets = {};
+var laatsteTik = null;
+
+function toon(){
+  var doel = regels[regelNr] || "";
+  var el = document.getElementById("regel");
+  var h = "";
+  for (var i=0;i<doel.length;i++){
+    var ch = doel[i] === " " ? "&nbsp;" : doel[i].replace("&","&amp;").replace("<","&lt;");
+    if (i < positie) h += '<span class="goed">'+ch+'</span>';
+    else if (i === positie) h += '<span class="nu">'+ch+'</span>';
+    else h += '<span class="rest">'+ch+'</span>';
+  }
+  el.innerHTML = h;
+  document.getElementById("voortgang").textContent = "regel "+(regelNr+1)+" van "+regels.length;
+  markeer(doel[positie]);
+  meters();
+}
+function meters(){
+  var min = start ? (Date.now()-start)/60000 : 0;
+  document.getElementById("wpm").textContent = (min > 0.08) ? Math.round((goed/5)/min) : "—";
+  document.getElementById("acc").textContent = aanslagen ? Math.round(goed/aanslagen*100)+"%" : "—";
+  document.getElementById("fouten").textContent = foutenTotaal;
+}
+function startLes(i){
+  lesIndex = i;
+  regels = maakRegels(i);
+  regelNr = 0; positie = 0;
+  start = null; aanslagen = 0; goed = 0; foutenTotaal = 0; foutPerToets = {};
+  document.getElementById("lestitel").textContent = "Les "+(i+1)+" — "+L[i].titel;
+  document.getElementById("uitslag").hidden = true;
+  toon();
+  tekenTuin();
+}
+
+function tel(){
+  var nu = Date.now();
+  if (laatsteTik){
+    var d = Math.min((nu-laatsteTik)/1000, 5);
+    var dag = vandaag();
+    data.dagen[dag] = (data.dagen[dag]||0) + d;
+  }
+  laatsteTik = nu;
+  tekenDag();
+}
+
+function klaar(){
+  var min = (Date.now()-start)/60000;
+  var wpm = Math.min(200, Math.round((goed/5)/Math.max(min,0.02)));
+  var acc = Math.round(goed/aanslagen*100);
+  var stap = 1;
+  if (acc >= 90) stap = 2;
+  if (acc >= 95 && wpm >= 15) stap = 3;
+  var oud = data.lessen[lesIndex] || {stap:0};
+  data.lessen[lesIndex] = {stap:Math.max(oud.stap||0, stap), wpm:Math.max(oud.wpm||0, wpm), acc:Math.max(oud.acc||0, acc)};
+  bewaar();
+
+  var lastig = Object.keys(foutPerToets).sort(function(a,b){return foutPerToets[b]-foutPerToets[a];}).slice(0,3);
+  var u = document.getElementById("uitslag");
+  var t = "<h3>Les "+(lesIndex+1)+" af</h3>";
+  t += "<p>"+wpm+" woorden per minuut, "+acc+"% goed getypt.</p>";
+  if (lastig.length && foutenTotaal > 2){
+    t += "<p>Deze toetsen gingen het vaakst mis: " + lastig.map(function(k){
+      return '<span class="lastig">'+(k===" "?"spatie":k)+'</span>';
+    }).join(" ") + ". Kijk even welke vinger daarbij hoort.</p>";
+  } else if (foutenTotaal === 0){
+    t += "<p>Geen enkele fout. Netjes.</p>";
+  }
+  if (stap < 3) t += "<p>Doe de les nog eens voor een groter plantje: vanaf 95% goed en 15 wpm gaat hij bloeien.</p>";
+  u.innerHTML = t;
+  u.hidden = false;
+  tekenTuin();
+  tekenDag();
+}
+
+document.addEventListener("keydown", function(e){
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  var doel = regels[regelNr];
+  if (!doel || regelNr >= regels.length) return;
+  if (e.key === "Tab") return;
+
+  if (e.key === "Backspace"){
+    e.preventDefault();
+    if (positie > 0){ positie--; toon(); }
+    return;
+  }
+  if (e.key.length !== 1) return;
+  e.preventDefault();
+
+  if (!start) start = Date.now();
+  tel();
+  aanslagen++;
+  var el = document.getElementById("regel");
+
+  if (e.key === doel[positie]){
+    goed++; positie++;
+    el.classList.remove("fout");
+    if (positie >= doel.length){
+      if (regelNr + 1 >= regels.length){ markeer(null); klaar(); return; }
+      regelNr++;
+      positie = 0;
+    }
+    toon();
+  } else {
+    foutenTotaal++;
+    var k = doel[positie];
+    foutPerToets[k] = (foutPerToets[k]||0)+1;
+    el.classList.remove("fout");
+    void el.offsetWidth;
+    el.classList.add("fout");
+    meters();
+  }
+});
+
+/* ---------- tuin en dagteller ---------- */
+function tekenTuin(){
+  var t = document.getElementById("tuin");
+  t.innerHTML = "";
+  L.forEach(function(les, i){
+    var v = data.lessen[i] || {stap:0};
+    var b = document.createElement("button");
+    b.className = "bed" + (i === lesIndex ? " actief" : "");
+    b.innerHTML = plant(v.stap, TINTEN[i]) + '<span class="nr">les '+(i+1)+'</span><span class="naam">'+les.titel+"</span>";
+    b.addEventListener("click", function(){ startLes(i); window.scrollTo({top:0,behavior:"smooth"}); });
+    t.appendChild(b);
+  });
+}
+function reeksTel(){
+  var n = 0, d = new Date();
+  for (var i=0;i<400;i++){
+    var s = d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+    if ((data.dagen[s]||0) >= 600) n++;
+    else if (i > 0) break;
+    d.setDate(d.getDate()-1);
+  }
+  return n;
+}
+function tekenDag(){
+  var sec = data.dagen[vandaag()] || 0;
+  var min = Math.floor(sec/60);
+  document.getElementById("minuten").textContent = min;
+  document.getElementById("dagbalk").style.width = Math.min(100, sec/900*100) + "%";
+  var r = reeksTel();
+  document.getElementById("reeks").textContent = r >= 2 ? r + " dagen op rij" : (min >= 10 ? "vandaag geplant" : "");
+}
+
+/* ---------- knoppen ---------- */
+document.getElementById("opnieuw").addEventListener("click", function(){ startLes(lesIndex); this.blur(); });
+document.getElementById("volgende").addEventListener("click", function(){ startLes(Math.min(lesIndex+1, L.length-1)); this.blur(); });
+document.getElementById("verberg").addEventListener("change", function(){
+  document.getElementById("bord").hidden = this.checked;
+});
+setInterval(function(){ if (start) bewaar(); }, 20000);
+window.addEventListener("beforeunload", bewaar);
+
+/* ---------- opstarten ---------- */
+(async function(){
+  await laad();
+  tekenBord();
+  var eerste = 0;
+  for (var i=0;i<L.length;i++){ if (!data.lessen[i]){ eerste = i; break; } }
+  startLes(eerste);
+  tekenDag();
+})();
+
+})();
+</script>
