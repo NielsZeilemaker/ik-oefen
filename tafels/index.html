@@ -42,7 +42,8 @@
     min-height:100vh;
   }
   .wrap{max-width:860px;margin:0 auto}
-  .terug{display:inline-block;margin-bottom:12px;font-size:14px;color:var(--tekst);text-decoration:none;border:1px solid var(--lijn);border-radius:8px;padding:4px 12px;background:var(--kaart)}
+  .titelrij{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px}
+  .terug{display:inline-block;white-space:nowrap;font-size:14px;color:var(--tekst);text-decoration:none;border:1px solid var(--lijn);border-radius:8px;padding:4px 12px;background:var(--kaart)}
   .terug:hover{border-color:var(--komeet)}
 
   header{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:baseline;justify-content:space-between;margin-bottom:22px}
@@ -153,10 +154,12 @@
 </style>
 
 <div class="wrap">
-  <a class="terug" href="../">← Ik oefen</a>
   <header>
     <div>
-      <h1>De Sterrenwacht <span class="ster">✦</span></h1>
+      <div class="titelrij">
+        <h1>De Sterrenwacht <span class="ster">✦</span></h1>
+        <a class="terug" href="../">← Ik oefen</a>
+      </div>
       <p class="ondertitel">Elke dag tien minuten tafels, dan gaat je hemel stralen.</p>
     </div>
     <div class="dagteller">
