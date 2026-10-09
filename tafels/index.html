@@ -1,0 +1,584 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>De Sterrenwacht — tafels oefenen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --nacht:#0E1530;
+    --kaart:#18224A;
+    --kaart2:#1F2B5A;
+    --tekst:#E9ECF8;
+    --zacht:rgba(233,236,248,.66);
+    --lijn:rgba(233,236,248,.16);
+    --maan:#F3D77A;
+    --komeet:#7FD4E8;
+    --nevel:#B48CF0;
+    --roze:#F49AC1;
+    --mars:#F5A65B;
+    --aurora:#7ED6A0;
+    --rood:#F0707A;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:
+      radial-gradient(1.2px 1.2px at 12% 18%, rgba(255,255,255,.7), transparent 60%),
+      radial-gradient(1px 1px at 78% 9%, rgba(255,255,255,.6), transparent 60%),
+      radial-gradient(1.4px 1.4px at 64% 32%, rgba(255,255,255,.5), transparent 60%),
+      radial-gradient(1px 1px at 31% 46%, rgba(255,255,255,.5), transparent 60%),
+      radial-gradient(1.2px 1.2px at 90% 58%, rgba(255,255,255,.55), transparent 60%),
+      radial-gradient(1px 1px at 6% 72%, rgba(255,255,255,.5), transparent 60%),
+      radial-gradient(1.3px 1.3px at 48% 86%, rgba(255,255,255,.45), transparent 60%),
+      radial-gradient(900px 500px at 85% -10%, rgba(180,140,240,.18), transparent 70%),
+      var(--nacht);
+    background-attachment:fixed;
+    color:var(--tekst);
+    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:16px;
+    line-height:1.5;
+    padding:20px 16px 48px;
+    min-height:100vh;
+  }
+  .wrap{max-width:860px;margin:0 auto}
+
+  header{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:baseline;justify-content:space-between;margin-bottom:22px}
+  h1{
+    font-family:Fredoka,ui-rounded,system-ui,sans-serif;
+    font-weight:600;
+    font-size:clamp(28px,6vw,40px);
+    margin:0;
+  }
+  h1 .ster{color:var(--maan)}
+  .ondertitel{margin:2px 0 0;font-size:14px;color:var(--zacht)}
+  .dagteller{font-size:14px;text-align:right;line-height:1.35;margin-left:auto}
+  .dagteller b{font-family:Fredoka,ui-rounded,sans-serif;font-size:20px;font-weight:600;color:var(--maan)}
+  .balk{width:150px;height:7px;border-radius:4px;background:rgba(233,236,248,.14);margin-top:6px;overflow:hidden;margin-left:auto}
+  .balk i{display:block;height:100%;background:var(--maan);width:0;transition:width .4s ease}
+
+  .kaart{background:var(--kaart);border:1px solid var(--lijn);border-radius:16px;padding:20px 18px}
+
+  .leskop{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:10px}
+  .leskop h2{font-family:Fredoka,ui-rounded,sans-serif;font-weight:500;font-size:20px;margin:0}
+  .leskop span{font-size:13px;color:var(--zacht);white-space:nowrap}
+
+  #som{
+    font-family:Fredoka,ui-rounded,system-ui,sans-serif;
+    font-weight:500;
+    font-size:clamp(40px,11vw,68px);
+    text-align:center;
+    line-height:1.2;
+    margin:10px 0 4px;
+    font-variant-numeric:tabular-nums;
+  }
+  #som .vak{
+    display:inline-block;min-width:2.2em;padding:0 .2em;
+    border-bottom:4px solid var(--komeet);color:var(--komeet);
+  }
+  #som .vak:empty::after{content:"?";opacity:.3}
+  #som.goed .vak{color:var(--aurora);border-color:var(--aurora)}
+  #som.fout .vak{color:var(--rood);border-color:var(--rood)}
+  @media (prefers-reduced-motion:no-preference){
+    #som.fout{animation:wiebel .2s}
+    #som.goed .vak{animation:pop .3s}
+  }
+  @keyframes wiebel{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+  @keyframes pop{50%{transform:scale(1.12)}}
+
+  #hint{text-align:center;min-height:1.5em;font-size:15px;color:var(--zacht);margin:0}
+  #hint b{color:var(--maan);font-weight:600}
+  .herkansing{display:inline-block;font-size:12px;border:1px solid var(--nevel);color:var(--nevel);border-radius:20px;padding:0 8px;margin-left:6px;vertical-align:middle}
+
+  .werkvlak{display:flex;flex-wrap:wrap;gap:20px;justify-content:center;align-items:flex-start;margin-top:16px}
+
+  #toetsen{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:min(260px,100%)}
+  #toetsen button{
+    font-family:Fredoka,ui-rounded,sans-serif;font-size:24px;font-weight:500;
+    height:54px;border-radius:12px;
+    background:var(--kaart2);color:var(--tekst);border:1px solid var(--lijn);
+    border-bottom:4px solid rgba(0,0,0,.35);
+    padding:0;cursor:pointer;touch-action:manipulation;
+  }
+  #toetsen button:hover{background:#28366B}
+  #toetsen button:active{transform:translateY(2px);border-bottom-width:2px}
+  #toetsen .ok{background:var(--maan);color:var(--nacht);border-color:transparent;border-bottom-color:#b8973a}
+  #toetsen .ok:hover{background:#f7e19b}
+
+  #stippen{display:flex;flex-direction:column;gap:5px;padding:10px;border:1px dashed var(--lijn);border-radius:12px}
+  #stippen[hidden]{display:none}
+  #stippen .rij{display:flex;gap:4px}
+  #stippen .rij i{width:11px;height:11px;border-radius:50%;background:var(--maan)}
+  #stippen .rij i:nth-child(5n){margin-right:6px}
+  #stippen p{margin:4px 0 0;font-size:12px;color:var(--zacht)}
+
+  .meters{display:flex;flex-wrap:wrap;gap:6px 22px;margin-top:18px;font-size:14px;color:var(--zacht);justify-content:center}
+  .meters b{font-family:Fredoka,ui-rounded,sans-serif;font-size:17px;font-weight:600;color:var(--tekst)}
+
+  .knoppen{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:16px}
+  .knoppen button{
+    font:inherit;font-size:14px;cursor:pointer;
+    border:1px solid var(--tekst);background:transparent;color:var(--tekst);
+    border-radius:8px;padding:7px 14px;
+  }
+  .knoppen button.vol{background:var(--tekst);color:var(--nacht)}
+  .knoppen button:hover{background:rgba(233,236,248,.1)}
+  .knoppen button.vol:hover{background:#fff}
+  :focus-visible{outline:3px solid var(--komeet);outline-offset:2px}
+  label.schakel{font-size:14px;display:flex;align-items:center;gap:6px;cursor:pointer;margin-left:auto}
+
+  /* uitslag */
+  #uitslag{margin-top:18px;border-top:1px solid var(--lijn);padding-top:16px}
+  #uitslag h3{font-family:Fredoka,ui-rounded,sans-serif;font-weight:500;font-size:20px;margin:0 0 8px;color:var(--maan)}
+  #uitslag p{margin:0 0 10px;font-size:15px}
+  #uitslag .lastig{font-family:Fredoka,ui-rounded,sans-serif;background:var(--kaart2);border-radius:6px;padding:1px 8px;white-space:nowrap}
+
+  /* hemel */
+  h2.hemelkop{font-family:Fredoka,ui-rounded,sans-serif;font-weight:500;font-size:20px;margin:34px 0 4px}
+  .hemeluitleg{margin:0 0 12px;font-size:14px;color:var(--zacht)}
+  #hemel{display:grid;grid-template-columns:repeat(auto-fill,minmax(112px,1fr));gap:10px}
+  .beeld{
+    background:var(--kaart);border:1px solid var(--lijn);border-radius:12px;color:var(--tekst);
+    padding:8px 6px 8px;text-align:center;cursor:pointer;font:inherit;
+  }
+  .beeld:hover{background:var(--kaart2)}
+  .beeld.actief{border-color:var(--komeet);box-shadow:0 0 0 2px var(--komeet) inset}
+  .beeld .naam{display:block;font-size:13px;line-height:1.25;margin-top:4px}
+  .beeld .nr{display:block;font-size:11px;color:var(--zacht)}
+  .beeld svg{display:block;margin:0 auto;width:100%;max-width:96px;height:auto}
+
+  footer{margin-top:30px;font-size:13px;color:var(--zacht)}
+</style>
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1>De Sterrenwacht <span class="ster">✦</span></h1>
+      <p class="ondertitel">Elke dag tien minuten tafels, dan gaat je hemel stralen.</p>
+    </div>
+    <div class="dagteller">
+      <b id="minuten">0</b> van de 10 minuten vandaag
+      <div class="balk"><i id="dagbalk"></i></div>
+      <div id="reeks" style="margin-top:6px"></div>
+    </div>
+  </header>
+
+  <div class="kaart">
+    <div class="leskop">
+      <h2 id="lestitel">Les 1</h2>
+      <span id="voortgang">som 1 van 20</span>
+    </div>
+
+    <div id="som" aria-live="polite"></div>
+    <p id="hint"></p>
+
+    <div class="werkvlak">
+      <div id="toetsen"></div>
+      <div id="stippen" hidden></div>
+    </div>
+
+    <div class="meters">
+      <div>tempo <b id="tempo">—</b> sec per som</div>
+      <div>in één keer goed <b id="acc">—</b></div>
+      <div>fouten <b id="fouten">0</b></div>
+    </div>
+
+    <div class="knoppen">
+      <button id="opnieuw" class="vol">Begin opnieuw</button>
+      <button id="volgende">Volgende les</button>
+      <label class="schakel"><input type="checkbox" id="hulp"> stippen als hulp</label>
+    </div>
+
+    <div id="uitslag" hidden></div>
+  </div>
+
+  <h2 class="hemelkop">Jouw sterrenhemel</h2>
+  <p class="hemeluitleg">Elke les is een sterrenbeeld. Hoe beter je rekent, hoe feller het gaat schijnen. Klik op een sterrenbeeld om die les te doen.</p>
+  <div id="hemel"></div>
+
+  <footer>Voortgang wordt op dit apparaat bewaard. Typ het antwoord met de cijfertoetsen of tik op de knoppen. Fout? Dan zie je het goede antwoord, typ je het over en komt de som later nog een keer terug.</footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+/* ---------- opslag ---------- */
+var BEWAAR = "sterrenwacht-v1";
+var DAGDOEL = 600;   // seconden
+var REEKSDREMPEL = 300;
+var data = {lessen:{}, dagen:{}};
+
+async function laad(){
+  try{
+    if (window.storage){
+      var r = await window.storage.get(BEWAAR, false);
+      if (r && r.value) data = JSON.parse(r.value);
+    } else if (window.localStorage){
+      var s = localStorage.getItem(BEWAAR);
+      if (s) data = JSON.parse(s);
+    }
+  }catch(e){ /* nog niets bewaard */ }
+  if (!data.lessen) data.lessen = {};
+  if (!data.dagen) data.dagen = {};
+}
+async function bewaar(){
+  var s = JSON.stringify(data);
+  try{
+    if (window.storage) await window.storage.set(BEWAAR, s, false);
+    else if (window.localStorage) localStorage.setItem(BEWAAR, s);
+  }catch(e){}
+}
+function datum(d){
+  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
+}
+function vandaag(){ return datum(new Date()); }
+
+/* ---------- lessen ---------- */
+var L = [
+  {tafels:[1],           titel:"tafel van 1"},
+  {tafels:[10],          titel:"tafel van 10"},
+  {tafels:[2],           titel:"tafel van 2"},
+  {tafels:[5],           titel:"tafel van 5"},
+  {tafels:[2,5,10],      titel:"2, 5 en 10 door elkaar"},
+  {tafels:[3],           titel:"tafel van 3"},
+  {tafels:[4],           titel:"tafel van 4"},
+  {tafels:[1,2,3,4,5],   titel:"1 t/m 5 door elkaar"},
+  {tafels:[6],           titel:"tafel van 6"},
+  {tafels:[9],           titel:"tafel van 9"},
+  {tafels:[8],           titel:"tafel van 8"},
+  {tafels:[7],           titel:"tafel van 7"},
+  {tafels:[6,7,8,9],     titel:"6 t/m 9 door elkaar"},
+  {tafels:[1,2,3,4,5,6,7,8,9,10], titel:"alle tafels"},
+  {tafels:[2,3,4,5,6,7,8,9,10], delen:true, titel:"deelsommen"}
+];
+
+function schud(a){
+  for (var i=a.length-1;i>0;i--){
+    var j = Math.floor(Math.random()*(i+1)), t = a[i]; a[i] = a[j]; a[j] = t;
+  }
+  return a;
+}
+function maakSommen(i){
+  var les = L[i], r = [];
+  if (les.tafels.length === 1 && !les.delen){
+    var n = les.tafels[0], k;
+    // eerst op volgorde (opzeggen), dan door elkaar
+    for (k=1;k<=10;k++) r.push({a:k, b:n, op:"x"});
+    var rest = [];
+    for (k=1;k<=10;k++) rest.push(Math.random() < 0.3 ? {a:n, b:k, op:"x"} : {a:k, b:n, op:"x"});
+    return r.concat(schud(rest));
+  }
+  var alle = [];
+  les.tafels.forEach(function(n){
+    for (var k=1;k<=10;k++){
+      if (les.delen) alle.push({a:k*n, b:n, op:":"});
+      else alle.push(Math.random() < 0.5 ? {a:k, b:n, op:"x"} : {a:n, b:k, op:"x"});
+    }
+  });
+  return schud(alle).slice(0, 20);
+}
+function uitkomst(s){ return s.op === "x" ? s.a*s.b : s.a/s.b; }
+function tekst(s){ return s.a + (s.op === "x" ? " × " : " : ") + s.b; }
+
+/* ---------- sterrenbeelden ---------- */
+function zaadje(n){
+  return function(){
+    n |= 0; n = n + 0x6D2B79F5 | 0;
+    var t = Math.imul(n ^ n >>> 15, 1 | n);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+var BEELDEN = L.map(function(_, i){
+  var rnd = zaadje(i*977+13), pts = [], poging = 0;
+  while (pts.length < 6 && poging < 200){
+    poging++;
+    var p = {x:8+rnd()*64, y:8+rnd()*40};
+    if (pts.every(function(q){ return Math.hypot(p.x-q.x, p.y-q.y) > 13; })) pts.push(p);
+  }
+  pts.sort(function(a,b){ return a.x-b.x; });
+  return pts;
+});
+var TINTEN = ["maan","komeet","nevel","roze","mars","aurora"];
+
+function sterrenbeeld(i, stap){
+  var pts = BEELDEN[i], kleur = "var(--"+TINTEN[i % TINTEN.length]+")";
+  var g = '<svg viewBox="0 0 80 56" width="96" height="67" aria-hidden="true">';
+  if (stap >= 1){
+    var d = "M" + pts.map(function(p){ return p.x.toFixed(1)+" "+p.y.toFixed(1); }).join(" L");
+    g += '<path d="'+d+'" fill="none" stroke="'+(stap >= 3 ? kleur : "var(--tekst)")+'" stroke-width="1"'
+       + ' stroke-opacity="'+(stap === 1 ? .25 : .6)+'"'+(stap === 1 ? ' stroke-dasharray="2 3"' : "")+'/>';
+  }
+  pts.forEach(function(p, k){
+    var aan = stap >= 3 || (stap === 2) || (stap === 1 && k % 2 === 0);
+    if (stap >= 3) g += '<circle cx="'+p.x+'" cy="'+p.y+'" r="4.5" fill="'+kleur+'" opacity=".22"/>';
+    g += '<circle cx="'+p.x+'" cy="'+p.y+'" r="'+(aan ? 2.1 : 1.3)+'" fill="'+(stap >= 3 ? kleur : "var(--tekst)")+'"'
+       + ' opacity="'+(aan ? 1 : .3)+'"/>';
+  });
+  if (stap >= 3){
+    var t = pts[pts.length-1];
+    g += '<path d="M'+t.x+' '+(t.y-7)+' V'+(t.y+7)+' M'+(t.x-7)+' '+t.y+' H'+(t.x+7)+'" stroke="'+kleur+'" stroke-width=".8" opacity=".7"/>';
+  }
+  return g + "</svg>";
+}
+
+/* ---------- toetsen en stippen ---------- */
+function tekenToetsen(){
+  var t = document.getElementById("toetsen");
+  ["1","2","3","4","5","6","7","8","9","⌫","0","OK"].forEach(function(k){
+    var b = document.createElement("button");
+    b.type = "button";
+    b.textContent = k;
+    if (k === "OK") b.className = "ok";
+    if (k === "⌫") b.setAttribute("aria-label", "wissen");
+    b.addEventListener("click", function(){
+      if (k === "⌫") wis();
+      else if (k === "OK") controleer();
+      else cijfer(k);
+      b.blur();
+    });
+    t.appendChild(b);
+  });
+}
+function tekenStippen(){
+  var el = document.getElementById("stippen");
+  var s = huidige();
+  if (!s || !document.getElementById("hulp").checked){ el.hidden = true; return; }
+  var rijen, perRij, uitleg;
+  if (s.op === "x"){ rijen = s.a; perRij = s.b; uitleg = s.a+(s.a === 1 ? " rij" : " rijen")+" van "+s.b; }
+  else { rijen = s.a / s.b; perRij = s.b; uitleg = "hoeveel rijen van "+s.b+"?"; }
+  var h = "";
+  for (var r=0;r<rijen;r++){
+    h += '<div class="rij">';
+    for (var k=0;k<perRij;k++) h += "<i></i>";
+    h += "</div>";
+  }
+  el.innerHTML = h + "<p>"+uitleg+"</p>";
+  el.hidden = false;
+}
+
+/* ---------- toestand ---------- */
+var lesIndex = 0, wachtrij = [], totaal = 0, opgelost = 0;
+var invoer = "", bezig = false, overtypen = false, somStart = 0;
+var eersteKeerGoed = 0, gevraagd = 0, foutenTotaal = 0, foutPerSom = {}, tijden = [];
+var laatsteTik = null;
+
+function huidige(){ return wachtrij[0]; }
+
+function mediaan(a){
+  if (!a.length) return null;
+  var b = a.slice().sort(function(x,y){ return x-y; }), m = Math.floor(b.length/2);
+  return b.length % 2 ? b[m] : (b[m-1]+b[m])/2;
+}
+
+function toon(stand){
+  var s = huidige(), el = document.getElementById("som");
+  el.className = stand || "";
+  if (!s){ el.innerHTML = ""; return; }
+  el.innerHTML = tekst(s) + ' = <span class="vak">'+invoer+"</span>";
+  var nr = Math.min(opgelost+1, totaal);
+  document.getElementById("voortgang").innerHTML = "som "+nr+" van "+totaal;
+  meters();
+}
+function meters(){
+  var m = mediaan(tijden);
+  document.getElementById("tempo").textContent = m === null ? "—" : m.toFixed(1).replace(".", ",");
+  document.getElementById("acc").textContent = gevraagd ? Math.round(eersteKeerGoed/gevraagd*100)+"%" : "—";
+  document.getElementById("fouten").textContent = foutenTotaal;
+}
+function zetHint(h){ document.getElementById("hint").innerHTML = h || ""; }
+
+function startLes(i){
+  lesIndex = i;
+  wachtrij = maakSommen(i);
+  totaal = wachtrij.length; opgelost = 0;
+  invoer = ""; bezig = false; overtypen = false;
+  eersteKeerGoed = 0; gevraagd = 0; foutenTotaal = 0; foutPerSom = {}; tijden = [];
+  document.getElementById("lestitel").textContent = "Les "+(i+1)+" — "+L[i].titel;
+  document.getElementById("uitslag").hidden = true;
+  volgendeSom();
+  tekenHemel();
+}
+function volgendeSom(){
+  invoer = ""; overtypen = false; bezig = false;
+  somStart = Date.now();
+  var s = huidige();
+  zetHint(s && s.herkansing ? '<span class="herkansing">herkansing</span>' : "");
+  if (L[lesIndex].tafels.length === 1 && opgelost < 10 && s && !s.herkansing && !L[lesIndex].delen)
+    zetHint("op volgorde");
+  else if (L[lesIndex].tafels.length === 1 && opgelost === 10 && s && !s.herkansing)
+    zetHint("en nu door elkaar");
+  toon();
+  tekenStippen();
+}
+
+function tel(){
+  var nu = Date.now();
+  if (laatsteTik){
+    var d = Math.min((nu-laatsteTik)/1000, 15);
+    var dag = vandaag();
+    data.dagen[dag] = (data.dagen[dag]||0) + d;
+  }
+  laatsteTik = nu;
+  tekenDag();
+}
+
+function cijfer(k){
+  var s = huidige();
+  if (!s || bezig || invoer.length >= 3) return;
+  tel();
+  invoer += k;
+  toon();
+  if (invoer.length === String(uitkomst(s)).length) controleer();
+}
+function wis(){
+  if (bezig || !invoer) return;
+  invoer = invoer.slice(0, -1);
+  toon();
+}
+function controleer(){
+  var s = huidige();
+  if (!s || bezig || !invoer) return;
+  var juist = Number(invoer) === uitkomst(s);
+
+  if (overtypen){
+    if (juist){
+      bezig = true;
+      toon("goed");
+      setTimeout(function(){ wachtrij.shift(); volgendeSom(); }, 450);
+    } else {
+      invoer = "";
+      toon("fout");
+    }
+    return;
+  }
+
+  if (!s.herkansing) gevraagd++;
+  if (juist){
+    if (!s.herkansing){
+      eersteKeerGoed++;
+      tijden.push((Date.now()-somStart)/1000);
+    }
+    opgelost++;
+    bezig = true;
+    toon("goed");
+    setTimeout(function(){
+      wachtrij.shift();
+      if (!wachtrij.length) klaar();
+      else volgendeSom();
+    }, 350);
+  } else {
+    foutenTotaal++;
+    var naam = tekst(s);
+    foutPerSom[naam] = (foutPerSom[naam]||0)+1;
+    // later nog een keer terug laten komen
+    var terug = {a:s.a, b:s.b, op:s.op, herkansing:true};
+    wachtrij.splice(Math.min(4, wachtrij.length), 0, terug);
+    overtypen = true;
+    invoer = "";
+    toon("fout");
+    zetHint("Het is <b>"+uitkomst(s)+"</b>. Typ het maar over.");
+  }
+}
+
+function klaar(){
+  var m = mediaan(tijden) || 99;
+  var acc = gevraagd ? Math.round(eersteKeerGoed/gevraagd*100) : 0;
+  var stap = 1;
+  if (acc >= 90) stap = 2;
+  if (acc >= 95 && m <= 5) stap = 3;
+  var oud = data.lessen[lesIndex] || {stap:0};
+  data.lessen[lesIndex] = {
+    stap: Math.max(oud.stap||0, stap),
+    acc: Math.max(oud.acc||0, acc),
+    sec: Math.min(oud.sec||99, Math.round(m*10)/10)
+  };
+  bewaar();
+
+  document.getElementById("som").innerHTML = "✦";
+  document.getElementById("som").className = "";
+  zetHint("");
+  document.getElementById("voortgang").textContent = "klaar";
+  document.getElementById("stippen").hidden = true;
+
+  var lastig = Object.keys(foutPerSom).sort(function(a,b){ return foutPerSom[b]-foutPerSom[a]; }).slice(0,3);
+  var u = document.getElementById("uitslag");
+  var t = "<h3>Les "+(lesIndex+1)+" af</h3>";
+  t += "<p>"+acc+"% in één keer goed, gemiddeld "+m.toFixed(1).replace(".", ",")+" seconden per som.</p>";
+  if (lastig.length){
+    t += "<p>Deze sommen waren lastig: " + lastig.map(function(k){
+      return '<span class="lastig">'+k+'</span>';
+    }).join(" ") + ". Zeg ze nog een paar keer hardop.</p>";
+  } else {
+    t += "<p>Alles in één keer goed. Knap!</p>";
+  }
+  if (stap < 3) t += "<p>Doe de les nog eens om je sterrenbeeld feller te laten schijnen: vanaf 95% goed en binnen 5 seconden per som gaat het stralen.</p>";
+  else t += "<p>Je sterrenbeeld straalt. Op naar de volgende!</p>";
+  u.innerHTML = t;
+  u.hidden = false;
+  tekenHemel();
+  tekenDag();
+}
+
+document.addEventListener("keydown", function(e){
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  if (/^[0-9]$/.test(e.key)){ e.preventDefault(); cijfer(e.key); return; }
+  if (e.key === "Backspace"){ e.preventDefault(); wis(); return; }
+  if (e.key === "Enter"){
+    if (document.activeElement && document.activeElement.tagName === "BUTTON" &&
+        !document.getElementById("toetsen").contains(document.activeElement)) return;
+    e.preventDefault(); controleer();
+  }
+});
+
+/* ---------- hemel en dagteller ---------- */
+function tekenHemel(){
+  var h = document.getElementById("hemel");
+  h.innerHTML = "";
+  L.forEach(function(les, i){
+    var v = data.lessen[i] || {stap:0};
+    var b = document.createElement("button");
+    b.className = "beeld" + (i === lesIndex ? " actief" : "");
+    b.innerHTML = sterrenbeeld(i, v.stap) + '<span class="nr">les '+(i+1)+'</span><span class="naam">'+les.titel+"</span>";
+    b.addEventListener("click", function(){ startLes(i); b.blur(); window.scrollTo({top:0,behavior:"smooth"}); });
+    h.appendChild(b);
+  });
+}
+function reeksTel(){
+  var n = 0, d = new Date();
+  for (var i=0;i<400;i++){
+    if ((data.dagen[datum(d)]||0) >= REEKSDREMPEL) n++;
+    else if (i > 0) break;
+    d.setDate(d.getDate()-1);
+  }
+  return n;
+}
+function tekenDag(){
+  var sec = data.dagen[vandaag()] || 0;
+  var min = Math.floor(sec/60);
+  document.getElementById("minuten").textContent = min;
+  document.getElementById("dagbalk").style.width = Math.min(100, sec/DAGDOEL*100) + "%";
+  var r = reeksTel();
+  document.getElementById("reeks").textContent = r >= 2 ? r + " dagen op rij" : (sec >= DAGDOEL ? "vandaag gelukt" : "");
+}
+
+/* ---------- knoppen ---------- */
+document.getElementById("opnieuw").addEventListener("click", function(){ startLes(lesIndex); this.blur(); });
+document.getElementById("volgende").addEventListener("click", function(){ startLes(Math.min(lesIndex+1, L.length-1)); this.blur(); });
+document.getElementById("hulp").addEventListener("change", function(){ tekenStippen(); this.blur(); });
+setInterval(function(){ if (gevraagd) bewaar(); }, 20000);
+window.addEventListener("beforeunload", bewaar);
+
+/* ---------- opstarten ---------- */
+(async function(){
+  await laad();
+  tekenToetsen();
+  var eerste = 0;
+  for (var i=0;i<L.length;i++){ if (!data.lessen[i]){ eerste = i; break; } }
+  startLes(eerste);
+  tekenDag();
+})();
+
+})();
+</script>
