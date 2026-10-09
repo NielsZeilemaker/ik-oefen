@@ -42,9 +42,10 @@
     min-height:100vh;
   }
   .wrap{max-width:860px;margin:0 auto}
-  .titelrij{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px}
-  .terug{display:inline-block;white-space:nowrap;font-size:14px;color:var(--tekst);text-decoration:none;border:1px solid var(--lijn);border-radius:8px;padding:4px 12px;background:var(--kaart)}
-  .terug:hover{border-color:var(--komeet)}
+  .kop{display:grid;grid-template-columns:auto 1fr;column-gap:14px;align-items:center}
+  .kop .ondertitel{grid-column:2}
+  .terug{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;color:var(--tekst);border:1px solid var(--lijn);background:var(--kaart);text-decoration:none;transition:background .15s,border-color .15s}
+  .terug:hover{background:var(--kaart2);border-color:var(--tekst)}
 
   header{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:baseline;justify-content:space-between;margin-bottom:22px}
   h1{
@@ -155,11 +156,9 @@
 
 <div class="wrap">
   <header>
-    <div>
-      <div class="titelrij">
-        <h1>De Sterrenwacht <span class="ster">✦</span></h1>
-        <a class="terug" href="../">← Ik oefen</a>
-      </div>
+    <div class="kop">
+      <a class="terug" href="../" aria-label="Terug naar Ik oefen" title="Terug naar Ik oefen"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      <h1>De Sterrenwacht <span class="ster">✦</span></h1>
       <p class="ondertitel">Elke dag tien minuten tafels, dan gaat je hemel stralen.</p>
     </div>
     <div class="dagteller">

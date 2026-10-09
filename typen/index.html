@@ -30,9 +30,10 @@
     padding:20px 16px 48px;
   }
   .wrap{max-width:860px;margin:0 auto}
-  .titelrij{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px}
-  .terug{display:inline-block;white-space:nowrap;font-size:14px;color:var(--diepgroen);text-decoration:none;border:1px solid var(--lijn);border-radius:8px;padding:4px 12px;background:var(--kaart)}
-  .terug:hover{border-color:var(--diepgroen)}
+  .kop{display:grid;grid-template-columns:auto 1fr;column-gap:14px;align-items:center}
+  .kop .ondertitel{grid-column:2}
+  .terug{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;color:var(--diepgroen);border:1px solid var(--lijn);background:var(--kaart);text-decoration:none;transition:background .15s,border-color .15s}
+  .terug:hover{background:rgba(30,58,40,.08);border-color:var(--diepgroen)}
 
   header{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:baseline;justify-content:space-between;margin-bottom:22px}
   h1{
@@ -127,11 +128,9 @@
 
 <div class="wrap">
   <header>
-    <div>
-      <div class="titelrij">
-        <h1>De Letterhof</h1>
-        <a class="terug" href="../">← Ik oefen</a>
-      </div>
+    <div class="kop">
+      <a class="terug" href="../" aria-label="Terug naar Ik oefen" title="Terug naar Ik oefen"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      <h1>De Letterhof</h1>
       <p class="ondertitel">Elke dag een kwartier, dan groeit je tuin.</p>
     </div>
     <div class="dagteller">
