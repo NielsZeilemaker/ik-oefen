@@ -44,7 +44,8 @@
   #kaart{display:block;width:100%;height:auto;max-height:76vh;margin:4px auto 0;touch-action:manipulation;user-select:none;-webkit-user-select:none}
   .prov path{fill:var(--land);stroke:var(--tekst);stroke-width:1.6;stroke-linejoin:round;fill-rule:evenodd;transition:fill .25s}
   .prov{cursor:pointer;outline:none;-webkit-tap-highlight-color:transparent}
-  @media (hover:hover){.prov:hover path{fill:#F4E8CC}}
+  @media (hover:hover){#kaart:not(.welke) .prov:hover path{fill:#F4E8CC}}
+  #kaart.welke .prov{cursor:default}
   .prov.af{cursor:default}
   .prov.af path,.prov.af:hover path{fill:var(--kleur)}
   .prov.mis path,.prov.mis:hover path{fill:var(--fout)}
@@ -57,6 +58,22 @@
   @keyframes knipper{50%{fill:#FFF0C9}}
   @keyframes pop{0%{transform:scale(.3)}60%{transform:scale(1.25)}100%{transform:scale(1)}}
   @keyframes wiebel{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+
+  .modus{display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+  .modus button{background:transparent;color:var(--tekst);border:1px solid var(--lijn);font-size:14px;padding:6px 12px}
+  .modus button:hover{background:#F4E8CC}
+  .modus button[aria-pressed="true"]{background:var(--tekst);color:#fff;border-color:var(--tekst)}
+  #hint .juist{color:var(--goed);font-weight:600}
+  #namen{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:6px;margin:4px 0 0;padding:8px 0;position:sticky;bottom:0;z-index:2;background:var(--kaart);border-top:1px solid var(--lijn)}
+  #namen[hidden]{display:none}
+  #namen button{font-family:Fredoka,ui-rounded,sans-serif;font-size:17px;font-weight:500;background:#fff;color:var(--tekst);border:1px solid var(--lijn);border-bottom:3px solid rgba(74,50,32,.25);padding:7px 6px;touch-action:manipulation}
+  #namen button:hover{background:#F4E8CC}
+  #namen button.goed{background:var(--goed);border-color:var(--goed);color:#fff}
+  #namen button.mis{background:var(--fout);border-color:var(--fout);color:#fff}
+  #namen button.wijs{background:var(--honing);border-color:var(--honing);color:var(--tekst)}
+  @media (prefers-reduced-motion:no-preference){#namen button.wijs{animation:knop .8s ease-in-out infinite}}
+  @keyframes knop{50%{background:#FFF0C9}}
+  @media (max-width:560px){#namen{grid-template-columns:repeat(3,1fr);gap:5px}#namen button{font-size:14px;padding:6px 2px}}
 
   .label{opacity:0;transition:opacity .3s;pointer-events:none}
   .label.aan{opacity:1}
@@ -103,17 +120,22 @@
     <div class="kop">
       <a class="terug" href="../" aria-label="Terug naar Ik oefen" title="Terug naar Ik oefen"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
       <h1>De Berenkaart</h1>
-      <p class="ondertitel">Vind alle 12 provincies en verdien beertjes.</p>
+      <p class="ondertitel">Zoek de provincies op de kaart, of noem ze bij naam, en verdien beertjes.</p>
     </div>
   </header>
 
   <div class="vel">
+    <div class="modus" role="group" aria-label="Kies hoe je oefent">
+      <button type="button" data-modus="waar">Waar ligt…? Klik op de kaart</button>
+      <button type="button" data-modus="welke">Welke is dit? Kies de naam</button>
+    </div>
     <div class="vraagbalk">
       <div id="voortgang"></div>
       <p id="vraag" aria-live="polite"></p>
       <p id="hint"></p>
     </div>
     <svg id="kaart" role="img" aria-label="Kaart van Nederland met de 12 provincies"></svg>
+    <div id="namen" hidden></div>
     <div id="berenrij" aria-label="Beertjes in deze ronde"></div>
     <div id="uitslag" hidden></div>
     <div class="knoppen"><button id="opnieuw" type="button">Begin opnieuw</button></div>
@@ -124,7 +146,7 @@
   <div id="plank"></div>
   <p id="plankmeer"></p>
 
-  <footer>Voortgang wordt op dit apparaat bewaard. Fout geklikt? Dan knippert de goede provincie, klik je die aan en komt de vraag later nog een keer terug. Kaartgrenzen: CBS/PDOK via cartomap.</footer>
+  <footer>Voortgang wordt op dit apparaat bewaard. Fout? Dan knippert het goede antwoord, klik je dat aan en komt de vraag later nog een keer terug. De provincies krijgen elke ronde andere kleuren. Kaartgrenzen: CBS/PDOK via cartomap.</footer>
 </div>
 
 <script>
@@ -162,6 +184,7 @@ async function laad(){
   }catch(e){ /* nog niets bewaard */ }
   data.beren = data.beren || 0;
   data.goud = data.goud || 0;
+  if (data.modus !== "welke") data.modus = "waar";
 }
 async function bewaar(){
   var s = JSON.stringify(data);
@@ -199,9 +222,29 @@ function ster(x, y, r, klasse){
   return '<path class="fonkel '+klasse+'" d="M'+x+' '+(y-r)+'Q'+x+' '+y+' '+(x+r)+' '+y+'Q'+x+' '+y+' '+x+' '+(y+r)+'Q'+x+' '+y+' '+(x-r)+' '+y+'Q'+x+' '+y+' '+x+' '+(y-r)+'Z"/>';
 }
 
+/* ---------- kleuren per ronde ---------- */
+// 13 goed uit elkaar liggende kleuren (onderling minstens 19,7 ΔE); niet te dicht bij het oranje van de aanwijzing of het rood van fout
+var PALET = ["#6FA8DC","#3F6FB5","#A6DCF2","#4FB8A8","#86C25E","#3D8B57","#D2E06A","#F5D65A","#C49A6C","#F29CC6","#A37FD6","#D1C2F0","#B95C9B"];
+// paren die op elkaar lijken (ΔE < 30): die komen niet naast elkaar
+var TEDICHT = [["#6FA8DC","#3F6FB5"],["#6FA8DC","#A6DCF2"],["#6FA8DC","#D1C2F0"],["#3F6FB5","#A37FD6"],["#A6DCF2","#D1C2F0"],["#4FB8A8","#3D8B57"],["#86C25E","#D2E06A"],["#D2E06A","#F5D65A"],["#F29CC6","#D1C2F0"],["#F29CC6","#B95C9B"],["#A37FD6","#B95C9B"]];
+// buurprovincies (index in PROVINCIES), plus Flevoland aan Gelderland en Utrecht over het water
+var BUREN = [[0,2],[0,4],[0,8],[1,2],[1,7],[1,8],[2,4],[2,7],[2,8],[3,5],[3,6],[3,8],[3,9],[3,11],[5,6],[6,10],[6,11],[7,9],[7,11],[9,11],[10,11],[1,3],[1,9]];
+
+function lijktOp(a, b){
+  return TEDICHT.some(function(t){ return (t[0] === a && t[1] === b) || (t[0] === b && t[1] === a); });
+}
+function kiesKleuren(){
+  var k;
+  for (var poging=0; poging<500; poging++){
+    k = schud(PALET.slice());
+    if (BUREN.every(function(b){ return !lijktOp(k[b[0]], k[b[1]]); })) break;
+  }
+  PROVINCIES.forEach(function(p, i){ groep[p.naam].style.setProperty("--kleur", k[i]); });
+}
+
 /* ---------- kaart tekenen ---------- */
 var NS = "http://www.w3.org/2000/svg";
-var groep = {}, label = {}, labeltekst = {};
+var groep = {}, label = {}, labeltekst = {}, knop = {};
 var SMAL = window.matchMedia("(max-width:560px)");
 var MARGE = 178;
 var VERSCHUIF = {"Noord-Holland":[-8,-42], "Flevoland":[16,6]};  // alleen op smalle schermen
@@ -216,7 +259,6 @@ function tekenKaart(){
   var svg = document.getElementById("kaart");
   PROVINCIES.forEach(function(p){
     var g = maak("g", {"class":"prov"}, svg);
-    g.style.setProperty("--kleur", p.kleur);
     maak("path", {d:p.d}, g);
     g.addEventListener("click", function(){ klik(p.naam); });
     groep[p.naam] = g;
@@ -233,6 +275,15 @@ function tekenKaart(){
     t.textContent = p.naam;
     labeltekst[p.naam] = t;
     label[p.naam] = g;
+  });
+  var namen = document.getElementById("namen");
+  PROVINCIES.map(naamVan).sort().forEach(function(n){
+    var b = document.createElement("button");
+    b.type = "button";
+    b.textContent = n;
+    b.addEventListener("click", function(){ kies(n); b.blur(); });
+    namen.appendChild(b);
+    knop[n] = b;
   });
   SMAL.addEventListener("change", pasSchermAan);
   pasSchermAan();
@@ -254,7 +305,7 @@ function pasSchermAan(){
 /* ---------- spel ---------- */
 var TOTAAL = PROVINCIES.length;
 var wachtrij = [], gevonden = 0, verdiend = 0, aanwijzen = false, bezig = false;
-var fouten = {}, misTimer = null;
+var fouten = {}, misTimer = null, knopTimer = null;
 
 function schud(a){
   for (var i=a.length-1;i>0;i--){
@@ -269,10 +320,18 @@ function naamVan(v){ return v.naam; }
 function start(){
   wachtrij = schud(PROVINCIES.map(function(p){ return {naam:p.naam}; }));
   gevonden = 0; verdiend = 0; aanwijzen = false; bezig = false; fouten = {};
-  clearTimeout(misTimer);
+  clearTimeout(misTimer); clearTimeout(knopTimer);
   PROVINCIES.forEach(function(p){
     groep[p.naam].setAttribute("class", "prov");
     label[p.naam].setAttribute("class", "label");
+    knop[p.naam].className = "";
+  });
+  kiesKleuren();
+  var welke = data.modus === "welke";
+  document.getElementById("kaart").classList.toggle("welke", welke);
+  document.getElementById("namen").hidden = !welke;
+  document.querySelectorAll(".modus button").forEach(function(b){
+    b.setAttribute("aria-pressed", String(b.dataset.modus === data.modus));
   });
   var rij = document.getElementById("berenrij"), h = "";
   for (var i=0;i<TOTAAL;i++) h += beer(LEEG);
@@ -286,8 +345,24 @@ function volgende(){
   document.getElementById("voortgang").textContent = "provincie "+Math.min(gevonden+1, TOTAAL)+" van "+TOTAAL;
   var q = document.getElementById("vraag");
   q.className = "";
-  q.innerHTML = "Waar ligt <b>"+v.naam+"</b>?";
+  if (data.modus === "welke"){
+    q.innerHTML = "Welke provincie <b>knippert</b>?";
+    zetKlas(v.naam, "wijs", true);
+    haalInBeeld(v.naam);
+  } else {
+    q.innerHTML = "Waar ligt <b>"+v.naam+"</b>?";
+  }
   zetHint(v.herkansing ? '<span class="herkansing">herkansing</span>' : "");
+}
+// op een kleine telefoon kan de knipperende provincie buiten beeld vallen: schuif hem tussen vraag en namen
+function haalInBeeld(naam){
+  var r = groep[naam].getBoundingClientRect();
+  var boven = document.querySelector(".vraagbalk").getBoundingClientRect().bottom;
+  var onder = document.getElementById("namen").getBoundingClientRect().top;
+  if (r.top < boven || r.bottom > onder){
+    var glad = !window.matchMedia("(prefers-reduced-motion:reduce)").matches;
+    window.scrollBy({top:(r.top + r.bottom)/2 - (boven + onder)/2, behavior:glad ? "smooth" : "auto"});
+  }
 }
 function geefBeer(){
   var kleur = BERENKLEUR[data.beren % BERENKLEUR.length];
@@ -300,7 +375,7 @@ function geefBeer(){
 }
 function klik(naam){
   var v = wachtrij[0];
-  if (!v || bezig || groep[naam].classList.contains("af")) return;
+  if (!v || bezig || data.modus !== "waar" || groep[naam].classList.contains("af")) return;
 
   if (aanwijzen){
     if (naam !== v.naam) return;
@@ -337,11 +412,60 @@ function klik(naam){
   q.className = ""; void q.offsetWidth; q.className = "fout";
   zetHint("Dat is <b>"+naam+"</b>. Kijk, hier knippert "+v.naam+": klik er maar op.");
 }
+// modus "welke": de provincie knippert, kies de goede naam
+function kies(naam){
+  var v = wachtrij[0];
+  if (!v || bezig || data.modus !== "welke") return;
+
+  if (aanwijzen){
+    if (naam !== v.naam) return;
+    knop[naam].className = "";
+    zetKlas(v.naam, "wijs", false);
+    wachtrij.shift();
+    volgende();
+    return;
+  }
+
+  if (naam === v.naam){
+    bezig = true;
+    zetKlas(naam, "wijs", false);
+    zetKlas(naam, "af", true);
+    label[naam].classList.add("aan");
+    knop[naam].className = "goed";
+    gevonden++;
+    if (!v.herkansing) geefBeer();
+    zetHint("");
+    setTimeout(function(){
+      knop[naam].className = "";
+      wachtrij.shift();
+      if (wachtrij.length) volgende(); else klaar();
+    }, 600);
+    return;
+  }
+
+  // fout: laat zien waar de gekozen provincie ligt, wijs de goede naam aan, vraag later opnieuw
+  fouten[v.naam] = (fouten[v.naam]||0)+1;
+  wachtrij.splice(Math.min(4, wachtrij.length), 0, {naam:v.naam, herkansing:true});
+  aanwijzen = true;
+  document.querySelectorAll(".prov.mis").forEach(function(g){ g.classList.remove("mis"); });
+  zetKlas(naam, "mis", true);
+  clearTimeout(misTimer);
+  misTimer = setTimeout(function(){ zetKlas(naam, "mis", false); }, 1400);
+  var fout = knop[naam];
+  fout.className = "mis";
+  clearTimeout(knopTimer);
+  knopTimer = setTimeout(function(){ if (fout.className === "mis") fout.className = ""; }, 1400);
+  knop[v.naam].className = "wijs";
+  var q = document.getElementById("vraag");
+  q.className = ""; void q.offsetWidth; q.className = "fout";
+  zetHint("Nee, dit is <span class=\"juist\">"+v.naam+"</span>. "+naam+" is rood. Klik maar op "+v.naam+".");
+}
+
 function klaar(){
   var perfect = verdiend === TOTAAL;
   if (perfect){ data.goud++; bewaar(); tekenPlank(); }
   document.getElementById("voortgang").textContent = "klaar";
-  document.getElementById("vraag").innerHTML = perfect ? "Alles in één keer goed!" : "Alle provincies gevonden!";
+  document.getElementById("vraag").innerHTML = perfect ? "Alles in één keer goed!" : (data.modus === "welke" ? "Alle provincies benoemd!" : "Alle provincies gevonden!");
   zetHint("");
   var lastig = Object.keys(fouten).sort(function(a,b){ return fouten[b]-fouten[a]; });
   var t = perfect ? beer(GOUD, "goudbeer") : "";
@@ -366,6 +490,14 @@ function tekenPlank(){
   document.getElementById("plankmeer").textContent = data.beren || data.goud ? "Totaal: "+m+"." : "";
 }
 
+document.querySelectorAll(".modus button").forEach(function(b){
+  b.addEventListener("click", function(){
+    data.modus = b.dataset.modus;
+    bewaar();
+    start();
+    b.blur();
+  });
+});
 document.getElementById("opnieuw").addEventListener("click", function(){ start(); this.blur(); window.scrollTo({top:0,behavior:"smooth"}); });
 
 /* ---------- opstarten ---------- */
