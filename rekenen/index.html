@@ -1,0 +1,479 @@
+<!doctype html>
+<html lang="nl">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>De Rekentrein — plussen en minnen tot 100</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --lucht:#DCEEF7;
+    --kaart:#FFFDF7;
+    --kaart2:#F1EBDD;
+    --tekst:#23313F;
+    --zacht:rgba(35,49,63,.62);
+    --lijn:rgba(35,49,63,.16);
+    --rails:#7A6A58;
+    --goed:#2F9E5B;
+    --rood:#D9484F;
+    --geel:#F2B632;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:linear-gradient(#CFE7F4, var(--lucht) 40%, #EAF4E4);
+    background-attachment:fixed;
+    color:var(--tekst);
+    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:16px;line-height:1.5;padding:20px 16px 48px;min-height:100vh;
+  }
+  .wrap{max-width:860px;margin:0 auto}
+  header{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:baseline;justify-content:space-between;margin-bottom:22px}
+  .kop{display:grid;grid-template-columns:auto 1fr;column-gap:14px;align-items:center}
+  .kop .ondertitel{grid-column:2}
+  .terug{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;color:var(--tekst);border:1px solid var(--lijn);background:var(--kaart);text-decoration:none;transition:background .15s,border-color .15s}
+  .terug:hover{background:var(--kaart2);border-color:var(--tekst)}
+  h1{font-family:Fredoka,ui-rounded,system-ui,sans-serif;font-weight:600;font-size:clamp(28px,6vw,40px);margin:0}
+  .ondertitel{margin:2px 0 0;font-size:14px;color:var(--zacht)}
+
+  .kaart{background:var(--kaart);border:1px solid var(--lijn);border-radius:16px;padding:20px 18px;box-shadow:0 2px 0 rgba(35,49,63,.06)}
+  .leskop{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:6px}
+  .leskop h2{font-family:Fredoka,ui-rounded,sans-serif;font-weight:500;font-size:20px;margin:0}
+  .leskop span{font-size:13px;color:var(--zacht);white-space:nowrap}
+
+  .niveaus{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px}
+  .niveaus button{font:inherit;font-size:14px;cursor:pointer;border:1px solid var(--lijn);background:var(--kaart2);color:var(--tekst);border-radius:20px;padding:5px 14px}
+  .niveaus button.aan{background:var(--tekst);color:#fff;border-color:var(--tekst)}
+
+  /* het spoor */
+  .spoor{position:relative;overflow:hidden;height:clamp(170px,40vw,210px);margin:8px -18px 0;padding:0 18px}
+  .spoor::after{content:"";position:absolute;left:0;right:0;bottom:22px;height:6px;
+    background:repeating-linear-gradient(90deg,var(--rails) 0 6px,transparent 6px 22px),linear-gradient(var(--rails),var(--rails)) bottom/100% 2px no-repeat;opacity:.55}
+  .som{position:absolute;left:50%;bottom:30px;display:flex;align-items:flex-end;gap:clamp(4px,1.6vw,12px);
+    transform:translateX(-50%);transition:transform .45s cubic-bezier(.3,.7,.3,1),opacity .45s}
+  .som.weg{transform:translateX(60%);opacity:0}
+  .som.nieuw{transform:translateX(-160%);opacity:0;transition:none}
+  .som.groot .wagon{font-size:clamp(22px,6.8vw,46px)}
+  .som.groot .teken{font-size:clamp(22px,6.5vw,40px)}
+  .wagon .bordje{position:absolute;left:50%;bottom:calc(100% + 6px);transform:translateX(-50%) rotate(-4deg);
+    font-size:13px;font-weight:600;line-height:1;white-space:nowrap;color:var(--tekst);background:var(--geel);
+    padding:4px 8px;border-radius:6px;box-shadow:0 2px 0 rgba(0,0,0,.15)}
+  .teken{font-family:Fredoka,ui-rounded,sans-serif;font-weight:600;font-size:clamp(28px,8vw,46px);line-height:1;padding-bottom:26px;min-width:.7em;text-align:center}
+  .wagon{position:relative;font-family:Fredoka,ui-rounded,sans-serif;font-weight:600;font-variant-numeric:tabular-nums;
+    font-size:clamp(30px,9vw,52px);line-height:1;color:#fff;background:var(--k,#5B8DEF);
+    min-width:2.1em;padding:.22em .25em .3em;border-radius:12px 12px 6px 6px;text-align:center;margin-bottom:12px;
+    box-shadow:inset 0 -5px 0 rgba(0,0,0,.18)}
+  .wagon::before,.wagon::after{content:"";position:absolute;bottom:-12px;width:18px;height:18px;border-radius:50%;background:#3A3F48;border:4px solid #8C939E}
+  .wagon::before{left:14%}
+  .wagon::after{right:14%}
+  /* de locomotief: het antwoordvak */
+  .wagon.loc{background:#C8423B;padding:.14em .3em .2em .16em;border-radius:.12em .3em 6px 6px;min-width:0}
+  .loc .antwoord{display:block;min-width:2.1em;background:#fff;color:var(--tekst);border:3px dashed var(--tekst);
+    border-radius:8px;padding:.04em .15em .08em;transition:background .2s,border-color .2s}
+  .loc .leeg{opacity:.25}
+  .loc .buffer{position:absolute;right:-.16em;bottom:.22em;width:.18em;height:.3em;border-radius:0 3px 3px 0;background:#3A3F48}
+  .loc .schoorsteen{position:absolute;right:.3em;bottom:100%;width:.3em;height:.42em;background:#3A3F48;border-radius:3px 3px 0 0}
+  .loc .schoorsteen::before{content:"";position:absolute;left:-.07em;right:-.07em;top:-.06em;height:.1em;background:#3A3F48;border-radius:3px}
+  .loc .cabine{position:absolute;left:-.06em;transform:scaleX(-1);bottom:calc(100% - 4px);width:1.35em;height:1.2em;display:block}
+  .loc .stoom{position:absolute;right:.45em;bottom:calc(100% + .42em);width:0;height:0}
+  .loc .stoom i{position:absolute;left:-.16em;bottom:0;width:.32em;height:.32em;border-radius:50%;background:#fff;
+    box-shadow:0 0 0 2px rgba(35,49,63,.08);opacity:0}
+  .som.goed .loc .antwoord{background:var(--goed);border-color:var(--goed);border-style:solid;color:#fff}
+  .som.fout .loc .antwoord{border-color:var(--rood);color:var(--rood)}
+  @media (prefers-reduced-motion:no-preference){
+    .som.fout .loc .antwoord{animation:wiebel .2s}
+    .som.goed .loc .antwoord{animation:pop .3s}
+    .loc .stoom i{animation:puf 2.4s ease-out infinite}
+    .loc .stoom i:nth-child(2){animation-delay:.8s}
+    .loc .stoom i:nth-child(3){animation-delay:1.6s}
+    .som.goed .loc .stoom i,.som.weg .loc .stoom i{animation-duration:.7s}
+    .som.goed .loc .stoom i:nth-child(2),.som.weg .loc .stoom i:nth-child(2){animation-delay:.23s}
+    .som.goed .loc .stoom i:nth-child(3),.som.weg .loc .stoom i:nth-child(3){animation-delay:.46s}
+    .loc .pet{animation:knik 3s ease-in-out infinite;transform-origin:20px 20px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    .loc .stoom i{opacity:.8}
+    .loc .stoom i:nth-child(2){transform:translate(-.3em,-.35em) scale(1.3);opacity:.55}
+    .loc .stoom i:nth-child(3){transform:translate(-.65em,-.75em) scale(1.7);opacity:.3}
+  }
+  @keyframes puf{
+    0%{transform:translate(0,0) scale(.5);opacity:0}
+    15%{opacity:.95}
+    100%{transform:translate(-1.1em,-1.3em) scale(2);opacity:0}
+  }
+  @keyframes knik{0%,80%,100%{transform:rotate(0)}88%{transform:rotate(-6deg)}}
+  @media (prefers-reduced-motion:reduce){ .som{transition:none} }
+  @keyframes wiebel{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+  @keyframes pop{50%{transform:scale(1.1)}}
+
+  #hint{text-align:center;min-height:1.5em;font-size:15px;color:var(--zacht);margin:6px 0 0}
+  #hint b{color:var(--rood)}
+
+  .werkvlak{display:flex;justify-content:center;margin-top:14px}
+  #toetsen{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:min(260px,100%)}
+  #toetsen button{font-family:Fredoka,ui-rounded,sans-serif;font-size:24px;font-weight:500;height:54px;border-radius:12px;
+    background:var(--kaart2);color:var(--tekst);border:1px solid var(--lijn);border-bottom:4px solid rgba(0,0,0,.2);
+    padding:0;cursor:pointer;touch-action:manipulation}
+  #toetsen button:hover{background:#E8DFCB}
+  #toetsen button:active{transform:translateY(2px);border-bottom-width:2px}
+  #toetsen .ok{background:var(--geel);border-color:transparent;border-bottom-color:#B9861A}
+
+  .meters{display:flex;flex-wrap:wrap;gap:6px 22px;margin-top:18px;font-size:14px;color:var(--zacht);justify-content:center}
+  .meters b{font-family:Fredoka,ui-rounded,sans-serif;font-size:17px;font-weight:600;color:var(--tekst)}
+  .knoppen{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:16px}
+  .knoppen button{font:inherit;font-size:14px;cursor:pointer;border:1px solid var(--tekst);background:var(--tekst);color:#fff;border-radius:8px;padding:7px 14px}
+  :focus-visible{outline:3px solid #5B8DEF;outline-offset:2px}
+
+  #uitslag{margin-top:18px;border-top:1px solid var(--lijn);padding-top:16px}
+  #uitslag h3{font-family:Fredoka,ui-rounded,sans-serif;font-weight:500;font-size:20px;margin:0 0 8px}
+  #uitslag p{margin:0 0 10px;font-size:15px}
+  #uitslag .lastig{font-family:Fredoka,ui-rounded,sans-serif;background:var(--kaart2);border-radius:6px;padding:1px 8px;white-space:nowrap}
+
+  h2.recordkop{font-family:Fredoka,ui-rounded,sans-serif;font-weight:500;font-size:20px;margin:30px 0 8px}
+  #records{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+  .record{background:var(--kaart);border:1px solid var(--lijn);border-radius:12px;padding:10px 12px;font-size:14px}
+  .record b{display:block;font-family:Fredoka,ui-rounded,sans-serif;font-size:17px;font-weight:600}
+  .record .sterren{color:var(--geel);font-size:18px;letter-spacing:2px}
+  .record .sterren i{font-style:normal;color:var(--lijn)}
+  footer{margin-top:30px;font-size:13px;color:var(--zacht)}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="kop">
+      <a class="terug" href="../" aria-label="Terug naar Ik oefen" title="Terug naar Ik oefen"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      <h1>De Rekentrein 🚂</h1>
+      <p class="ondertitel">Het antwoord haakt aan en rijdt mee naar de volgende som.</p>
+    </div>
+  </header>
+
+  <div class="kaart">
+    <div class="niveaus" id="niveaus"></div>
+    <div class="leskop">
+      <h2 id="titel">Tot 100</h2>
+      <span id="voortgang">som 1 van 20</span>
+    </div>
+
+    <div class="spoor"><div class="som" id="som" aria-live="polite"></div></div>
+    <p id="hint"></p>
+
+    <div class="werkvlak"><div id="toetsen"></div></div>
+
+    <div class="meters">
+      <div>tijd <b id="klok">0:00</b></div>
+      <div>tempo <b id="tempo">—</b> sec per som</div>
+      <div>fouten <b id="fouten">0</b></div>
+    </div>
+
+    <div class="knoppen"><button id="opnieuw">Nieuwe trein</button></div>
+    <div id="uitslag" hidden></div>
+  </div>
+
+  <h2 class="recordkop">Jouw snelste treinen</h2>
+  <div id="records"></div>
+
+  <footer>Voortgang wordt op dit apparaat bewaard. Elke som gebruikt de laatste twee getallen; af en toe stapt er een nieuw getal in. Wordt het te groot, dan wordt het een min: het grootste getal komt voorop. Fout? Dan zie je het goede antwoord, typ je het over en rijdt de trein verder.</footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+var BEWAAR = "rekentrein-v1";
+var RONDE = 20;
+var NIVEAUS = [
+  {max:20,  start:[1,6],  vers:[1,15], titel:"Tot 20"},
+  {max:50,  start:[2,12], vers:[2,40], titel:"Tot 50"},
+  {max:100, start:[3,25], vers:[3,80], titel:"Tot 100"},
+  {max:1000, start:[20,150], vers:[10,800], titel:"Tot 1000"}
+];
+var KLEUREN = ["#5B8DEF","#E8794A","#3FAE8C","#B36AD8","#D9A21E","#E45F8C","#4AA7C9","#7D8F3A"];
+
+var data = {records:{}, niveau:2};
+function laad(){
+  try{ var s = localStorage.getItem(BEWAAR); if (s) data = JSON.parse(s); }catch(e){}
+  if (!data.records) data.records = {};
+  if (typeof data.niveau !== "number" || !NIVEAUS[data.niveau]) data.niveau = 2;
+}
+function bewaar(){ try{ localStorage.setItem(BEWAAR, JSON.stringify(data)); }catch(e){} }
+
+function tussen(a, b){ return a + Math.floor(Math.random()*(b-a+1)); }
+
+/* ---------- de ketting ---------- */
+// Een getal is {v, k}: waarde en kleur, zodat je het ziet doorschuiven.
+var kleurNr = 0;
+function getal(v){ return {v:v, k:KLEUREN[(kleurNr++) % KLEUREN.length]}; }
+
+var vorig, laatst, recent;   // de laatste twee getallen en recente paren
+var totVers;                 // over hoeveel sommen er een vers getal instapt
+
+function startKetting(){
+  var n = NIVEAUS[data.niveau];
+  var a = tussen(n.start[0], n.start[1]), b;
+  do { b = tussen(n.start[0], n.start[1]); } while (b === a);
+  kleurNr = tussen(0, KLEUREN.length-1);
+  vorig = getal(a); laatst = getal(b);
+  recent = [];
+  totVers = tussen(4, 6);
+}
+
+// Maak de som van de laatste twee getallen.
+function maakSom(){
+  var niv = NIVEAUS[data.niveau], max = niv.max;
+  // af en toe stapt er een vers getal in, in plaats van het oudste getal
+  if (--totVers <= 0){
+    var f;
+    do { f = tussen(niv.vers[0], niv.vers[1]); } while (f === laatst.v);
+    vorig = getal(f); vorig.vers = true;
+    totVers = tussen(4, 6);
+    recent = [];
+  }
+  var a = vorig.v, b = laatst.v;
+  var plusKan = a + b <= max;
+  var minKan = a !== b;                 // verschil 0 vermijden
+  var plus = plusKan && (!minKan || Math.random() >= 0.35);
+  // rondjes doorbreken: kies het andere teken als dit paar net al was
+  var sleutel = Math.min(a,b) + "|" + Math.max(a,b) + "|" + (plus ? "+" : "-");
+  if (recent.indexOf(sleutel) >= 0){
+    if (plus && minKan) plus = false;
+    else if (!plus && plusKan) plus = true;
+  }
+  if (!plusKan && !minKan){
+    // allebei gelijk en te groot (kan alleen bij gelijke getallen): begin vers
+    startKetting(); return maakSom();
+  }
+  recent.push(Math.min(a,b) + "|" + Math.max(a,b) + "|" + (plus ? "+" : "-"));
+  if (recent.length > 6) recent.shift();
+
+  if (plus) return {links:vorig, rechts:laatst, op:"+", uit:a+b};
+  // min: grootste getal voorop
+  var groot = a > b ? vorig : laatst, klein = a > b ? laatst : vorig;
+  return {links:groot, rechts:klein, op:"−", uit:groot.v-klein.v};
+}
+
+/* ---------- toestand ---------- */
+var som = null, invoer = "", bezig = false, overtypen = false;
+var opgelost = 0, fouten = 0, tijden = [], somStart = 0, rondeStart = 0, klokTimer = null;
+var lastig = {};
+
+function mediaan(a){
+  if (!a.length) return null;
+  var b = a.slice().sort(function(x,y){ return x-y; }), m = Math.floor(b.length/2);
+  return b.length % 2 ? b[m] : (b[m-1]+b[m])/2;
+}
+function komma(x){ return x.toFixed(1).replace(".", ","); }
+function mmss(s){ s = Math.floor(s); return Math.floor(s/60) + ":" + String(s%60).padStart(2,"0"); }
+
+function wagon(g){
+  return '<span class="wagon'+(g.vers ? ' vers' : '')+'" style="--k:'+g.k+'">'+g.v
+    + (g.vers ? '<span class="bordje">nieuw!</span>' : '') + '</span>';
+}
+// cabine met machinist (gespiegeld via CSS, zodat hij naar rechts kijkt: de rijrichting)
+var CABINE = '<svg class="cabine" viewBox="0 0 40 36" aria-hidden="true">'
+  + '<rect x="1" y="1" width="38" height="5" rx="2" fill="#3A3F48"/>'
+  + '<rect x="4" y="6" width="32" height="30" fill="#A8332D"/>'
+  + '<rect x="9" y="10" width="22" height="18" rx="3" fill="#CFE7F4"/>'
+  + '<path d="M11 28 q9 -9 18 0z" fill="#3B5BA9"/>'
+  + '<circle cx="20" cy="20" r="6" fill="#F3C7A0"/>'
+  + '<circle cx="17.6" cy="19.6" r=".9" fill="#23313F"/><circle cx="21.6" cy="19.6" r=".9" fill="#23313F"/>'
+  + '<path d="M17.4 22.6 q2 1.6 4 0" stroke="#23313F" stroke-width=".9" fill="none" stroke-linecap="round"/>'
+  + '<g class="pet"><path d="M13.6 17.4 q6.4 -8 12.8 0z" fill="#3B5BA9"/><rect x="10.6" y="16.6" width="9" height="1.8" rx=".9" fill="#2C447F"/></g>'
+  + '</svg>';
+function locomotief(){
+  return '<span class="wagon loc">'
+    + '<span class="stoom" aria-hidden="true"><i></i><i></i><i></i></span>'
+    + '<span class="schoorsteen" aria-hidden="true"></span>' + CABINE
+    + '<span class="buffer" aria-hidden="true"></span>'
+    + '<span class="antwoord">' + (invoer || '<span class="leeg">?</span>') + '</span></span>';
+}
+function tekenSom(stand){
+  var el = document.getElementById("som");
+  el.classList.remove("goed","fout");
+  if (stand) el.classList.add(stand);
+  el.innerHTML = wagon(som.links) + '<span class="teken">'+som.op+'</span>' + wagon(som.rechts)
+    + '<span class="teken">=</span>' + locomotief();
+  document.getElementById("voortgang").textContent = "som " + Math.min(opgelost+1, RONDE) + " van " + RONDE;
+}
+function meters(){
+  var m = mediaan(tijden);
+  document.getElementById("tempo").textContent = m === null ? "—" : komma(m);
+  document.getElementById("fouten").textContent = fouten;
+}
+function zetHint(h){ document.getElementById("hint").innerHTML = h || ""; }
+
+function startRonde(){
+  startKetting();
+  som = maakSom();
+  invoer = ""; bezig = false; overtypen = false;
+  opgelost = 0; fouten = 0; tijden = []; lastig = {};
+  rondeStart = 0; somStart = Date.now();
+  clearInterval(klokTimer); klokTimer = null;
+  document.getElementById("klok").textContent = "0:00";
+  document.getElementById("titel").textContent = NIVEAUS[data.niveau].titel;
+  document.getElementById("uitslag").hidden = true;
+  zetHint("");
+  var el = document.getElementById("som");
+  el.classList.remove("weg","nieuw");
+  el.classList.toggle("groot", NIVEAUS[data.niveau].max >= 1000);
+  tekenSom(); meters(); tekenNiveaus();
+}
+
+function rijDoor(){
+  // antwoord haakt aan: de laatste twee getallen schuiven op
+  var nieuw = {v:som.uit, k:KLEUREN[(kleurNr++) % KLEUREN.length]};
+  vorig.vers = laatst.vers = false;
+  vorig = laatst; laatst = nieuw;
+  var el = document.getElementById("som");
+  el.classList.add("weg");
+  setTimeout(function(){
+    som = maakSom();
+    invoer = ""; overtypen = false;
+    el.classList.remove("weg"); el.classList.add("nieuw");
+    tekenSom();
+    void el.offsetWidth;            // reflow zodat de inrij-animatie start
+    el.classList.remove("nieuw");
+    somStart = Date.now();
+    bezig = false;
+  }, 380);
+}
+
+function cijfer(k){
+  if (!som || bezig || invoer.length >= String(NIVEAUS[data.niveau].max).length) return;
+  if (!rondeStart){
+    rondeStart = Date.now();
+    klokTimer = setInterval(function(){
+      document.getElementById("klok").textContent = mmss((Date.now()-rondeStart)/1000);
+    }, 250);
+  }
+  invoer += k;
+  tekenSom();
+  if (invoer.length === String(som.uit).length) controleer();
+}
+function wis(){
+  if (bezig || !invoer) return;
+  invoer = invoer.slice(0,-1);
+  tekenSom();
+}
+function controleer(){
+  if (!som || bezig || !invoer) return;
+  var juist = Number(invoer) === som.uit;
+
+  if (overtypen){
+    if (juist){ bezig = true; zetHint(""); tekenSom("goed"); setTimeout(volgende, 300); }
+    else { invoer = ""; tekenSom("fout"); }
+    return;
+  }
+  if (juist){
+    tijden.push((Date.now()-somStart)/1000);
+    bezig = true;
+    tekenSom("goed");
+    setTimeout(volgende, 250);
+  } else {
+    fouten++;
+    var naam = som.links.v + " " + som.op + " " + som.rechts.v;
+    lastig[naam] = (lastig[naam]||0) + 1;
+    overtypen = true; invoer = "";
+    tekenSom("fout");
+    zetHint("Het is <b>"+som.uit+"</b>. Typ het maar over.");
+  }
+  meters();
+}
+function volgende(){
+  opgelost++;
+  meters();
+  if (opgelost >= RONDE) klaar();
+  else rijDoor();
+}
+
+function klaar(){
+  clearInterval(klokTimer); klokTimer = null;
+  var duur = (Date.now()-rondeStart)/1000;
+  document.getElementById("klok").textContent = mmss(duur);
+  var m = mediaan(tijden) || 99;
+  var goed = RONDE - Object.keys(lastig).length;
+  var sterren = 1;
+  if (fouten <= 2 && m <= 6) sterren = 2;
+  if (fouten === 0 && m <= 4) sterren = 3;
+
+  var oud = data.records[data.niveau];
+  var nieuwRecord = !oud || duur < oud.tijd;
+  data.records[data.niveau] = {
+    tijd: nieuwRecord ? Math.round(duur) : oud.tijd,
+    sterren: Math.max(oud ? oud.sterren : 0, sterren),
+    keer: (oud ? oud.keer : 0) + 1
+  };
+  bewaar();
+
+  document.getElementById("som").innerHTML = '<span class="teken">🚂💨</span>';
+  document.getElementById("voortgang").textContent = "aangekomen";
+  zetHint("");
+  var lijst = Object.keys(lastig).sort(function(a,b){ return lastig[b]-lastig[a]; }).slice(0,3);
+  var t = "<h3>Aangekomen in " + mmss(duur) + (nieuwRecord ? " — nieuw record!" : "") + "</h3>";
+  t += "<p>" + goed + " van de " + RONDE + " in één keer goed, gemiddeld " + komma(m) + " seconden per som.</p>";
+  if (lijst.length) t += "<p>Deze waren lastig: " + lijst.map(function(k){ return '<span class="lastig">'+k+"</span>"; }).join(" ") + ".</p>";
+  if (sterren < 3) t += "<p>Drie sterren haal je met alles goed en binnen 4 seconden per som.</p>";
+  else t += "<p>Drie sterren. Supersnel!</p>";
+  var u = document.getElementById("uitslag");
+  u.innerHTML = t; u.hidden = false;
+  tekenRecords();
+}
+
+/* ---------- niveaus en records ---------- */
+function tekenNiveaus(){
+  var el = document.getElementById("niveaus");
+  el.innerHTML = "";
+  NIVEAUS.forEach(function(n, i){
+    var b = document.createElement("button");
+    b.type = "button";
+    b.textContent = n.titel;
+    if (i === data.niveau) b.className = "aan";
+    b.addEventListener("click", function(){ data.niveau = i; bewaar(); startRonde(); b.blur(); });
+    el.appendChild(b);
+  });
+}
+function tekenRecords(){
+  var el = document.getElementById("records");
+  el.innerHTML = NIVEAUS.map(function(n, i){
+    var r = data.records[i];
+    var st = "";
+    for (var k=1;k<=3;k++) st += (r && r.sterren >= k) ? "★" : "<i>★</i>";
+    return '<div class="record"><b>' + n.titel + '</b><span class="sterren">' + st + "</span><br>"
+      + (r ? "snelste " + mmss(r.tijd) + " · " + r.keer + "× gereden" : "nog niet gereden") + "</div>";
+  }).join("");
+}
+
+/* ---------- invoer ---------- */
+function tekenToetsen(){
+  var t = document.getElementById("toetsen");
+  ["1","2","3","4","5","6","7","8","9","⌫","0","OK"].forEach(function(k){
+    var b = document.createElement("button");
+    b.type = "button"; b.textContent = k;
+    if (k === "OK") b.className = "ok";
+    if (k === "⌫") b.setAttribute("aria-label", "wissen");
+    b.addEventListener("click", function(){
+      if (k === "⌫") wis(); else if (k === "OK") controleer(); else cijfer(k);
+      b.blur();
+    });
+    t.appendChild(b);
+  });
+}
+document.addEventListener("keydown", function(e){
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  if (/^[0-9]$/.test(e.key)){ e.preventDefault(); cijfer(e.key); return; }
+  if (e.key === "Backspace"){ e.preventDefault(); wis(); return; }
+  if (e.key === "Enter"){
+    if (document.activeElement && document.activeElement.tagName === "BUTTON" &&
+        !document.getElementById("toetsen").contains(document.activeElement)) return;
+    e.preventDefault(); controleer();
+  }
+});
+document.getElementById("opnieuw").addEventListener("click", function(){ startRonde(); this.blur(); });
+
+laad();
+tekenToetsen();
+tekenRecords();
+startRonde();
+})();
+</script>
+</html>
