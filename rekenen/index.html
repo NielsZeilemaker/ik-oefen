@@ -111,8 +111,11 @@
   #hint b{color:var(--rood)}
 
   /* hulp: getallenlijn met sprongen */
-  #lijn{display:block;width:100%;max-width:640px;height:auto;margin:0 auto;overflow:visible}
-  #hulpvak[hidden]{display:none}
+  /* de ruimte blijft altijd gereserveerd, zodat de toetsen niet verspringen */
+  #hulpvak{height:114px}
+  #hulpvak[hidden]{display:block;visibility:hidden}
+  #hulpvak.uit{display:none}
+  #lijn{display:block;width:100%;max-width:640px;height:114px;margin:0 auto;overflow:visible}
   #lijn .as{stroke:var(--tekst);stroke-width:2;stroke-linecap:round}
   #lijn .boog{fill:none;stroke:#4A3FB0;stroke-width:3;stroke-linecap:round}
   #lijn .sprong{font-family:Fredoka,ui-rounded,sans-serif;font-weight:600;font-size:17px;fill:#4A3FB0;text-anchor:middle}
@@ -172,7 +175,7 @@
 
     <div class="spoor"><div class="som" id="som" aria-live="polite"></div></div>
     <p id="hint"></p>
-    <div id="hulpvak" hidden><svg id="lijn" viewBox="0 0 640 118" role="img" aria-label="getallenlijn met sprongen"></svg></div>
+    <div id="hulpvak" hidden><svg id="lijn" viewBox="0 0 640 114" role="img" aria-label="getallenlijn met sprongen"></svg></div>
 
     <div class="werkvlak"><div id="toetsen"></div></div>
 
@@ -353,6 +356,7 @@ function verbergLijn(){
 }
 function toonLijn(){
   if (!som || som.lijn) return;       // per som maar één keer tekenen
+  if (som.rechts.v < 10) return;      // onder de 10 geen getallenlijn
   som.lijn = true;
   if (!som.hulp){ som.hulp = true; hulpGebruikt++; }
   var stappen = sprongen(som.links.v, som.op, som.rechts.v);
@@ -363,8 +367,8 @@ function toonLijn(){
   var vak = document.getElementById("hulpvak");
   vak.hidden = false;
   var W = Math.round(Math.max(300, Math.min(640, vak.clientWidth || 640)));
-  var L = W < 480 ? 28 : 40, R = W - L, Y = 104;
-  document.getElementById("lijn").setAttribute("viewBox", "0 0 " + W + " 118");
+  var L = W < 480 ? 28 : 40, R = W - L, Y = 72;
+  document.getElementById("lijn").setAttribute("viewBox", "0 0 " + W + " 114");
   // Niet precies op schaal, net als op papier: elk stukje tussen twee getallen
   // krijgt minstens MIN pixels, zodat kleine sprongetjes leesbaar blijven.
   var keys = punten.slice().sort(function(p, q){ return p - q; })
@@ -390,17 +394,20 @@ function toonLijn(){
   }
 
   var g = '<line class="as" x1="'+(L-18)+'" y1="'+Y+'" x2="'+(R+18)+'" y2="'+Y+'"/>';
-  // bogen met het sprongetje erboven
+  // bogen met het sprongetje erbij; een terugsprong (+60, −1) gaat onder de lijn,
+  // zodat hij nooit over de grote boog heen valt
   stappen.forEach(function(d, i){
     var xa = x(punten[i]), xb = x(punten[i+1]), w = Math.abs(xb - xa);
-    var hb = Math.max(16, Math.min(78, w * 0.55));
+    var terug = i > 0 && (d > 0) !== (stappen[0] > 0);
+    var z = terug ? 1 : -1;                     // -1 = boven, 1 = onder de lijn
+    var hb = terug ? Math.max(14, Math.min(18, w * 0.55)) : Math.max(16, Math.min(50, w * 0.55));
     var vertr = 'style="--d:'+(i*0.6)+'s"';
     g += '<path class="boog" pathLength="1" '+vertr+' d="M'+xa.toFixed(1)+' '+Y
-       + ' C'+xa.toFixed(1)+' '+(Y-hb*1.3).toFixed(1)+' '+xb.toFixed(1)+' '+(Y-hb*1.3).toFixed(1)+' '+xb.toFixed(1)+' '+Y+'"/>';
+       + ' C'+xa.toFixed(1)+' '+(Y+z*hb*1.3).toFixed(1)+' '+xb.toFixed(1)+' '+(Y+z*hb*1.3).toFixed(1)+' '+xb.toFixed(1)+' '+Y+'"/>';
     // pijlpuntje bij de landing
     var richting = xb > xa ? -1 : 1;
-    g += '<path class="boog na" '+vertr+' d="M'+(xb+richting*7).toFixed(1)+' '+(Y-9)+' L'+xb.toFixed(1)+' '+(Y-1)+' L'+(xb-richting*1).toFixed(1)+' '+(Y-12)+'"/>';
-    g += '<text class="sprong na" '+vertr+' x="'+((xa+xb)/2).toFixed(1)+'" y="'+(Y-hb-8).toFixed(1)+'">'
+    g += '<path class="boog na" '+vertr+' d="M'+(xb+richting*7).toFixed(1)+' '+(Y+z*9)+' L'+xb.toFixed(1)+' '+(Y+z*1)+' L'+(xb-richting*1).toFixed(1)+' '+(Y+z*12)+'"/>';
+    g += '<text class="sprong na" '+vertr+' x="'+((xa+xb)/2).toFixed(1)+'" y="'+(terug ? Y+hb+19 : Y-hb-8).toFixed(1)+'">'
        + (d > 0 ? "+" : "−") + Math.abs(d) + '</text>';
   });
   // alleen stipjes op de lijn, geen getallen: die reken je zelf uit
@@ -589,11 +596,13 @@ document.addEventListener("keydown", function(e){
 document.getElementById("opnieuw").addEventListener("click", function(){ startRonde(); this.blur(); });
 document.getElementById("hulp").addEventListener("change", function(){
   data.hulp = this.checked; bewaar(); this.blur();
+  document.getElementById("hulpvak").classList.toggle("uit", !data.hulp);
   if (data.hulp) planHulp(); else verbergLijn();
 });
 
 laad();
 document.getElementById("hulp").checked = data.hulp;
+document.getElementById("hulpvak").classList.toggle("uit", !data.hulp);
 tekenToetsen();
 tekenRecords();
 startRonde();
