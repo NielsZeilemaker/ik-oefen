@@ -54,7 +54,7 @@
     transform:translateX(-50%);transition:transform .45s cubic-bezier(.3,.7,.3,1),opacity .45s}
   .som.weg{transform:translateX(60%);opacity:0}
   .som.nieuw{transform:translateX(-160%);opacity:0;transition:none}
-  .som.groot .wagon{font-size:clamp(22px,6.8vw,46px)}
+  .som.groot .wagon{font-size:clamp(24px,7.6vw,46px)}
   .som.groot .teken{font-size:clamp(22px,6.5vw,40px)}
   .wagon .bordje{position:absolute;left:50%;bottom:calc(100% + 6px);transform:translateX(-50%) rotate(-4deg);
     font-size:13px;font-weight:600;line-height:1;white-space:nowrap;color:var(--tekst);background:var(--geel);
@@ -62,9 +62,9 @@
   .teken{font-family:Fredoka,ui-rounded,sans-serif;font-weight:600;font-size:clamp(28px,8vw,46px);line-height:1;padding-bottom:26px;min-width:.7em;text-align:center}
   .wagon{position:relative;font-family:Fredoka,ui-rounded,sans-serif;font-weight:600;font-variant-numeric:tabular-nums;
     font-size:clamp(30px,9vw,52px);line-height:1;color:#fff;background:var(--k,#5B8DEF);
-    min-width:2.1em;padding:.22em .25em .3em;border-radius:12px 12px 6px 6px;text-align:center;margin-bottom:12px;
+    min-width:2.1em;padding:.22em .25em .3em;border-radius:12px 12px 6px 6px;text-align:center;margin-bottom:.24em;
     box-shadow:inset 0 -5px 0 rgba(0,0,0,.18)}
-  .wagon::before,.wagon::after{content:"";position:absolute;bottom:-12px;width:18px;height:18px;border-radius:50%;background:#3A3F48;border:4px solid #8C939E}
+  .wagon::before,.wagon::after{content:"";position:absolute;bottom:-.24em;width:.36em;height:.36em;border-radius:50%;background:#3A3F48;border:.08em solid #8C939E}
   .wagon::before{left:14%}
   .wagon::after{right:14%}
   /* de locomotief: het antwoordvak */
@@ -109,6 +109,21 @@
 
   #hint{text-align:center;min-height:1.5em;font-size:15px;color:var(--zacht);margin:6px 0 0}
   #hint b{color:var(--rood)}
+
+  /* hulp: getallenlijn met sprongen */
+  #lijn{display:block;width:100%;max-width:640px;height:auto;margin:0 auto;overflow:visible}
+  #hulpvak[hidden]{display:none}
+  #lijn .as{stroke:var(--tekst);stroke-width:2;stroke-linecap:round}
+  #lijn .boog{fill:none;stroke:#4A3FB0;stroke-width:3;stroke-linecap:round}
+  #lijn .sprong{font-family:Fredoka,ui-rounded,sans-serif;font-weight:600;font-size:17px;fill:#4A3FB0;text-anchor:middle}
+  #lijn .stip{fill:var(--tekst)}
+  @media (prefers-reduced-motion:no-preference){
+    #lijn .boog{stroke-dasharray:1;stroke-dashoffset:1;animation:teken .55s ease-out forwards;animation-delay:var(--d)}
+    #lijn .na{opacity:0;animation:verschijn .25s forwards;animation-delay:calc(var(--d) + .45s)}
+  }
+  @keyframes teken{to{stroke-dashoffset:0}}
+  @keyframes verschijn{to{opacity:1}}
+  .knoppen label{font-size:14px;display:flex;align-items:center;gap:6px;cursor:pointer;margin-left:auto}
 
   .werkvlak{display:flex;justify-content:center;margin-top:14px}
   #toetsen{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:min(260px,100%)}
@@ -157,6 +172,7 @@
 
     <div class="spoor"><div class="som" id="som" aria-live="polite"></div></div>
     <p id="hint"></p>
+    <div id="hulpvak" hidden><svg id="lijn" viewBox="0 0 640 118" role="img" aria-label="getallenlijn met sprongen"></svg></div>
 
     <div class="werkvlak"><div id="toetsen"></div></div>
 
@@ -166,14 +182,15 @@
       <div>fouten <b id="fouten">0</b></div>
     </div>
 
-    <div class="knoppen"><button id="opnieuw">Nieuwe trein</button></div>
+    <div class="knoppen"><button id="opnieuw">Nieuwe trein</button>
+      <label><input type="checkbox" id="hulp"> getallenlijn als hulp</label></div>
     <div id="uitslag" hidden></div>
   </div>
 
   <h2 class="recordkop">Jouw snelste treinen</h2>
   <div id="records"></div>
 
-  <footer>Voortgang wordt op dit apparaat bewaard. Elke som gebruikt de laatste twee getallen; af en toe stapt er een nieuw getal in. Wordt het te groot, dan wordt het een min: het grootste getal komt voorop. Fout? Dan zie je het goede antwoord, typ je het over en rijdt de trein verder.</footer>
+  <footer>Voortgang wordt op dit apparaat bewaard. Elke som gebruikt de laatste twee getallen; af en toe stapt er een nieuw getal in. Wordt het te groot, dan wordt het een min: het grootste getal komt voorop. Weet je het even niet? Na een paar seconden verschijnt een getallenlijn met sprongen als hulp. Fout? Dan zie je het goede antwoord, typ je het over en rijdt de trein verder.</footer>
 </div>
 
 <script>
@@ -195,6 +212,7 @@ function laad(){
   try{ var s = localStorage.getItem(BEWAAR); if (s) data = JSON.parse(s); }catch(e){}
   if (!data.records) data.records = {};
   if (typeof data.niveau !== "number" || !NIVEAUS[data.niveau]) data.niveau = 2;
+  if (typeof data.hulp !== "boolean") data.hulp = true;
 }
 function bewaar(){ try{ localStorage.setItem(BEWAAR, JSON.stringify(data)); }catch(e){} }
 
@@ -302,12 +320,105 @@ function meters(){
 }
 function zetHint(h){ document.getElementById("hint").innerHTML = h || ""; }
 
+/* ---------- hulp: getallenlijn ---------- */
+// Splits de som in hooguit twee sprongen, zoals je het op papier doet:
+// eerst de tientallen (met honderdtallen erbij), dan de eenheden (35 + 11 = +10, +1).
+// Eindigt het getal op 8 of 9: spring een tiental te ver en ga dan terug (31 + 18 = +20, −2).
+function sprongen(a, op, b){
+  var t = op === "+" ? 1 : -1, max = NIVEAUS[data.niveau].max;
+  var e = b % 10, r = [];
+  if (b >= 8 && e >= 8){
+    var op10 = b + (10 - e), tussen = a + t*op10;
+    if (tussen >= 0 && tussen <= max) return [t*op10, -t*(10 - e)];
+  }
+  if (b - e) r.push(t*(b - e));
+  if (e) r.push(t*e);
+  return r;
+}
+
+var hulpTimer = null, hulpGebruikt = 0;
+function planHulp(){
+  clearTimeout(hulpTimer);
+  if (!data.hulp) return;
+  var wacht = NIVEAUS[data.niveau].max >= 1000 ? 12000 : 8000;
+  hulpTimer = setTimeout(function(){
+    if (som && !bezig && !invoer && !overtypen) toonLijn();
+  }, wacht);
+}
+function verbergLijn(){
+  clearTimeout(hulpTimer);
+  document.getElementById("hulpvak").hidden = true;
+  if (som) som.lijn = false;
+  document.getElementById("lijn").innerHTML = "";
+}
+function toonLijn(){
+  if (!som || som.lijn) return;       // per som maar één keer tekenen
+  som.lijn = true;
+  if (!som.hulp){ som.hulp = true; hulpGebruikt++; }
+  var stappen = sprongen(som.links.v, som.op, som.rechts.v);
+  var punten = [som.links.v];
+  stappen.forEach(function(d){ punten.push(punten[punten.length-1] + d); });
+
+  // teken op ware grootte, zodat de getallen op een telefoon even groot blijven
+  var vak = document.getElementById("hulpvak");
+  vak.hidden = false;
+  var W = Math.round(Math.max(300, Math.min(640, vak.clientWidth || 640)));
+  var L = W < 480 ? 28 : 40, R = W - L, Y = 104;
+  document.getElementById("lijn").setAttribute("viewBox", "0 0 " + W + " 118");
+  // Niet precies op schaal, net als op papier: elk stukje tussen twee getallen
+  // krijgt minstens MIN pixels, zodat kleine sprongetjes leesbaar blijven.
+  var keys = punten.slice().sort(function(p, q){ return p - q; })
+    .filter(function(v, i, a){ return i === 0 || v !== a[i-1]; });
+  var MIN = 46, rand = 30, ruimte = R - L - 2*rand, gaten = [];
+  for (var i = 1; i < keys.length; i++) gaten.push(keys[i] - keys[i-1]);
+  var vast = gaten.map(function(){ return false; }), k = 0;
+  for (var ronde = 0; ronde < 4; ronde++){
+    var rest = ruimte, som_ = 0;
+    gaten.forEach(function(d, j){ if (vast[j]) rest -= MIN; else som_ += d; });
+    k = som_ ? rest / som_ : 0;
+    gaten.forEach(function(d, j){ if (d * k < MIN) vast[j] = true; });
+  }
+  var breed = gaten.map(function(d, j){ return vast[j] ? MIN : d * k; });
+  if (!gaten.length) breed = [];
+  var totaal = breed.reduce(function(a, b){ return a + b; }, 0);
+  var x0 = L + rand + (ruimte - totaal) / 2, xs = [x0];
+  breed.forEach(function(b){ xs.push(xs[xs.length-1] + b); });
+  function x(v){
+    for (var j = 0; j < gaten.length; j++)
+      if (v <= keys[j+1]) return xs[j] + (v - keys[j]) / gaten[j] * breed[j];
+    return xs[xs.length-1];
+  }
+
+  var g = '<line class="as" x1="'+(L-18)+'" y1="'+Y+'" x2="'+(R+18)+'" y2="'+Y+'"/>';
+  // bogen met het sprongetje erboven
+  stappen.forEach(function(d, i){
+    var xa = x(punten[i]), xb = x(punten[i+1]), w = Math.abs(xb - xa);
+    var hb = Math.max(16, Math.min(78, w * 0.55));
+    var vertr = 'style="--d:'+(i*0.6)+'s"';
+    g += '<path class="boog" pathLength="1" '+vertr+' d="M'+xa.toFixed(1)+' '+Y
+       + ' C'+xa.toFixed(1)+' '+(Y-hb*1.3).toFixed(1)+' '+xb.toFixed(1)+' '+(Y-hb*1.3).toFixed(1)+' '+xb.toFixed(1)+' '+Y+'"/>';
+    // pijlpuntje bij de landing
+    var richting = xb > xa ? -1 : 1;
+    g += '<path class="boog na" '+vertr+' d="M'+(xb+richting*7).toFixed(1)+' '+(Y-9)+' L'+xb.toFixed(1)+' '+(Y-1)+' L'+(xb-richting*1).toFixed(1)+' '+(Y-12)+'"/>';
+    g += '<text class="sprong na" '+vertr+' x="'+((xa+xb)/2).toFixed(1)+'" y="'+(Y-hb-8).toFixed(1)+'">'
+       + (d > 0 ? "+" : "−") + Math.abs(d) + '</text>';
+  });
+  // alleen stipjes op de lijn, geen getallen: die reken je zelf uit
+  punten.forEach(function(v, i){
+    var vertr = i ? ' style="--d:'+((i-1)*0.6)+'s"' : "";
+    g += '<circle class="stip'+(i ? ' na' : '')+'"'+vertr+' cx="'+x(v).toFixed(1)+'" cy="'+Y+'" r="3.5"/>';
+  });
+  document.getElementById("lijn").innerHTML = g;
+  document.getElementById("hulpvak").hidden = false;
+}
+
 function startRonde(){
   startKetting();
   som = maakSom();
   invoer = ""; bezig = false; overtypen = false;
-  opgelost = 0; fouten = 0; tijden = []; lastig = {};
+  opgelost = 0; fouten = 0; tijden = []; lastig = {}; hulpGebruikt = 0;
   rondeStart = 0; somStart = Date.now();
+  verbergLijn(); planHulp();
   clearInterval(klokTimer); klokTimer = null;
   document.getElementById("klok").textContent = "0:00";
   document.getElementById("titel").textContent = NIVEAUS[data.niveau].titel;
@@ -329,6 +440,7 @@ function rijDoor(){
   setTimeout(function(){
     som = maakSom();
     invoer = ""; overtypen = false;
+    verbergLijn(); planHulp();
     el.classList.remove("weg"); el.classList.add("nieuw");
     tekenSom();
     void el.offsetWidth;            // reflow zodat de inrij-animatie start
@@ -347,12 +459,14 @@ function cijfer(k){
     }, 250);
   }
   invoer += k;
+  clearTimeout(hulpTimer);
   tekenSom();
   if (invoer.length === String(som.uit).length) controleer();
 }
 function wis(){
   if (bezig || !invoer) return;
   invoer = invoer.slice(0,-1);
+  if (!invoer && !overtypen) planHulp();
   tekenSom();
 }
 function controleer(){
@@ -360,7 +474,7 @@ function controleer(){
   var juist = Number(invoer) === som.uit;
 
   if (overtypen){
-    if (juist){ bezig = true; zetHint(""); tekenSom("goed"); setTimeout(volgende, 300); }
+    if (juist){ bezig = true; zetHint(""); tekenSom("goed"); setTimeout(volgende, 500); }
     else { invoer = ""; tekenSom("fout"); }
     return;
   }
@@ -376,6 +490,8 @@ function controleer(){
     overtypen = true; invoer = "";
     tekenSom("fout");
     zetHint("Het is <b>"+som.uit+"</b>. Typ het maar over.");
+    clearTimeout(hulpTimer);
+    if (data.hulp) toonLijn();
   }
   meters();
 }
@@ -388,6 +504,7 @@ function volgende(){
 
 function klaar(){
   clearInterval(klokTimer); klokTimer = null;
+  verbergLijn();
   var duur = (Date.now()-rondeStart)/1000;
   document.getElementById("klok").textContent = mmss(duur);
   var m = mediaan(tijden) || 99;
@@ -411,6 +528,7 @@ function klaar(){
   var lijst = Object.keys(lastig).sort(function(a,b){ return lastig[b]-lastig[a]; }).slice(0,3);
   var t = "<h3>Aangekomen in " + mmss(duur) + (nieuwRecord ? " — nieuw record!" : "") + "</h3>";
   t += "<p>" + goed + " van de " + RONDE + " in één keer goed, gemiddeld " + komma(m) + " seconden per som.</p>";
+  if (hulpGebruikt) t += "<p>De getallenlijn hielp je " + hulpGebruikt + " keer" + ".</p>";
   if (lijst.length) t += "<p>Deze waren lastig: " + lijst.map(function(k){ return '<span class="lastig">'+k+"</span>"; }).join(" ") + ".</p>";
   if (sterren < 3) t += "<p>Drie sterren haal je met alles goed en binnen 4 seconden per som.</p>";
   else t += "<p>Drie sterren. Supersnel!</p>";
@@ -469,8 +587,13 @@ document.addEventListener("keydown", function(e){
   }
 });
 document.getElementById("opnieuw").addEventListener("click", function(){ startRonde(); this.blur(); });
+document.getElementById("hulp").addEventListener("change", function(){
+  data.hulp = this.checked; bewaar(); this.blur();
+  if (data.hulp) planHulp(); else verbergLijn();
+});
 
 laad();
+document.getElementById("hulp").checked = data.hulp;
 tekenToetsen();
 tekenRecords();
 startRonde();
