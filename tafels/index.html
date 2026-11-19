@@ -63,10 +63,6 @@
   }
   h1 .ster{color:var(--maan)}
   .ondertitel{margin:2px 0 0;font-size:14px;color:var(--zacht)}
-  .dagteller{font-size:14px;text-align:right;line-height:1.35;margin-left:auto}
-  .dagteller b{font-family:Fredoka,ui-rounded,sans-serif;font-size:20px;font-weight:600;color:var(--maan)}
-  .balk{width:150px;height:7px;border-radius:4px;background:rgba(233,236,248,.14);margin-top:6px;overflow:hidden;margin-left:auto}
-  .balk i{display:block;height:100%;background:var(--maan);width:0;transition:width .4s ease}
 
   .kaart{background:var(--kaart);border:1px solid var(--lijn);border-radius:16px;padding:20px 18px}
 
@@ -166,12 +162,7 @@
     <div class="kop">
       <a class="terug" href="../" aria-label="Terug naar Ik oefen" title="Terug naar Ik oefen"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
       <h1>De Sterrenwacht <span class="ster">✦</span></h1>
-      <p class="ondertitel">Elke dag tien minuten tafels, dan gaat je hemel stralen.</p>
-    </div>
-    <div class="dagteller">
-      <b id="minuten">0</b> van de 10 minuten vandaag
-      <div class="balk"><i id="dagbalk"></i></div>
-      <div id="reeks" style="margin-top:6px"></div>
+      <p class="ondertitel">Oefen de tafels, dan gaat je hemel stralen.</p>
     </div>
   </header>
 
@@ -217,9 +208,7 @@
 
 /* ---------- opslag ---------- */
 var BEWAAR = "sterrenwacht-v1";
-var DAGDOEL = 600;   // seconden
-var REEKSDREMPEL = 300;
-var data = {lessen:{}, dagen:{}};
+var data = {lessen:{}};
 
 async function laad(){
   try{
@@ -232,7 +221,6 @@ async function laad(){
     }
   }catch(e){ /* nog niets bewaard */ }
   if (!data.lessen) data.lessen = {};
-  if (!data.dagen) data.dagen = {};
 }
 async function bewaar(){
   var s = JSON.stringify(data);
@@ -241,10 +229,6 @@ async function bewaar(){
     else if (window.localStorage) localStorage.setItem(BEWAAR, s);
   }catch(e){}
 }
-function datum(d){
-  return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");
-}
-function vandaag(){ return datum(new Date()); }
 
 /* ---------- lessen ---------- */
 var L = [
@@ -370,7 +354,6 @@ function tekenStippen(){
 var lesIndex = 0, wachtrij = [], totaal = 0, opgelost = 0;
 var invoer = "", bezig = false, overtypen = false, somStart = 0;
 var eersteKeerGoed = 0, gevraagd = 0, foutenTotaal = 0, foutPerSom = {}, tijden = [];
-var laatsteTik = null;
 
 function huidige(){ return wachtrij[0]; }
 
@@ -421,21 +404,9 @@ function volgendeSom(){
   tekenStippen();
 }
 
-function tel(){
-  var nu = Date.now();
-  if (laatsteTik){
-    var d = Math.min((nu-laatsteTik)/1000, 15);
-    var dag = vandaag();
-    data.dagen[dag] = (data.dagen[dag]||0) + d;
-  }
-  laatsteTik = nu;
-  tekenDag();
-}
-
 function cijfer(k){
   var s = huidige();
   if (!s || bezig || invoer.length >= 3) return;
-  tel();
   invoer += k;
   toon();
   if (invoer.length === String(uitkomst(s)).length) controleer();
@@ -526,7 +497,6 @@ function klaar(){
   u.innerHTML = t;
   u.hidden = false;
   tekenHemel();
-  tekenDag();
 }
 
 document.addEventListener("keydown", function(e){
@@ -540,7 +510,7 @@ document.addEventListener("keydown", function(e){
   }
 });
 
-/* ---------- hemel en dagteller ---------- */
+/* ---------- hemel ---------- */
 function tekenHemel(){
   var h = document.getElementById("hemel");
   h.innerHTML = "";
@@ -552,23 +522,6 @@ function tekenHemel(){
     b.addEventListener("click", function(){ startLes(i); b.blur(); window.scrollTo({top:0,behavior:"smooth"}); });
     h.appendChild(b);
   });
-}
-function reeksTel(){
-  var n = 0, d = new Date();
-  for (var i=0;i<400;i++){
-    if ((data.dagen[datum(d)]||0) >= REEKSDREMPEL) n++;
-    else if (i > 0) break;
-    d.setDate(d.getDate()-1);
-  }
-  return n;
-}
-function tekenDag(){
-  var sec = data.dagen[vandaag()] || 0;
-  var min = Math.floor(sec/60);
-  document.getElementById("minuten").textContent = min;
-  document.getElementById("dagbalk").style.width = Math.min(100, sec/DAGDOEL*100) + "%";
-  var r = reeksTel();
-  document.getElementById("reeks").textContent = r >= 2 ? r + " dagen op rij" : (sec >= DAGDOEL ? "vandaag gelukt" : "");
 }
 
 /* ---------- knoppen ---------- */
@@ -585,7 +538,6 @@ window.addEventListener("beforeunload", bewaar);
   var eerste = 0;
   for (var i=0;i<L.length;i++){ if (!data.lessen[i]){ eerste = i; break; } }
   startLes(eerste);
-  tekenDag();
 })();
 
 })();
