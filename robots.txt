@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://ik-oefen.nl/sitemap.xml
