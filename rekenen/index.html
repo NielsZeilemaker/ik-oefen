@@ -113,9 +113,34 @@
   /* hulp: getallenlijn met sprongen */
   /* de ruimte blijft altijd gereserveerd, zodat de toetsen niet verspringen */
   #hulpvak{height:114px}
-  #hulpvak[hidden]{display:block;visibility:hidden}
-  #hulpvak.uit{display:none}
-  #lijn{display:block;width:100%;max-width:640px;height:114px;margin:0 auto;overflow:visible}
+  #hulpvak.uit{height:auto;padding:4px 0}
+  #lijn{display:none;width:100%;max-width:640px;height:114px;margin:0 auto;overflow:visible}
+  #hulpvak.lijn #lijn{display:block}
+  #hulpvak.lijn #muntbalk{display:none}
+
+  /* gouden munt: los het op voordat de getallenlijn komt */
+  .munt{display:inline-block;width:1em;height:1em;border-radius:50%;vertical-align:-.15em;
+    background:radial-gradient(circle at 35% 30%,#FFF1B8,#F5C342 45%,#D9961A);box-shadow:inset 0 0 0 .1em #C4840F}
+  #muntbalk{position:relative;display:flex;align-items:center;gap:10px;max-width:380px;margin:0 auto;padding-top:34px}
+  #hulpvak.uit #muntbalk{padding-top:0}
+  #muntbalk .munt{font-size:30px;flex:none;transition:filter .3s,opacity .3s}
+  #muntbalk .balk{flex:1;height:14px;border-radius:7px;background:var(--kaart2);overflow:hidden;box-shadow:inset 0 1px 2px rgba(0,0,0,.12)}
+  #muntbalk .balk i{display:block;height:100%;width:100%;border-radius:7px;background:linear-gradient(90deg,#F2B632,#FFD866)}
+  #muntbalk .tekst{position:absolute;left:0;right:0;top:8px;text-align:center;font-size:13px;color:var(--zacht)}
+  #muntbalk.klaar{visibility:hidden}
+  #muntbalk.weg .munt{filter:grayscale(1);opacity:.35}
+  #muntbalk.weg .tekst{opacity:.6}
+  #muntbalk.verdiend .munt{animation:muntpop .5s}
+  #muntbalk .plus{position:absolute;left:4px;top:10px;font-family:Fredoka,ui-rounded,sans-serif;font-weight:600;font-size:18px;color:#C4840F;
+    opacity:0;pointer-events:none}
+  #muntbalk.verdiend .plus{animation:omhoog .7s ease-out}
+  @keyframes muntpop{0%{transform:scale(1)}40%{transform:scale(1.45) rotate(-12deg)}100%{transform:scale(1)}}
+  @keyframes omhoog{0%{opacity:0;transform:translateY(8px)}20%{opacity:1}100%{opacity:0;transform:translateY(-26px)}}
+  .leskop .teller{display:inline-flex;align-items:center;gap:6px;font-family:Fredoka,ui-rounded,sans-serif;font-size:18px;font-weight:600;color:var(--tekst)}
+  .teller .munt{font-size:20px}
+  .teller.bump{animation:muntpop .45s}
+  .leskop .reeks{font-size:15px;color:#D9581E;font-weight:600;margin-left:4px}
+  .leskop .rechts{display:flex;align-items:baseline;gap:14px}
   #lijn .as{stroke:var(--tekst);stroke-width:2;stroke-linecap:round}
   #lijn .boog{fill:none;stroke:#4A3FB0;stroke-width:3;stroke-linecap:round}
   #lijn .sprong{font-family:Fredoka,ui-rounded,sans-serif;font-weight:600;font-size:17px;fill:#4A3FB0;text-anchor:middle}
@@ -170,12 +195,22 @@
     <div class="niveaus" id="niveaus"></div>
     <div class="leskop">
       <h2 id="titel">Tot 100</h2>
-      <span id="voortgang">som 1 van 20</span>
+      <div class="rechts">
+        <span class="teller" id="teller" title="gouden munten"><i class="munt"></i><b id="munten">0</b><span class="reeks" id="reeks"></span></span>
+        <span id="voortgang">som 1 van 20</span>
+      </div>
     </div>
 
     <div class="spoor"><div class="som" id="som" aria-live="polite"></div></div>
     <p id="hint"></p>
-    <div id="hulpvak" hidden><svg id="lijn" viewBox="0 0 640 114" role="img" aria-label="getallenlijn met sprongen"></svg></div>
+    <div id="hulpvak">
+      <div id="muntbalk">
+        <span class="tekst" id="munttekst">Zelf oplossen = gouden munt</span>
+        <i class="munt" aria-hidden="true"></i><span class="plus" aria-hidden="true">+1</span>
+        <div class="balk"><i id="muntvulling"></i></div>
+      </div>
+      <svg id="lijn" viewBox="0 0 640 114" role="img" aria-label="getallenlijn met sprongen"></svg>
+    </div>
 
     <div class="werkvlak"><div id="toetsen"></div></div>
 
@@ -190,10 +225,10 @@
     <div id="uitslag" hidden></div>
   </div>
 
-  <h2 class="recordkop">Jouw snelste treinen</h2>
+  <h2 class="recordkop">Jouw records</h2>
   <div id="records"></div>
 
-  <footer>Voortgang wordt op dit apparaat bewaard. Elke som gebruikt de laatste twee getallen; af en toe stapt er een nieuw getal in. Wordt het te groot, dan wordt het een min: het grootste getal komt voorop. Weet je het even niet? Na een paar seconden verschijnt een getallenlijn met sprongen als hulp. Fout? Dan zie je het goede antwoord, typ je het over en rijdt de trein verder.</footer>
+  <footer>Voortgang wordt op dit apparaat bewaard. Elke som gebruikt de laatste twee getallen; af en toe stapt er een nieuw getal in. Wordt het te groot, dan wordt het een min: het grootste getal komt voorop. Los je de som op voordat de gouden balk leeg is, dan verdien je een gouden munt. Weet je het even niet? Als de balk leeg is, verschijnt een getallenlijn met sprongen als hulp. Fout? Dan zie je het goede antwoord, typ je het over en rijdt de trein verder.</footer>
 </div>
 
 <script>
@@ -340,19 +375,66 @@ function sprongen(a, op, b){
 }
 
 var hulpTimer = null, hulpGebruikt = 0;
+function wachtTijd(){ return NIVEAUS[data.niveau].max >= 1000 ? 12000 : 8000; }
 function planHulp(){
   clearTimeout(hulpTimer);
   if (!data.hulp) return;
-  var wacht = NIVEAUS[data.niveau].max >= 1000 ? 12000 : 8000;
   hulpTimer = setTimeout(function(){
     if (som && !bezig && !invoer && !overtypen) toonLijn();
-  }, wacht);
+  }, wachtTijd());
 }
 function verbergLijn(){
   clearTimeout(hulpTimer);
-  document.getElementById("hulpvak").hidden = true;
+  document.getElementById("hulpvak").classList.remove("lijn");
   if (som) som.lijn = false;
   document.getElementById("lijn").innerHTML = "";
+}
+
+/* ---------- gouden munten ---------- */
+var munten = 0, reeks = 0, langsteReeks = 0, muntTimer = null;
+function startMuntbalk(){
+  var mb = document.getElementById("muntbalk"), v = document.getElementById("muntvulling");
+  mb.classList.remove("weg", "verdiend", "klaar");
+  document.getElementById("munttekst").textContent = reeks >= 2 ? reeks + " op rij! Kun je er nog een?" : "Zelf oplossen = gouden munt";
+  v.style.transition = "none"; v.style.width = "100%";
+  void v.offsetWidth;
+  v.style.transition = "width " + wachtTijd() + "ms linear";
+  v.style.width = "0%";
+  clearTimeout(muntTimer);
+  muntTimer = setTimeout(muntWeg, wachtTijd());
+}
+function stopMuntbalk(){
+  clearTimeout(muntTimer);
+  var v = document.getElementById("muntvulling");
+  v.style.width = getComputedStyle(v).width;   // bevries waar hij was
+  v.style.transition = "none";
+}
+function muntWeg(){
+  if (!som || som.munt === false) return;
+  som.munt = false;
+  stopMuntbalk();
+  document.getElementById("muntvulling").style.width = "0%";
+  document.getElementById("muntbalk").classList.add("weg");
+  document.getElementById("munttekst").textContent = "Deze munt is weg, de volgende kun je pakken!";
+  if (reeks) { reeks = 0; tekenTeller(); }
+}
+function muntVerdiend(){
+  som.munt = true;
+  stopMuntbalk();
+  munten++; reeks++;
+  langsteReeks = Math.max(langsteReeks, reeks);
+  var mb = document.getElementById("muntbalk");
+  mb.classList.remove("verdiend"); void mb.offsetWidth; mb.classList.add("verdiend");
+  document.getElementById("munttekst").textContent = reeks >= 3 ? "🔥 " + reeks + " op rij!" : "Gouden munt!";
+  tekenTeller(true);
+}
+function tekenTeller(bump){
+  document.getElementById("munten").textContent = munten;
+  document.getElementById("reeks").textContent = reeks >= 2 ? "🔥" + reeks : "";
+  if (bump){
+    var t = document.getElementById("teller");
+    t.classList.remove("bump"); void t.offsetWidth; t.classList.add("bump");
+  }
 }
 function toonLijn(){
   if (!som || som.lijn) return;       // per som maar één keer tekenen
@@ -365,7 +447,7 @@ function toonLijn(){
 
   // teken op ware grootte, zodat de getallen op een telefoon even groot blijven
   var vak = document.getElementById("hulpvak");
-  vak.hidden = false;
+  vak.classList.add("lijn");
   var W = Math.round(Math.max(300, Math.min(640, vak.clientWidth || 640)));
   var L = W < 480 ? 28 : 40, R = W - L, Y = 72;
   document.getElementById("lijn").setAttribute("viewBox", "0 0 " + W + " 114");
@@ -416,7 +498,6 @@ function toonLijn(){
     g += '<circle class="stip'+(i ? ' na' : '')+'"'+vertr+' cx="'+x(v).toFixed(1)+'" cy="'+Y+'" r="3.5"/>';
   });
   document.getElementById("lijn").innerHTML = g;
-  document.getElementById("hulpvak").hidden = false;
 }
 
 function startRonde(){
@@ -424,8 +505,9 @@ function startRonde(){
   som = maakSom();
   invoer = ""; bezig = false; overtypen = false;
   opgelost = 0; fouten = 0; tijden = []; lastig = {}; hulpGebruikt = 0;
+  munten = 0; reeks = 0; langsteReeks = 0; tekenTeller();
   rondeStart = 0; somStart = Date.now();
-  verbergLijn(); planHulp();
+  verbergLijn(); planHulp(); startMuntbalk();
   clearInterval(klokTimer); klokTimer = null;
   document.getElementById("klok").textContent = "0:00";
   document.getElementById("titel").textContent = NIVEAUS[data.niveau].titel;
@@ -447,7 +529,7 @@ function rijDoor(){
   setTimeout(function(){
     som = maakSom();
     invoer = ""; overtypen = false;
-    verbergLijn(); planHulp();
+    verbergLijn(); planHulp(); startMuntbalk();
     el.classList.remove("weg"); el.classList.add("nieuw");
     tekenSom();
     void el.offsetWidth;            // reflow zodat de inrij-animatie start
@@ -488,6 +570,8 @@ function controleer(){
   if (juist){
     tijden.push((Date.now()-somStart)/1000);
     bezig = true;
+    if (som.munt !== false && !som.hulp && Date.now() - somStart <= wachtTijd()) muntVerdiend();
+    else muntWeg();
     tekenSom("goed");
     setTimeout(volgende, 250);
   } else {
@@ -498,6 +582,7 @@ function controleer(){
     tekenSom("fout");
     zetHint("Het is <b>"+som.uit+"</b>. Typ het maar over.");
     clearTimeout(hulpTimer);
+    muntWeg();
     if (data.hulp) toonLijn();
   }
   meters();
@@ -511,20 +596,23 @@ function volgende(){
 
 function klaar(){
   clearInterval(klokTimer); klokTimer = null;
-  verbergLijn();
+  verbergLijn(); stopMuntbalk();
+  document.getElementById("muntbalk").classList.add("klaar");
   var duur = (Date.now()-rondeStart)/1000;
   document.getElementById("klok").textContent = mmss(duur);
   var m = mediaan(tijden) || 99;
   var goed = RONDE - Object.keys(lastig).length;
   var sterren = 1;
-  if (fouten <= 2 && m <= 6) sterren = 2;
-  if (fouten === 0 && m <= 4) sterren = 3;
+  if (munten >= 15) sterren = 2;
+  if (munten >= RONDE) sterren = 3;
 
   var oud = data.records[data.niveau];
   var nieuwRecord = !oud || duur < oud.tijd;
+  var muntRecord = !oud || munten > (oud.munten || 0);
   data.records[data.niveau] = {
     tijd: nieuwRecord ? Math.round(duur) : oud.tijd,
     sterren: Math.max(oud ? oud.sterren : 0, sterren),
+    munten: Math.max(oud ? (oud.munten || 0) : 0, munten),
     keer: (oud ? oud.keer : 0) + 1
   };
   bewaar();
@@ -533,12 +621,15 @@ function klaar(){
   document.getElementById("voortgang").textContent = "aangekomen";
   zetHint("");
   var lijst = Object.keys(lastig).sort(function(a,b){ return lastig[b]-lastig[a]; }).slice(0,3);
-  var t = "<h3>Aangekomen in " + mmss(duur) + (nieuwRecord ? " — nieuw record!" : "") + "</h3>";
+  var t = '<h3><i class="munt"></i> ' + munten + " gouden munten" + (muntRecord && munten ? " — nieuw muntrecord!" : "") + "</h3>";
+  t += "<p>Aangekomen in " + mmss(duur) + (nieuwRecord ? " (snelste tijd ooit!)" : "") + "."
+     + (langsteReeks >= 3 ? " Langste reeks: " + langsteReeks + " op rij 🔥" : "") + "</p>";
   t += "<p>" + goed + " van de " + RONDE + " in één keer goed, gemiddeld " + komma(m) + " seconden per som.</p>";
   if (hulpGebruikt) t += "<p>De getallenlijn hielp je " + hulpGebruikt + " keer" + ".</p>";
   if (lijst.length) t += "<p>Deze waren lastig: " + lijst.map(function(k){ return '<span class="lastig">'+k+"</span>"; }).join(" ") + ".</p>";
-  if (sterren < 3) t += "<p>Drie sterren haal je met alles goed en binnen 4 seconden per som.</p>";
-  else t += "<p>Drie sterren. Supersnel!</p>";
+  if (sterren === 1) t += "<p>Twee sterren haal je met 15 munten, drie sterren met alle 20.</p>";
+  else if (sterren === 2) t += "<p>Twee sterren! Pak alle 20 munten voor drie sterren.</p>";
+  else t += "<p>Alle munten, drie sterren. Supersnel!</p>";
   var u = document.getElementById("uitslag");
   u.innerHTML = t; u.hidden = false;
   tekenRecords();
@@ -564,7 +655,7 @@ function tekenRecords(){
     var st = "";
     for (var k=1;k<=3;k++) st += (r && r.sterren >= k) ? "★" : "<i>★</i>";
     return '<div class="record"><b>' + n.titel + '</b><span class="sterren">' + st + "</span><br>"
-      + (r ? "snelste " + mmss(r.tijd) + " · " + r.keer + "× gereden" : "nog niet gereden") + "</div>";
+      + (r ? '<i class="munt"></i> ' + (r.munten || 0) + " van " + RONDE + " · snelste " + mmss(r.tijd) + "<br>" + r.keer + "× gereden" : "nog niet gereden") + "</div>";
   }).join("");
 }
 
