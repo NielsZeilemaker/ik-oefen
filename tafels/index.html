@@ -2,13 +2,13 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>De Sterrenwacht — tafels oefenen</title>
-<meta name="description" content="Oefen de tafels van 1 tot en met 10 en deelsommen in De Sterrenwacht. Elke les wordt een sterrenbeeld. Gratis, zonder cookies, tracking of reclame.">
+<meta name="description" content="Oefen de tafels van 1 tot en met 10 in De Sterrenwacht. Elke les wordt een sterrenbeeld. Gratis, zonder cookies, tracking of reclame.">
 <link rel="canonical" href="https://ik-oefen.nl/tafels/">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="nl_NL">
 <meta property="og:site_name" content="Ik oefen">
 <meta property="og:title" content="De Sterrenwacht — tafels oefenen">
-<meta property="og:description" content="Oefen de tafels van 1 tot en met 10 en deelsommen in De Sterrenwacht. Elke les wordt een sterrenbeeld. Gratis, zonder cookies, tracking of reclame.">
+<meta property="og:description" content="Oefen de tafels van 1 tot en met 10 in De Sterrenwacht. Elke les wordt een sterrenbeeld. Gratis, zonder cookies, tracking of reclame.">
 <meta property="og:url" content="https://ik-oefen.nl/tafels/">
 <link rel="stylesheet" href="../fonts/fredoka.css">
 <style>
@@ -261,8 +261,7 @@ var L = [
   {tafels:[8],           titel:"tafel van 8"},
   {tafels:[7],           titel:"tafel van 7"},
   {tafels:[6,7,8,9],     titel:"6 t/m 9 door elkaar"},
-  {tafels:[1,2,3,4,5,6,7,8,9,10], titel:"alle tafels"},
-  {tafels:[2,3,4,5,6,7,8,9,10], delen:true, titel:"deelsommen"}
+  {tafels:[1,2,3,4,5,6,7,8,9,10], titel:"alle tafels"}
 ];
 
 function schud(a){
@@ -273,7 +272,7 @@ function schud(a){
 }
 function maakSommen(i){
   var les = L[i], r = [];
-  if (les.tafels.length === 1 && !les.delen){
+  if (les.tafels.length === 1){
     var n = les.tafels[0], k;
     // eerst op volgorde (opzeggen), dan door elkaar
     for (k=1;k<=10;k++) r.push({a:k, b:n, op:"x"});
@@ -284,14 +283,13 @@ function maakSommen(i){
   var alle = [];
   les.tafels.forEach(function(n){
     for (var k=1;k<=10;k++){
-      if (les.delen) alle.push({a:k*n, b:n, op:":"});
-      else alle.push(Math.random() < 0.5 ? {a:k, b:n, op:"x"} : {a:n, b:k, op:"x"});
+      alle.push(Math.random() < 0.5 ? {a:k, b:n, op:"x"} : {a:n, b:k, op:"x"});
     }
   });
   return schud(alle).slice(0, 20);
 }
-function uitkomst(s){ return s.op === "x" ? s.a*s.b : s.a/s.b; }
-function tekst(s){ return s.a + (s.op === "x" ? " × " : " : ") + s.b; }
+function uitkomst(s){ return s.a*s.b; }
+function tekst(s){ return s.a + " × " + s.b; }
 
 /* ---------- sterrenbeelden ---------- */
 function zaadje(n){
@@ -357,9 +355,7 @@ function tekenStippen(){
   var el = document.getElementById("stippen");
   var s = huidige();
   if (!s || !document.getElementById("hulp").checked){ el.hidden = true; return; }
-  var rijen, perRij, uitleg;
-  if (s.op === "x"){ rijen = s.a; perRij = s.b; uitleg = s.a+(s.a === 1 ? " rij" : " rijen")+" van "+s.b; }
-  else { rijen = s.a / s.b; perRij = s.b; uitleg = "hoeveel rijen van "+s.b+"?"; }
+  var rijen = s.a, perRij = s.b, uitleg = s.a+(s.a === 1 ? " rij" : " rijen")+" van "+s.b;
   var h = "";
   for (var r=0;r<rijen;r++){
     h += '<div class="rij">';
@@ -417,7 +413,7 @@ function volgendeSom(){
   somStart = Date.now();
   var s = huidige();
   zetHint(s && s.herkansing ? '<span class="herkansing">herkansing</span>' : "");
-  if (L[lesIndex].tafels.length === 1 && opgelost < 10 && s && !s.herkansing && !L[lesIndex].delen)
+  if (L[lesIndex].tafels.length === 1 && opgelost < 10 && s && !s.herkansing)
     zetHint("op volgorde");
   else if (L[lesIndex].tafels.length === 1 && opgelost === 10 && s && !s.herkansing)
     zetHint("en nu door elkaar");
