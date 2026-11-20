@@ -1,0 +1,712 @@
+<!doctype html>
+<html lang="nl">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>De Klokkentoren — klokkijken oefenen</title>
+<meta name="description" content="Oefen klokkijken met De Klokkentoren: hele en halve uren, kwartieren, minuten en de digitale klok. Zet zelf de wijzers. Gratis, zonder cookies, tracking of reclame.">
+<link rel="canonical" href="https://ik-oefen.nl/klok/">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="nl_NL">
+<meta property="og:site_name" content="Ik oefen">
+<meta property="og:title" content="De Klokkentoren — klokkijken oefenen">
+<meta property="og:description" content="Oefen klokkijken met De Klokkentoren: hele en halve uren, kwartieren, minuten en de digitale klok. Zet zelf de wijzers. Gratis, zonder cookies, tracking of reclame.">
+<meta property="og:url" content="https://ik-oefen.nl/klok/">
+<link rel="stylesheet" href="../fonts/fredoka.css">
+<style>
+  :root{
+    --lucht:#EEE8F6;
+    --kaart:#FFFCF5;
+    --kaart2:#F0E8DA;
+    --tekst:#2B2840;
+    --zacht:rgba(43,40,64,.62);
+    --lijn:rgba(43,40,64,.16);
+    --steen:#D8BE96;
+    --steen2:#C4A577;
+    --dak:#5B4A8A;
+    --groot:#2F5FB8;   /* grote wijzer: blauw */
+    --klein:#C8423B;   /* kleine wijzer: rood */
+    --goed:#2F9E5B;
+    --rood:#D9484F;
+    --geel:#F2B632;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:linear-gradient(#E4DCF3, var(--lucht) 35%, #F7EEDD);
+    background-attachment:fixed;
+    color:var(--tekst);
+    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:16px;line-height:1.5;padding:20px 16px 48px;min-height:100vh;
+  }
+  .wrap{max-width:860px;margin:0 auto}
+  header{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:baseline;justify-content:space-between;margin-bottom:22px}
+  .kop{display:grid;grid-template-columns:auto 1fr;column-gap:14px;align-items:center}
+  .kop .ondertitel{grid-column:2}
+  .terug{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;color:var(--tekst);border:1px solid var(--lijn);background:var(--kaart);text-decoration:none;transition:background .15s,border-color .15s}
+  .terug:hover{background:var(--kaart2);border-color:var(--tekst)}
+  h1{font-family:Fredoka,ui-rounded,system-ui,sans-serif;font-weight:600;font-size:clamp(28px,6vw,40px);margin:0}
+  .ondertitel{margin:2px 0 0;font-size:14px;color:var(--zacht)}
+
+  .kaart{background:var(--kaart);border:1px solid var(--lijn);border-radius:16px;padding:20px 18px;box-shadow:0 2px 0 rgba(43,40,64,.06)}
+  .leskop{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:6px}
+  .leskop h2{font-family:Fredoka,ui-rounded,sans-serif;font-weight:500;font-size:20px;margin:0}
+  .leskop .rechts{display:flex;align-items:baseline;gap:14px;font-size:13px;color:var(--zacht);white-space:nowrap}
+
+  .niveaus{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+  .niveaus button{font:inherit;font-size:14px;cursor:pointer;border:1px solid var(--lijn);background:var(--kaart2);color:var(--tekst);border-radius:20px;padding:5px 14px}
+  .niveaus button.aan{background:var(--tekst);color:#fff;border-color:var(--tekst)}
+
+  /* de vraag */
+  .vraag{text-align:center;min-height:96px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;margin:4px 0 2px}
+  .vraag .wat{font-size:15px;color:var(--zacht)}
+  .vraag .tijd{font-family:Fredoka,ui-rounded,sans-serif;font-weight:600;font-size:clamp(26px,7vw,36px);line-height:1.15;
+    background:var(--geel);color:var(--tekst);padding:4px 16px 6px;border-radius:10px;transform:rotate(-1.5deg);box-shadow:0 3px 0 rgba(0,0,0,.14)}
+  .vraag .digi{font-family:Fredoka,ui-rounded,sans-serif;font-weight:500;font-variant-numeric:tabular-nums;letter-spacing:.06em;
+    font-size:clamp(30px,8vw,40px);line-height:1.1;background:#24213A;color:#8CF0B4;padding:4px 18px 6px;border-radius:10px;
+    box-shadow:inset 0 0 0 3px #3B3760,0 3px 0 rgba(0,0,0,.18)}
+  .vraag .dagdeel{font-size:15px;font-weight:600}
+  .vraag .klein{font-size:15px}
+
+  /* de toren */
+  .toren{display:block;width:min(300px,100%);height:auto;margin:0 auto;overflow:visible;touch-action:none;user-select:none;-webkit-user-select:none}
+  .toren .wijzerplaat{cursor:default}
+  .toren.zet .wijzerplaat{cursor:grab}
+  .toren.slepen .wijzerplaat{cursor:grabbing}
+  .toren:focus{outline:none}
+  .toren:focus-visible .rand{stroke:#5B8DEF;stroke-width:5}
+  .cijfer{font-family:Fredoka,ui-rounded,sans-serif;font-weight:600;font-size:19px;fill:var(--tekst);text-anchor:middle;dominant-baseline:central}
+  .streep{stroke:var(--tekst);stroke-width:1.2;opacity:.55}
+  .streep.dik{stroke-width:3;opacity:.9}
+  .wijzer.kl{fill:var(--klein)}
+  .wijzer.gr{fill:var(--groot)}
+  .vast .wijzer,.wenk .wijzer{stroke:#FFD866;stroke-width:4;paint-order:stroke;stroke-linejoin:round}
+  @media (prefers-reduced-motion:no-preference){ .wenk .wijzer{animation:wenk 1.1s ease-in-out infinite} }
+  @keyframes wenk{50%{stroke-width:9}}
+  .wijzers.leeg{opacity:0}
+  .raam{fill:#4A4166;transition:fill .3s}
+  .raam.nu{fill:#6B5F94}
+  .raam.licht{fill:#FFE6A3}
+  .raam.munt{fill:#F5C342}
+  .bel{transform-origin:150px 38px}
+  @media (prefers-reduced-motion:no-preference){
+    .toren.luid .bel{animation:luid .9s ease-in-out}
+    .raam.munt{animation:glim .5s}
+  }
+  @keyframes luid{20%{transform:rotate(16deg)}45%{transform:rotate(-13deg)}70%{transform:rotate(7deg)}100%{transform:rotate(0)}}
+  @keyframes glim{50%{fill:#FFF3C4}}
+  .bimbam{font-family:Fredoka,ui-rounded,sans-serif;font-weight:600;font-size:16px;fill:var(--dak);opacity:0}
+  @media (prefers-reduced-motion:no-preference){ .toren.luid .bimbam{animation:bim .9s ease-out} }
+  @keyframes bim{0%{opacity:0;transform:translateY(6px)}25%{opacity:1}100%{opacity:0;transform:translateY(-10px)}}
+
+  #hint{text-align:center;min-height:2em;font-size:17px;color:var(--tekst);margin:6px auto 0;font-family:Fredoka,ui-rounded,sans-serif;font-weight:600}
+
+  /* gouden munt */
+  .munt{display:inline-block;width:1em;height:1em;border-radius:50%;vertical-align:-.15em;
+    background:radial-gradient(circle at 35% 30%,#FFF1B8,#F5C342 45%,#D9961A);box-shadow:inset 0 0 0 .1em #C4840F}
+  #muntbalk{position:relative;display:flex;align-items:center;gap:10px;max-width:340px;margin:2px auto 0;height:34px}
+  #muntbalk .munt{font-size:26px;flex:none;transition:filter .3s,opacity .3s}
+  #muntbalk .balk{flex:1;height:12px;border-radius:6px;background:var(--kaart2);overflow:hidden;box-shadow:inset 0 1px 2px rgba(0,0,0,.12)}
+  #muntbalk .balk i{display:block;height:100%;width:100%;border-radius:6px;background:linear-gradient(90deg,#F2B632,#FFD866)}
+  #muntbalk.klaar{visibility:hidden}
+  #muntbalk.weg .munt{filter:grayscale(1);opacity:.35}
+  #muntbalk.verdiend .munt{animation:muntpop .5s}
+  @keyframes muntpop{0%{transform:scale(1)}40%{transform:scale(1.45) rotate(-12deg)}100%{transform:scale(1)}}
+  .teller{display:inline-flex;align-items:center;gap:6px;font-family:Fredoka,ui-rounded,sans-serif;font-size:18px;font-weight:600;color:var(--tekst)}
+  .teller .munt{font-size:20px}
+  .teller.bump{animation:muntpop .45s}
+  .teller .reeks{font-size:15px;color:#D9581E;font-weight:600;margin-left:4px}
+
+  /* antwoorden */
+  #antwoord{min-height:128px;display:flex;align-items:center;justify-content:center;margin-top:8px}
+  .keuzes{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:min(440px,100%)}
+  .keuzes.drie{grid-template-columns:1fr 1fr 1fr}
+  .keuzes button{font-family:Fredoka,ui-rounded,sans-serif;font-weight:500;font-size:clamp(17px,4.6vw,21px);line-height:1.2;
+    min-height:56px;padding:6px 10px;border-radius:12px;background:var(--kaart2);color:var(--tekst);
+    border:1px solid var(--lijn);border-bottom:4px solid rgba(0,0,0,.2);cursor:pointer;touch-action:manipulation}
+  .keuzes button:hover{background:#E6DCC9}
+  .keuzes button:active{transform:translateY(2px);border-bottom-width:2px}
+  .keuzes button.digi{font-variant-numeric:tabular-nums;letter-spacing:.04em}
+  .keuzes button.fout{border-color:var(--rood);color:var(--rood);background:#FBE9E7}
+  .keuzes button.juist{border-color:var(--goed);background:#E3F4E8;box-shadow:0 0 0 3px var(--goed)}
+  .keuzes button.goed{background:var(--goed);color:#fff;border-color:var(--goed)}
+  .keuzes button:disabled{opacity:.45;cursor:default}
+  @media (prefers-reduced-motion:no-preference){ .keuzes button.fout{animation:wiebel .2s} .keuzes button.goed{animation:pop .3s} }
+  @keyframes wiebel{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+  @keyframes pop{50%{transform:scale(1.06)}}
+
+  .knoppen{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:16px}
+  .knoppen button{font:inherit;font-size:14px;cursor:pointer;border:1px solid var(--tekst);background:var(--tekst);color:#fff;border-radius:8px;padding:7px 14px}
+  .knoppen label{font-size:14px;display:flex;align-items:center;gap:6px;cursor:pointer;margin-left:auto}
+  :focus-visible{outline:3px solid #5B8DEF;outline-offset:2px}
+
+  #uitslag{margin-top:18px;border-top:1px solid var(--lijn);padding-top:16px}
+  #uitslag h3{font-family:Fredoka,ui-rounded,sans-serif;font-weight:500;font-size:20px;margin:0 0 8px}
+  #uitslag p{margin:0 0 10px;font-size:15px}
+  #uitslag .lastig{font-family:Fredoka,ui-rounded,sans-serif;background:var(--kaart2);border-radius:6px;padding:1px 8px;white-space:nowrap}
+  #uitslag .sterren{color:var(--geel);font-size:26px;letter-spacing:3px}
+  #uitslag .sterren i{font-style:normal;color:var(--lijn)}
+  #uitslag button{font:inherit;font-size:15px;cursor:pointer;border-radius:8px;padding:7px 14px;margin:4px 8px 0 0;border:1px solid var(--tekst);background:var(--kaart);color:var(--tekst)}
+  #uitslag button.hoofd{background:var(--tekst);color:#fff}
+
+  h2.recordkop{font-family:Fredoka,ui-rounded,sans-serif;font-weight:500;font-size:20px;margin:30px 0 8px}
+  #records{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+  .record{background:var(--kaart);border:1px solid var(--lijn);border-radius:12px;padding:10px 12px;font-size:14px}
+  .record b{display:block;font-family:Fredoka,ui-rounded,sans-serif;font-size:17px;font-weight:600}
+  .record .sterren{color:var(--geel);font-size:18px;letter-spacing:2px}
+  .record .sterren i{font-style:normal;color:var(--lijn)}
+  footer{margin-top:30px;font-size:13px;color:var(--zacht)}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="kop">
+      <a class="terug" href="../" aria-label="Terug naar Ik oefen" title="Terug naar Ik oefen"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      <h1>De Klokkentoren 🕰️</h1>
+      <p class="ondertitel">Lees de klok en draai zelf de grote wijzer. Elk goed antwoord laat een raampje branden.</p>
+    </div>
+  </header>
+
+  <div class="kaart">
+    <div class="niveaus" id="niveaus"></div>
+    <div class="leskop">
+      <h2 id="titel">Heel en half</h2>
+      <div class="rechts">
+        <span class="teller" id="teller" title="gouden munten"><i class="munt"></i><b id="munten">0</b><span class="reeks" id="reeks"></span></span>
+        <span id="voortgang">vraag 1 van 12</span>
+      </div>
+    </div>
+
+    <div class="vraag" id="vraag" aria-live="polite"></div>
+
+    <svg class="toren" id="toren" viewBox="0 0 300 372" tabindex="0" role="img" aria-label="klok in de toren">
+      <!-- dak met klokje -->
+      <path d="M150 4 L262 92 H38 Z" fill="var(--dak)"/>
+      <path d="M150 4 L262 92 H226 L150 30 Z" fill="#000" opacity=".12"/>
+      <rect x="128" y="44" width="44" height="40" rx="20" fill="#3E3263"/>
+      <g class="bel">
+        <path d="M150 38 c-11 0 -14 10 -14 20 v8 h28 v-8 c0 -10 -3 -20 -14 -20z" fill="#F2B632"/>
+        <rect x="132" y="65" width="36" height="5" rx="2.5" fill="#D9961A"/>
+        <circle cx="150" cy="73" r="3.5" fill="#D9961A"/>
+      </g>
+      <text class="bimbam" x="214" y="56">bim bam!</text>
+      <!-- toren -->
+      <rect x="30" y="88" width="240" height="284" rx="6" fill="var(--steen)"/>
+      <rect x="236" y="92" width="34" height="280" fill="#000" opacity=".07"/>
+      <g fill="var(--steen2)" opacity=".7">
+        <rect x="42" y="102" width="26" height="8" rx="2"/><rect x="232" y="118" width="22" height="8" rx="2"/>
+        <rect x="44" y="300" width="22" height="8" rx="2"/><rect x="236" y="290" width="24" height="8" rx="2"/>
+      </g>
+      <!-- wijzerplaat, middelpunt 150,210 -->
+      <g class="wijzerplaat" transform="translate(150 210)">
+        <circle r="112" fill="var(--steen2)"/>
+        <circle class="rand" r="104" fill="#FFFBF0" stroke="#3E3263" stroke-width="5"/>
+        <g id="strepen"></g>
+        <g id="cijfers"></g>
+        <g class="wijzers" id="wijzers">
+          <g id="kleineWijzer"><path class="wijzer kl" d="M-7 12 L-2.5 -52 L0 -58 L2.5 -52 L7 12 Z"/></g>
+          <g id="groteWijzer"><path class="wijzer gr" d="M-4.5 14 L-1.6 -84 L0 -90 L1.6 -84 L4.5 14 Z"/></g>
+          <circle r="7" fill="#3E3263"/><circle r="2.5" fill="#FFFBF0"/>
+        </g>
+      </g>
+      <!-- raampjes: één per vraag -->
+      <g id="ramen"></g>
+    </svg>
+
+    <p id="hint"></p>
+    <div id="muntbalk">
+      <i class="munt" aria-hidden="true"></i>
+      <div class="balk" title="Goed voordat de balk leeg is = gouden munt"><i id="muntvulling"></i></div>
+    </div>
+    <div id="antwoord"></div>
+
+    <div class="knoppen"><button id="opnieuw">Begin opnieuw</button></div>
+    <div id="uitslag" hidden></div>
+  </div>
+
+  <h2 class="recordkop">Jouw records</h2>
+  <div id="records"></div>
+
+  <footer>Voortgang wordt op dit apparaat bewaard. De grote blauwe wijzer wijst de minuten aan, de kleine rode wijzer de uren. Draai de grote wijzer met je vinger of muis (de kleine loopt vanzelf mee), of gebruik de pijltjestoetsen (← → minuten, ↑ ↓ uren). Staat de klok goed, dan gaat de bel vanzelf. Goed voordat de gouden balk leeg is? Dan verdien je een gouden munt. Kies je het verkeerde antwoord, dan licht het goede antwoord groen op.</footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+var BEWAAR = "klokkentoren-v1";
+var RONDE = 12;
+var NIVEAUS = [
+  {titel:"Heel en half", stap:30},
+  {titel:"Kwartieren",    stap:15, sprong:[15,30,45,60]},
+  {titel:"Per 5 minuten", stap:5,  sprong:[5,10,15,20,25,30,45,60]},
+  {titel:"Per minuut",    stap:1,  sprong:[2,3,5,7,10,15,20,30]},
+  {titel:"Digitaal",      stap:5,  digitaal:true}
+];
+
+var UREN = ["twaalf","één","twee","drie","vier","vijf","zes","zeven","acht","negen","tien","elf"];
+var MINUTEN = ["","één","twee","drie","vier","vijf","zes","zeven","acht","negen","tien","elf","twaalf","dertien","veertien"];
+
+var data = {records:{}, niveau:0};
+function laad(){
+  try{ var s = localStorage.getItem(BEWAAR); if (s) data = JSON.parse(s); }catch(e){}
+  if (!data || typeof data !== "object") data = {};
+  if (!data.records) data.records = {};
+  if (typeof data.niveau !== "number" || !NIVEAUS[data.niveau]) data.niveau = 0;
+}
+function bewaar(){ try{ localStorage.setItem(BEWAAR, JSON.stringify(data)); }catch(e){} }
+
+function tussen(a, b){ return a + Math.floor(Math.random()*(b-a+1)); }
+function schud(a){ for (var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)), t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+function mod(a, n){ return ((a % n) + n) % n; }
+function $(id){ return document.getElementById(id); }
+
+/* ---------- tijd in woorden ---------- */
+// t = minuten na twaalf uur (0..719)
+function woorden(t){
+  t = mod(t, 720);
+  var h = Math.floor(t/60), m = t % 60, u = UREN[h], v = UREN[(h+1) % 12];
+  if (m === 0)  return u + " uur";
+  if (m === 15) return "kwart over " + u;
+  if (m === 30) return "half " + v;
+  if (m === 45) return "kwart voor " + v;
+  if (m < 15)   return MINUTEN[m] + " over " + u;
+  if (m < 30)   return MINUTEN[30-m] + " voor half " + v;
+  if (m < 45)   return MINUTEN[m-30] + " over half " + v;
+  return MINUTEN[60-m] + " voor " + v;
+}
+// t24 = minuten na middernacht (0..1439)
+function digitaal(t24){
+  t24 = mod(t24, 1440);
+  var h = Math.floor(t24/60), m = t24 % 60;
+  return (h < 10 ? "0" : "") + h + ":" + (m < 10 ? "0" : "") + m;
+}
+function dagdeel(t24){
+  var h = Math.floor(mod(t24,1440)/60);
+  if (h < 6)  return "'s nachts 🌙";
+  if (h < 12) return "'s ochtends 🌅";
+  if (h < 18) return "'s middags ☀️";
+  return "'s avonds 🌆";
+}
+function duur(d){
+  if (d === 15) return "een kwartier";
+  if (d === 30) return "een half uur";
+  if (d === 45) return "drie kwartier";
+  if (d === 60) return "een uur";
+  return d + " minuten";
+}
+function getalUur(h){ return h % 12 || 12; }
+
+/* ---------- de klok tekenen ---------- */
+var NS = "http://www.w3.org/2000/svg";
+function el(naam, attr, ouder){
+  var e = document.createElementNS(NS, naam);
+  for (var k in attr) e.setAttribute(k, attr[k]);
+  if (ouder) ouder.appendChild(e);
+  return e;
+}
+function punt(hoek, r){ var a = (hoek-90) * Math.PI/180; return [r*Math.cos(a), r*Math.sin(a)]; }
+
+function tekenWijzerplaat(){
+  var s = $("strepen"), c = $("cijfers");
+  for (var i=0;i<60;i++){
+    var dik = i % 5 === 0, a = punt(i*6, dik ? 88 : 93), b = punt(i*6, 99);
+    el("line", {x1:a[0].toFixed(1), y1:a[1].toFixed(1), x2:b[0].toFixed(1), y2:b[1].toFixed(1), "class":"streep" + (dik ? " dik" : "")}, s);
+  }
+  for (var u=1;u<=12;u++){
+    var p = punt(u*30, 74);
+    var t = el("text", {x:p[0].toFixed(1), y:p[1].toFixed(1), "class":"cijfer"}, c);
+    t.textContent = u;
+  }
+  var r = $("ramen");
+  for (var n=0;n<RONDE;n++){
+    var x = 47 + n*18.2;
+    el("path", {d:"M"+x+" 362 v-14 a6 6 0 0 1 12 0 v14 z", "class":"raam", id:"raam"+n}, r);
+  }
+}
+
+var RUSTIG = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+// Draai één wijzer. Met glij (seconden) draait hij soepel de korte kant op.
+function draai(w, hoek, glij){
+  if (glij && typeof w._hoek === "number"){
+    hoek = w._hoek + (mod(hoek - w._hoek + 180, 360) - 180);
+    w.style.transition = RUSTIG ? "none" : "transform " + glij + "s cubic-bezier(.3,.7,.3,1)";
+  } else w.style.transition = "none";
+  w._hoek = hoek;
+  w.style.transform = "rotate(" + hoek.toFixed(2) + "deg)";
+}
+// t mag een kommagetal zijn (tijdens het slepen).
+function zetWijzers(t, glij){
+  draai($("kleineWijzer"), mod(t, 720) / 2, glij);
+  draai($("groteWijzer"), mod(t, 60) * 6, glij);
+}
+
+/* ---------- vragen maken ---------- */
+// soorten: "zet" (zet de klok), "kies" (hoe laat is het?), "sprong" (over een kwartier),
+// "digizet" (zet de klok op 15:30), "digikies" (welke digitale tijd?), "digiwoord" (15:30 in woorden)
+function kiesTijd(niv, gebruikt){
+  var n = NIVEAUS[niv], vorige = niv > 0 && !n.digitaal ? NIVEAUS[niv-1].stap : 0;
+  for (var poging=0; poging<50; poging++){
+    var h = tussen(0, 11), m;
+    var opties = [];
+    for (var x=0; x<60; x+=n.stap) opties.push(x);
+    if (vorige && Math.random() < 0.75){
+      var nieuw = opties.filter(function(x){ return x % vorige !== 0; });
+      if (nieuw.length) opties = nieuw;
+    }
+    m = opties[tussen(0, opties.length-1)];
+    var t = h*60 + m;
+    if (gebruikt.indexOf(t) < 0) return t;
+  }
+  return t;
+}
+
+function maakRonde(){
+  var niv = data.niveau, n = NIVEAUS[niv], soorten = [];
+  if (n.digitaal) soorten = ["digizet","digizet","digizet","digizet","digikies","digikies","digikies","digikies","digiwoord","digiwoord","digiwoord","digiwoord"];
+  else if (n.sprong) soorten = ["zet","zet","zet","zet","zet","kies","kies","kies","kies","sprong","sprong","sprong"];
+  else soorten = ["zet","zet","zet","zet","zet","zet","kies","kies","kies","kies","kies","kies"];
+  schud(soorten);
+  // nooit met een sprong beginnen: eerst rustig inkomen
+  if (soorten[0] === "sprong"){ var i = soorten.indexOf("zet"); soorten[i] = "sprong"; soorten[0] = "zet"; }
+  var gebruikt = [], vragen = [];
+  soorten.forEach(function(s){
+    var t = kiesTijd(niv, gebruikt); gebruikt.push(t);
+    var v = {soort:s, t:t};
+    if (s === "sprong"){
+      v.d = n.sprong[tussen(0, n.sprong.length-1)];
+      v.start = t; v.t = mod(t + v.d, 720);
+    }
+    if (s.indexOf("digi") === 0){
+      // meestal na twaalf uur (daar zit het lastige), soms 's ochtends of 's nachts
+      v.t24 = t + (Math.random() < 0.7 ? 720 : 0);
+      if (v.t24 < 360 && Math.random() < 0.6) v.t24 += 720; // nacht minder vaak
+    }
+    vragen.push(v);
+  });
+  return vragen;
+}
+
+// Afleiders die echte vergissingen nadoen.
+function afleiders(t, stap){
+  var h = Math.floor(t/60), m = t % 60, uit = [];
+  uit.push(mod(t + 60, 720), mod(t - 60, 720));                 // uur ernaast (half vier / half vijf)
+  if (m !== 0 && m !== 30) uit.push(h*60 + (60 - m));           // over en voor omgedraaid
+  if (m !== 0 && m !== 30) uit.push(mod(h*60 + (30 - m), 720)); // spiegel rond half
+  var hs = Math.round(m/5) % 12, ms = (h % 12) * 5;             // wijzers verwisseld
+  uit.push(hs*60 + ms);
+  for (var i=0;i<8;i++) uit.push(tussen(0, 11)*60 + tussen(0, 60/stap - 1)*stap);
+  return uit.filter(function(x){ return x !== t && mod(x, stap) === 0; });
+}
+function maakOpties(goed, kandidaten, aantal, sleutel){
+  var uit = [goed], gezien = {};
+  gezien[sleutel(goed)] = 1;
+  for (var i=0; i<kandidaten.length && uit.length < aantal; i++){
+    var k = sleutel(kandidaten[i]);
+    if (!gezien[k]){ gezien[k] = 1; uit.push(kandidaten[i]); }
+  }
+  return schud(uit);
+}
+
+/* ---------- toestand ---------- */
+var vragen = [], nr = 0, vraag = null, stand = 0, ruw = 0;
+var munten = 0, reeks = 0, fouten = 0, lastig = {}, bezig = false;
+var muntTimer = null, vraagStart = 0;
+
+function wachtTijd(){
+  var s = vraag ? vraag.soort : "";
+  var basis = (s === "kies" || s === "digikies" || s === "digiwoord") ? 9000 : 12000;
+  if (NIVEAUS[data.niveau].stap === 1) basis += 4000;
+  if (s === "sprong") basis += 4000;
+  return basis;
+}
+
+function zetHint(h){ $("hint").innerHTML = h || ""; }
+
+function startMuntbalk(){
+  var mb = $("muntbalk"), v = $("muntvulling");
+  mb.classList.remove("weg", "klaar", "verdiend");
+  v.style.transition = "none"; v.style.width = "100%";
+  void v.offsetWidth;
+  v.style.transition = "width " + wachtTijd() + "ms linear";
+  v.style.width = "0%";
+  clearTimeout(muntTimer);
+  muntTimer = setTimeout(function(){ $("muntbalk").classList.add("weg"); }, wachtTijd());
+}
+function stopMuntbalk(){
+  clearTimeout(muntTimer);
+  var v = $("muntvulling");
+  v.style.width = getComputedStyle(v).width; v.style.transition = "none";
+}
+function tekenTeller(bump){
+  $("munten").textContent = munten;
+  $("reeks").textContent = reeks >= 3 ? "🔥" + reeks : "";
+  if (bump){ var t = $("teller"); t.classList.remove("bump"); void t.offsetWidth; t.classList.add("bump"); }
+}
+
+/* ---------- een vraag tonen ---------- */
+// De klok begint 1 à 2 uur van het goede antwoord, soms ervoor, soms erna:
+// nooit meer dan een paar rondjes draaien, en toch nadenken welke kant op.
+function startStand(t){
+  var stap = Math.max(NIVEAUS[data.niveau].stap, 5);
+  var afstand = Math.round(tussen(60, 120) / stap) * stap;
+  return mod(t + (Math.random() < 0.5 ? -afstand : afstand), 720);
+}
+function toonVraag(){
+  $("groteWijzer").classList.remove("wenk");
+  vraag = vragen[nr];
+  bezig = true;
+  vraagStart = Date.now();
+  zetHint("");
+  var toren = $("toren"), vr = $("vraag"), aw = $("antwoord"), s = vraag.soort;
+  toren.classList.remove("zet", "luid");
+  $("wijzers").classList.remove("leeg");
+  $("voortgang").textContent = "vraag " + (nr+1) + " van " + RONDE;
+  for (var i=0;i<RONDE;i++) $("raam"+i).classList.toggle("nu", i === nr);
+
+  if (s === "zet" || s === "sprong" || s === "digizet"){
+    // start op tien over tien: beide wijzers goed te zien en te pakken
+    stand = s === "sprong" ? vraag.start : startStand(vraag.t);
+    ruw = stand;
+    zetWijzers(stand);
+    toren.classList.add("zet");
+    toren.setAttribute("aria-label", "klok: sleep de wijzers of gebruik de pijltjestoetsen");
+    if (s === "zet") vr.innerHTML = '<span class="wat">Zet de klok op</span><span class="tijd">' + woorden(vraag.t) + '</span>';
+    else if (s === "digizet") vr.innerHTML = '<span class="wat">Zet de klok op</span><span class="digi">' + digitaal(vraag.t24) + '</span>';
+    else vr.innerHTML = '<span class="wat">Het is ' + woorden(vraag.start) + '. Zet de klok op de tijd</span><span class="tijd">over ' + duur(vraag.d) + '</span>';
+    aw.innerHTML = "";
+    $("groteWijzer").classList.add("wenk");
+  } else {
+    var opties, html = "";
+    if (s === "kies"){
+      zetWijzers(vraag.t);
+      vr.innerHTML = '<span class="wat">Hoe laat is het?</span>';
+      opties = maakOpties(vraag.t, afleiders(vraag.t, NIVEAUS[data.niveau].stap), NIVEAUS[data.niveau].stap === 30 ? 3 : 4, woorden);
+      opties.forEach(function(o, i){ html += '<button data-k="' + o + '">' + woorden(o) + '</button>'; });
+    } else if (s === "digikies"){
+      zetWijzers(vraag.t24);
+      vr.innerHTML = '<span class="wat">Hoe laat is het op een digitale klok?</span><span class="dagdeel">' + dagdeel(vraag.t24) + '</span>';
+      var t12 = vraag.t24 % 720, dagbasis = vraag.t24 - t12;
+      var kand = [mod(vraag.t24 + 720, 1440)].concat(afleiders(t12, 5).map(function(x){ return dagbasis + x; }));
+      opties = maakOpties(vraag.t24, kand, 4, digitaal);
+      opties.forEach(function(o){ html += '<button class="digi" data-k="' + o + '">' + digitaal(o) + '</button>'; });
+    } else {
+      $("wijzers").classList.add("leeg");
+      vr.innerHTML = '<span class="wat">Hoe zeg je deze tijd?</span><span class="digi">' + digitaal(vraag.t24) + '</span>';
+      var t = vraag.t24 % 720;
+      opties = maakOpties(t, afleiders(t, 5), 4, woorden);
+      opties.forEach(function(o){ html += '<button data-k="' + o + '">' + woorden(o) + '</button>'; });
+    }
+    toren.setAttribute("aria-label", "klok");
+    aw.innerHTML = '<div class="keuzes' + (opties.length === 3 ? " drie" : "") + '">' + html + '</div>';
+    Array.prototype.forEach.call(aw.querySelectorAll("button"), function(b){ b.onclick = function(){ kies(b); }; });
+  }
+  startMuntbalk();
+}
+
+/* ---------- antwoorden ---------- */
+function goedAntwoord(){
+  bezig = false;
+  $("groteWijzer").classList.remove("wenk");
+  stopMuntbalk();
+  var verdiend = !vraag.fout && Date.now() - vraagStart <= wachtTijd();
+  var raam = $("raam"+nr);
+  raam.classList.remove("nu");
+  raam.classList.add(verdiend ? "munt" : "licht");
+  if (verdiend){
+    munten++; reeks++;
+    var mb = $("muntbalk"); mb.classList.remove("verdiend"); void mb.offsetWidth; mb.classList.add("verdiend");
+  } else reeks = 0;
+  tekenTeller(verdiend);
+  var toren = $("toren");
+  toren.classList.remove("zet", "luid"); void toren.getBoundingClientRect(); toren.classList.add("luid");
+  var lof = verdiend ? ["Goed zo!", "Precies!", "Knap!", "Super!", "Ja, goed!"][tussen(0,4)] + " +1 munt" : "Goed zo!";
+  zetHint("<b>" + lof + "</b>");
+  if (vraag.soort === "digiwoord"){ $("wijzers").classList.remove("leeg"); zetWijzers(vraag.t24, 0.6); }
+  setTimeout(volgende, verdiend ? 1100 : 1300);
+}
+function telFout(){
+  if (!vraag.fout){ fouten++; vraag.fout = true; lastig[vraag.t] = (lastig[vraag.t] || 0) + 1; }
+  reeks = 0; tekenTeller(false);
+}
+
+// Staat de klok goed? Dan telt het meteen, zonder knop.
+function controleerZet(){
+  if (magZetten() && mod(stand, 720) === mod(vraag.t, 720)) goedAntwoord();
+}
+
+function kies(knop){
+  if (!bezig || knop.disabled) return;
+  var k = +knop.getAttribute("data-k"), s = vraag.soort;
+  var goed = s === "digikies" ? k === vraag.t24 : k === mod(s === "digiwoord" ? vraag.t24 : vraag.t, 720);
+  var knoppen = $("antwoord").querySelectorAll("button");
+  if (goed){
+    knop.classList.add("goed");
+    Array.prototype.forEach.call(knoppen, function(b){ if (b !== knop) b.disabled = true; });
+    goedAntwoord();
+    return;
+  }
+  telFout();
+  stopMuntbalk(); $("muntbalk").classList.add("weg");
+  knop.classList.remove("fout"); void knop.offsetWidth; knop.classList.add("fout"); knop.disabled = true;
+  var juist = s === "digikies" ? vraag.t24 : mod(s === "digiwoord" ? vraag.t24 : vraag.t, 720);
+  Array.prototype.forEach.call(knoppen, function(b){
+    if (+b.getAttribute("data-k") === juist) b.classList.add("juist"); else b.disabled = true;
+  });
+}
+
+function volgende(){
+  nr++;
+  if (nr >= RONDE) klaar(); else toonVraag();
+}
+
+/* ---------- slepen ---------- */
+var sleep = null;   // "groot" of "klein"
+function hoekVan(ev){
+  var svg = $("toren"), pt = svg.createSVGPoint();
+  pt.x = ev.clientX; pt.y = ev.clientY;
+  var p = pt.matrixTransform(svg.getScreenCTM().inverse());
+  var x = p.x - 150, y = p.y - 210;
+  return {hoek: mod(Math.atan2(x, -y) * 180/Math.PI, 360), r: Math.sqrt(x*x + y*y)};
+}
+function magZetten(){ return bezig && vraag && (vraag.soort === "zet" || vraag.soort === "sprong" || vraag.soort === "digizet"); }
+
+// Alleen de grote wijzer draait, zoals aan het knopje van een echte klok:
+// de kleine wijzer loopt vanzelf mee. Tijdens het slepen volgt hij je vinger
+// soepel; bij loslaten glijdt hij naar de dichtstbijzijnde goede plek.
+function zetGroot(hoek){
+  var d = hoek / 6 - mod(ruw, 60);
+  if (d > 30) d -= 60;
+  if (d < -30) d += 60;
+  ruw += d;                                          // over de 12 = volgend uur
+  zetWijzers(ruw, 0.05);
+}
+function rondAf(){
+  stand = mod(Math.round(ruw / NIVEAUS[data.niveau].stap) * NIVEAUS[data.niveau].stap, 720);
+  ruw = stand;
+  zetWijzers(stand, 0.25);
+}
+function pakVast(ev){
+  if (!magZetten()) return;
+  var p = hoekVan(ev);
+  if (p.r > 115 || p.r < 10) return;           // buiten de klok, of midden: richting onduidelijk
+  sleep = "groot";
+  ruw = stand;
+  $("toren").classList.add("slepen");
+  $("groteWijzer").classList.remove("wenk");
+  $("groteWijzer").classList.add("vast");
+  try{ $("toren").setPointerCapture(ev.pointerId); }catch(e){}
+  ev.preventDefault();
+  beweeg(ev);
+}
+function beweeg(ev){
+  if (!sleep || !magZetten()) return;
+  var p = hoekVan(ev);
+  zetGroot(p.hoek);
+}
+function laatLos(){
+  var was = sleep;
+  if (was) rondAf();
+  sleep = null; $("toren").classList.remove("slepen");
+  $("groteWijzer").classList.remove("vast");
+  if (was) controleerZet();
+}
+
+function toets(ev){
+  if (ev.target && ev.target.tagName === "INPUT") return;
+  if (magZetten()){
+    var stap = NIVEAUS[data.niveau].stap, d = 0;
+    if (ev.key === "ArrowRight") d = stap;
+    else if (ev.key === "ArrowLeft") d = -stap;
+    else if (ev.key === "ArrowUp") d = 60;
+    else if (ev.key === "ArrowDown") d = -60;
+    if (d){ ev.preventDefault(); $("groteWijzer").classList.remove("wenk"); stand = mod(stand + d, 720); ruw = stand; zetWijzers(stand, 0.2); controleerZet(); }
+    return;
+  }
+  if (bezig && /^[1-4]$/.test(ev.key)){
+    var b = $("antwoord").querySelectorAll("button")[+ev.key - 1];
+    if (b) kies(b);
+  }
+}
+
+/* ---------- ronde ---------- */
+function startRonde(){
+  vragen = maakRonde(); nr = 0; munten = 0; reeks = 0; fouten = 0; lastig = {};
+  $("uitslag").hidden = true;
+  $("titel").textContent = NIVEAUS[data.niveau].titel;
+  for (var i=0;i<RONDE;i++) $("raam"+i).setAttribute("class", "raam");
+  tekenTeller(false);
+  toonVraag();
+}
+
+function klaar(){
+  bezig = false; vraag = null;
+  stopMuntbalk();
+  $("muntbalk").classList.add("klaar");
+  $("antwoord").innerHTML = "";
+  $("vraag").innerHTML = '<span class="tijd">Alle raampjes branden!</span>';
+  zetHint("");
+  var toren = $("toren"); toren.classList.remove("zet", "luid"); void toren.getBoundingClientRect(); toren.classList.add("luid");
+
+  var sterren = 1;
+  if (munten >= 9) sterren = 2;
+  if (munten >= RONDE) sterren = 3;
+  var oud = data.records[data.niveau];
+  data.records[data.niveau] = {
+    sterren: Math.max(oud ? oud.sterren : 0, sterren),
+    munten: Math.max(oud ? oud.munten : 0, munten),
+    keer: (oud ? oud.keer || 0 : 0) + 1
+  };
+  bewaar();
+  tekenRecords();
+
+  var st = "";
+  for (var k=1;k<=3;k++) st += k <= sterren ? "★" : "<i>★</i>";
+  var t = '<h3>Klaar! <span class="sterren">' + st + '</span></h3>';
+  t += "<p>Je verdiende <b>" + munten + "</b> van de " + RONDE + " gouden munten" + (fouten ? " en maakte " + fouten + " fout" + (fouten > 1 ? "en" : "") : " en maakte geen enkele fout") + ".</p>";
+  if (sterren === 1) t += "<p>Twee sterren haal je met 9 munten, drie sterren met alle " + RONDE + ".</p>";
+  else if (sterren === 2) t += "<p>Twee sterren! Pak alle " + RONDE + " munten voor drie sterren.</p>";
+  else t += "<p>Alle munten, drie sterren. Jij kunt klokkijken!</p>";
+  var moeilijk = Object.keys(lastig);
+  if (moeilijk.length) t += "<p>Oefen nog eens: " + moeilijk.slice(0, 4).map(function(x){ return '<span class="lastig">' + woorden(+x) + "</span>"; }).join(" ") + "</p>";
+  t += '<button class="hoofd" id="nogeens">Nog een keer</button>';
+  if (sterren >= 2 && NIVEAUS[data.niveau+1]) t += '<button id="verder">Verder: ' + NIVEAUS[data.niveau+1].titel + ' →</button>';
+  var u = $("uitslag"); u.innerHTML = t; u.hidden = false;
+  $("nogeens").onclick = startRonde;
+  if ($("verder")) $("verder").onclick = function(){ data.niveau++; bewaar(); tekenNiveaus(); startRonde(); };
+}
+
+function tekenNiveaus(){
+  var box = $("niveaus"); box.innerHTML = "";
+  NIVEAUS.forEach(function(n, i){
+    var b = document.createElement("button");
+    b.textContent = n.titel;
+    if (i === data.niveau) b.className = "aan";
+    b.onclick = function(){ data.niveau = i; bewaar(); tekenNiveaus(); startRonde(); };
+    box.appendChild(b);
+  });
+}
+function tekenRecords(){
+  $("records").innerHTML = NIVEAUS.map(function(n, i){
+    var r = data.records[i], st = "";
+    for (var k=1;k<=3;k++) st += (r && r.sterren >= k) ? "★" : "<i>★</i>";
+    return '<div class="record"><b>' + n.titel + '</b><span class="sterren">' + st + "</span><br>"
+      + (r ? "beste: " + r.munten + " munten" : "nog niet gespeeld") + "</div>";
+  }).join("");
+}
+
+/* ---------- start ---------- */
+laad();
+tekenWijzerplaat();
+tekenNiveaus();
+tekenRecords();
+$("opnieuw").onclick = startRonde;
+var toren = $("toren");
+toren.addEventListener("pointerdown", pakVast);
+toren.addEventListener("pointermove", beweeg);
+toren.addEventListener("pointerup", laatLos);
+toren.addEventListener("pointercancel", laatLos);
+document.addEventListener("keydown", toets);
+startRonde();
+})();
+</script>
+</html>

@@ -11,6 +11,7 @@ Kleine oefenspelletjes voor kinderen (basisschoolleeftijd), live op https://ik-o
 | `tafels/` | De Sterrenwacht — tafels oefenen |
 | `provincies/` | De Berenkaart — provincies oefenen |
 | `rekenen/` | De Rekentrein — plussen en minnen tot 20/50/100/1000 |
+| `klok/` | De Klokkentoren — klokkijken, van hele uren tot digitaal |
 | `fonts/` | Zelf gehoste Fredoka (`fredoka.css` + woff2 + `OFL-fredoka.txt`) |
 | `robots.txt`, `sitemap.xml` | Vindbaarheid |
 
@@ -45,6 +46,15 @@ Kleine oefenspelletjes voor kinderen (basisschoolleeftijd), live op https://ik-o
 - Om de 4–6 sommen stapt een vers getal in (bordje "nieuw!"), en recente paren worden vermeden om rondjes te doorbreken.
 - Getallenlijn-hulp: verschijnt na 8 s zonder invoer (12 s bij tot 1000) of na een fout, **niet** als het tweede getal < 10. Hooguit **2 boogjes**, geen getallen of streepjes op de lijn, alleen de sprong boven de boog: eerst tientallen (incl. honderdtallen), dan eenheden; bij 8 of 9 een tiental te ver en terug (31 + 18 → +20, −2), tenzij dat over de grens gaat. Een terugsprong staat onder de lijn.
 - Gouden munt: alleen als de som in één keer goed is vóór de balk leeg is (en zonder lijn). Sterren: ★ uitgespeeld, ★★ 15 munten, ★★★ alle 20.
+
+## De Klokkentoren (klokregels)
+
+- Niveaus volgen de school: heel en half (hele en halve uren) → kwartieren → per 5 minuten → per minuut → digitaal (24 uur). Op een niveau gaat ~3 op 4 vragen over wat nieuw is.
+- Vraagsoorten: wijzers zelf slepen (de kern), "hoe laat is het?" (keuze), "over een kwartier" (vanaf kwartieren), en bij digitaal: 15:30 zetten, digitale tijd kiezen, en digitaal → woorden.
+- Grote wijzer blauw, kleine wijzer rood. Alleen de grote wijzer is te draaien (overal op de wijzerplaat te pakken), de kleine loopt mee zoals bij het knopje van een echte klok. Tijdens slepen volgt hij soepel je vinger; bij loslaten glijdt hij naar de dichtstbijzijnde stap van het niveau. De klok start 1 à 2 uur van het antwoord (ervoor of erna); bij "over een kwartier" op de gegeven tijd. De grote wijzer pulseert geel tot je hem pakt.
+- Tijden in woorden zoals op school: "tien voor half vijf", "één over half één". Afleiders doen echte vergissingen na (uur ernaast, over/voor omgedraaid, wijzers verwisseld).
+- **Geen hulp en geen uitlegzinnen** (groep 3 leest nog niet vlot, en het kind moet het zelf doen). Geen Klaar-knop: staat de klok goed bij het loslaten (of na een pijltjestoets), dan telt het meteen. Fout bij kiezen: het goede antwoord licht groen op en het kind tikt het aan.
+- 12 vragen per ronde, elk een raampje in de toren (goud = munt). Sterren: ★ uitgespeeld, ★★ 9 munten, ★★★ alle 12.
 
 ## Testen
 
