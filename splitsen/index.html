@@ -1,0 +1,620 @@
+<!doctype html>
+<html lang="nl">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Het Kippenhok — splitsen oefenen</title>
+<meta name="description" content="Oefen splitsen tot 10 met Het Kippenhok: hoeveel eieren liggen er onder de kip? Elk ei dat je in één keer goed hebt, wordt een kuiken. Gratis, zonder cookies, tracking of reclame.">
+<link rel="canonical" href="https://ik-oefen.nl/splitsen/">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="nl_NL">
+<meta property="og:site_name" content="Ik oefen">
+<meta property="og:title" content="Het Kippenhok — splitsen oefenen">
+<meta property="og:description" content="Oefen splitsen tot 10 met Het Kippenhok: hoeveel eieren liggen er onder de kip? Elk ei dat je in één keer goed hebt, wordt een kuiken. Gratis, zonder cookies, tracking of reclame.">
+<meta property="og:url" content="https://ik-oefen.nl/splitsen/">
+<link rel="stylesheet" href="../fonts/fredoka.css">
+<style>
+  :root{
+    --papier:#FBF6DF;
+    --kaart:#FFFEF6;
+    --kaart2:#F3EDCF;
+    --tekst:#2F3A1F;
+    --zacht:rgba(47,58,31,.64);
+    --lijn:rgba(47,58,31,.16);
+    --hok:#C94A32;
+    --hok2:#8E3424;
+    --gras:#9CCB5E;
+    --gras2:#7DB043;
+    --stro:#E2B04A;
+    --goed:#2F9E5B;
+    --rood:#D9484F;
+    --geel:#F2B632;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:linear-gradient(#FFEFB0, var(--papier) 38%, #E6F0CC);
+    background-attachment:fixed;
+    color:var(--tekst);
+    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:16px;line-height:1.5;padding:20px 16px 48px;min-height:100vh;
+  }
+  .wrap{max-width:860px;margin:0 auto}
+  header{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:baseline;justify-content:space-between;margin-bottom:22px}
+  .kop{display:grid;grid-template-columns:auto 1fr;column-gap:14px;align-items:start}
+  .kop .terug{margin-top:calc(clamp(28px,6vw,40px) * .75 - 20px)}   /* midden op de regel van de titel */
+  /* lage schermhoogte (zelfde grens als hok-naast-toetsen): ondertitel naast de titel, scheelt een regel */
+  @media (max-height:901px) and (min-width:600px){
+    .koptekst{display:flex;flex-wrap:wrap;align-items:center;column-gap:18px}
+    .koptekst .ondertitel{flex:1 1 260px;max-width:440px;margin:0}
+  }
+  .terug{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;color:var(--tekst);border:1px solid var(--lijn);background:var(--kaart);text-decoration:none;transition:background .15s,border-color .15s}
+  .terug:hover{background:var(--kaart2);border-color:var(--tekst)}
+  h1{font-family:Fredoka,ui-rounded,system-ui,sans-serif;font-weight:600;font-size:clamp(28px,6vw,40px);margin:0}
+  .ondertitel{margin:2px 0 0;font-size:14px;color:var(--zacht)}
+
+  .kaart{background:var(--kaart);border:1px solid var(--lijn);border-radius:16px;padding:20px 18px;box-shadow:0 2px 0 rgba(47,58,31,.06)}
+  /* één rij: niveauknoppen links, kuikens en voortgang rechts (past het niet, dan zakken die eronder) */
+  .leskop{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-bottom:6px}
+  .leskop .rechts{display:flex;align-items:center;gap:14px;margin-left:auto;font-size:13px;color:var(--zacht);white-space:nowrap}
+  .teller{display:inline-flex;align-items:center;gap:4px;font-family:Fredoka,ui-rounded,sans-serif;font-size:18px;font-weight:600;color:var(--tekst)}
+  .teller svg{width:20px;height:20px}
+  .teller.bump{animation:pop .45s}
+  .teller .reeks{font-size:15px;color:#D9581E;margin-left:4px}
+
+  .niveaus{display:contents}   /* knoppen doen mee in de rij van .leskop */
+  .niveaus button{font:inherit;font-size:14px;cursor:pointer;border:1px solid var(--lijn);background:var(--kaart2);color:var(--tekst);border-radius:20px;padding:5px 14px}
+  .niveaus button.aan{background:var(--tekst);color:#fff;border-color:var(--tekst)}
+
+  /* de ren: elk kuiken is een ei dat op tijd en in één keer goed was. Vaste hoogte (twee rijen), dus niets verspringt. */
+  .ren{position:relative;display:flex;flex-wrap:wrap;align-content:flex-end;gap:2px 2px;height:66px;overflow:hidden;
+    padding:12px 52px 4px 8px;margin-top:6px;border-radius:12px;
+    background:linear-gradient(#CFE8A6,#B4D884);
+    box-shadow:inset 0 5px 0 #E9D3A6,inset 0 7px 0 rgba(0,0,0,.06)}
+  .ren::before{content:"";position:absolute;left:0;right:0;top:0;height:12px;
+    background:repeating-linear-gradient(90deg,transparent 0 18px,#C99B62 18px 22px)}   /* paaltjes van het hek */
+  .ren svg{display:block;width:22px;height:22px;flex:none;animation:pik 2.8s ease-in-out infinite}
+  .ren svg:nth-child(3n+1){animation-delay:-.9s}
+  .ren svg:nth-child(3n+2){animation-delay:-1.8s;animation-duration:3.4s}
+  .ren .nieuw{animation:uitkomen .7s cubic-bezier(.2,.9,.3,1.3),pik 2.8s ease-in-out .7s infinite}
+  .ren .nieuw .schaal{animation:schaalweg .9s ease-out forwards}
+  .ren .totaal{position:absolute;right:8px;bottom:8px;font-family:Fredoka,ui-rounded,sans-serif;font-weight:600;font-size:15px;
+    background:rgba(255,254,246,.9);border-radius:10px;padding:0 8px;min-width:36px;text-align:center}
+  .ren .totaal:empty{display:none}
+  @keyframes pik{0%,70%,100%{transform:translateY(0)}78%{transform:translateY(-3px)}86%{transform:translateY(0)}}
+  @keyframes uitkomen{0%{transform:scale(.3);opacity:0}100%{transform:none;opacity:1}}
+  @keyframes schaalweg{0%{opacity:1;transform:none}100%{opacity:0;transform:translateY(-8px)}}
+
+  /* het hok: zo groot als in de hoogte past, zodat de toetsen eronder in beeld blijven (groot op een staande tablet) */
+  .hok{display:block;width:clamp(240px, (100svh - 520px) * 1.103, 560px);max-width:100%;height:auto;margin:8px auto 0;overflow:visible;user-select:none;-webkit-user-select:none}
+  .hok text{font-family:Fredoka,ui-rounded,sans-serif;font-weight:600;text-anchor:middle;dominant-baseline:central}
+  .eischaal{fill:#FBEBD0;stroke:#B98E5A;stroke-width:1.4}
+  #kip,#poten{transition:transform .35s cubic-bezier(.3,.7,.3,1.2),opacity .1s}
+  #poten{opacity:0}
+  .hok.op #kip,.hok.op #poten{transform:translateY(-62px)}
+  .hok.op #poten{opacity:1;transition-delay:0s,.12s}
+  #vraagwolk{transition:opacity .2s}
+  .hok.op #vraagwolk,.hok.eind #vraagwolk{opacity:0}
+  #bordtal{font-size:42px;fill:var(--tekst)}
+  #bordtal.sterren{font-size:21px;fill:var(--geel);letter-spacing:1px}
+  #hartje{opacity:0}
+  .hok.tien #hartje{opacity:1}
+  .hok.goed #bord{animation:wip .5s}
+  @keyframes wip{40%{transform:translateY(-4px) rotate(-3deg)}}
+  #bord{transform-box:fill-box;transform-origin:50% 100%}
+
+  #hint{text-align:center;min-height:1.8em;font-family:Fredoka,ui-rounded,sans-serif;font-weight:600;font-size:18px;margin:6px 0 0}
+
+  /* tijdbalk: op tijd en in één keer goed = een kuiken */
+  #balk{display:flex;align-items:center;gap:10px;max-width:340px;margin:2px auto 0;height:32px}
+  #balk svg{width:26px;height:26px;flex:none;transition:filter .3s,opacity .3s}
+  #balk .spoor{flex:1;height:12px;border-radius:6px;background:var(--kaart2);overflow:hidden;box-shadow:inset 0 1px 2px rgba(0,0,0,.12)}
+  #balk .spoor i{display:block;height:100%;width:100%;border-radius:6px;background:linear-gradient(90deg,#F2B632,#FFE07A)}
+  #balk.weg svg{filter:grayscale(1);opacity:.4}
+  #balk.klaar{visibility:hidden}
+  #balk.verdiend svg{animation:pop .5s}
+
+  /* schermtoetsenbord: 0 t/m 4 en 5 t/m 9, één tik is het antwoord */
+  #vak{margin-top:8px;display:flex;justify-content:center}
+  #toetsen{--toets:56px;display:grid;grid-template-columns:repeat(5,1fr);gap:8px;width:min(calc(var(--toets) * 6.4), 100%)}
+  #toetsen[hidden]{display:none}
+  #toetsen.kort button:nth-child(n+6){display:none}   /* Tot 5: het antwoord is hooguit 4 */
+  #toetsen button{font-family:Fredoka,ui-rounded,sans-serif;font-size:calc(var(--toets) * .5);font-weight:600;height:var(--toets);border-radius:14px;
+    background:#FFF3CC;color:var(--tekst);border:1px solid var(--lijn);border-bottom:4px solid #D9B85E;
+    padding:0;cursor:pointer;touch-action:manipulation}
+  #toetsen button:hover{background:#FFEBB0}
+  #toetsen button:active{transform:translateY(2px);border-bottom-width:2px}
+  #toetsen button:disabled{opacity:.35;cursor:default;transform:none}
+  #toetsen button.fout{opacity:.5;border-color:var(--rood);color:var(--rood);background:#FBE9E7;animation:wiebel .25s 2}
+  #toetsen button.juist{opacity:1;background:#DDF3DE;border-color:var(--goed);border-bottom-color:#8DC495;box-shadow:0 0 0 4px var(--goed)}
+  #toetsen button.goed{background:var(--goed);color:#fff;border-color:var(--goed)}
+  /* hoge tablet: grotere toetsen */
+  @media (min-width:600px) and (min-height:902px){ #toetsen{--toets:clamp(56px, (100svh - 820px) / 3, 76px)} }
+
+  /* terugblik aan het eind van de ronde: elk ei als splitshuisje */
+  #terugblik{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;max-width:300px}   /* 6 per rij: twee nette rijen van 6 */
+  #terugblik[hidden]{display:none}
+  .huisje{width:44px;display:flex;flex-direction:column;align-items:center;font-family:Fredoka,ui-rounded,sans-serif;font-weight:600;animation:erin .3s ease-out both}
+  .huisje b{display:block;width:100%;text-align:center;background:var(--hok);color:#fff;border-radius:14px 14px 3px 3px;font-size:17px;line-height:24px}
+  .huisje span{display:flex;width:100%;border:1px solid var(--lijn);border-top:0;border-radius:0 0 6px 6px;background:var(--kaart2);overflow:hidden}
+  .huisje i{flex:1;font-style:normal;text-align:center;font-size:16px;line-height:24px}
+  .huisje i + i{border-left:1px solid var(--lijn);color:var(--goed);background:#E6F4E2}
+  .huisje svg{width:20px;height:20px;margin-top:2px}
+  .huisje .plek{height:22px}
+
+  @media (prefers-reduced-motion:reduce){
+    .ren svg,.ren .nieuw,.ren .nieuw .schaal,#toetsen button.fout,.huisje,#balk.verdiend svg,.teller.bump,.hok.goed #bord{animation:none}
+    #kip,#poten{transition:none}
+  }
+  @keyframes wiebel{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+  @keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.4) rotate(-10deg)}100%{transform:scale(1)}}
+  @keyframes erin{0%{transform:translateY(16px);opacity:0}100%{transform:none;opacity:1}}
+
+  /* te laag om onder elkaar te passen (hok 240 + toetsen ≈ 900px)? dan het hok links en de toetsen rechts */
+  @media (max-height:901px) and (min-width:600px){
+    .speelveld{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:24px;
+      grid-template-rows:1fr auto auto auto 1fr;
+      grid-template-areas:"hok ." "hok hint" "hok vak" "hok balk" "hok ."}
+    .speelveld .hok{grid-area:hok;width:clamp(240px, min((100svh - 250px) * 1.103, 100vw - 420px), 450px);margin:6px 0 0}
+    .speelveld #hint{grid-area:hint} .speelveld #vak{grid-area:vak;margin:4px 0 10px} .speelveld #balk{grid-area:balk;width:100%}
+    .speelveld #toetsen{--toets:clamp(48px, (100svh - 500px) / 3, 72px);width:min(calc(var(--toets) * 6), 100%)}
+  }
+
+  .knoppen[hidden]{display:none}
+  .knoppen{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:16px}
+  .knoppen button{font:inherit;font-size:14px;cursor:pointer;border:1px solid var(--tekst);background:var(--tekst);color:#fff;border-radius:8px;padding:7px 14px}
+  :focus-visible{outline:3px solid #5B8DEF;outline-offset:2px}
+
+  #uitslag{margin-top:18px;border-top:1px solid var(--lijn);padding-top:16px}
+  #uitslag h3{font-family:Fredoka,ui-rounded,sans-serif;font-weight:500;font-size:20px;margin:0 0 8px}
+  #uitslag p{margin:0 0 10px;font-size:15px}
+  #uitslag .sterren{color:var(--geel);font-size:26px;letter-spacing:3px}
+  #uitslag .sterren i{font-style:normal;color:var(--lijn)}
+  #uitslag button{font:inherit;font-size:15px;cursor:pointer;border-radius:8px;padding:7px 14px;margin:4px 8px 0 0;border:1px solid var(--tekst);background:var(--kaart);color:var(--tekst)}
+  #uitslag button.hoofd{background:var(--tekst);color:#fff}
+
+  h2.recordkop{font-family:Fredoka,ui-rounded,sans-serif;font-weight:500;font-size:20px;margin:30px 0 8px}
+  #records{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+  .record{background:var(--kaart);border:1px solid var(--lijn);border-radius:12px;padding:10px 12px;font-size:14px}
+  .record b{display:block;font-family:Fredoka,ui-rounded,sans-serif;font-size:17px;font-weight:600}
+  .record .sterren{color:var(--geel);font-size:18px;letter-spacing:2px}
+  .record .sterren i{font-style:normal;color:var(--lijn)}
+  .record svg{width:16px;height:16px;vertical-align:-3px}
+
+  footer{margin-top:28px;font-size:13px;color:var(--zacht)}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="kop">
+      <a class="terug" href="../" aria-label="Terug naar Ik oefen" title="Terug naar Ik oefen"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      <div class="koptekst">
+        <h1>Het Kippenhok</h1>
+        <p class="ondertitel">Hoeveel eieren liggen er onder de kip? Elk ei dat je in één keer goed hebt, wordt een kuiken.</p>
+      </div>
+    </div>
+  </header>
+
+  <div class="kaart">
+    <div class="leskop">
+      <div class="niveaus" id="niveaus"></div>
+      <div class="rechts">
+        <span class="teller" id="teller" title="kuikens deze ronde"><span id="tellerkuiken"></span><b id="kuikens">0</b><span class="reeks" id="reeks"></span></span>
+        <span id="voortgang">ei 1 van 12</span>
+      </div>
+    </div>
+
+    <div class="ren" id="ren" aria-label="jouw kuikens"></div>
+
+    <div class="speelveld">
+    <svg class="hok" id="hok" viewBox="0 0 320 290" role="img" aria-label="kippenhok">
+      <!-- gras -->
+      <rect x="0" y="188" width="320" height="102" rx="18" fill="var(--gras)"/>
+      <path d="M14 214 l4 -8 l3 8 M300 230 l4 -8 l3 8 M180 282 l4 -8 l3 8 M286 278 l4 -8 l3 8 M10 276 l4 -8 l3 8" fill="none" stroke="var(--gras2)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <!-- het hok -->
+      <rect x="44" y="78" width="232" height="126" fill="var(--hok)"/>
+      <g stroke="#000" stroke-opacity=".12" stroke-width="2">
+        <path d="M60 84 V204 M76 84 V204 M92 84 V204 M108 84 V204 M124 84 V204 M140 84 V204 M156 84 V204 M172 84 V204 M188 84 V204 M204 84 V204 M220 84 V204 M236 84 V204 M252 84 V204 M268 84 V204"/>
+      </g>
+      <rect x="248" y="84" width="28" height="120" fill="#000" opacity=".08"/>
+      <g fill="#4A2A1E" stroke="#FFF4DC" stroke-width="4">
+        <rect x="64" y="104" width="38" height="32" rx="3"/>
+        <rect x="218" y="104" width="38" height="32" rx="3"/>
+      </g>
+      <path d="M83 104 V136 M64 120 H102 M237 104 V136 M218 120 H256" stroke="#FFF4DC" stroke-width="3"/>
+      <path d="M134 204 V150 a26 26 0 0 1 52 0 V204 Z" fill="#3A2218" stroke="#FFF4DC" stroke-width="4"/>
+      <path d="M160 6 L304 86 H16 Z" fill="var(--hok2)"/>
+      <path d="M160 6 L304 86 H262 L160 30 Z" fill="#000" opacity=".12"/>
+      <path d="M18 85 L160 7 L302 85" fill="none" stroke="#FFF4DC" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+      <!-- bordje met het totaal -->
+      <g id="bord">
+        <rect x="122" y="32" width="76" height="52" rx="9" fill="#FFF7E0" stroke="#6B3A1E" stroke-width="3"/>
+        <circle cx="130" cy="40" r="2" fill="#6B3A1E"/><circle cx="190" cy="40" r="2" fill="#6B3A1E"/>
+        <text id="bordtal" x="160" y="60">7</text>
+        <!-- hartje bovenop het bordje (Maak/Samen 10), niet ernaast: dan past "10" er nog in -->
+        <path id="hartje" transform="translate(160 36) scale(1.35) translate(-188 -74)" d="M188 74 c-6 -4 -8 -7 -8 -10 a3.6 3.6 0 0 1 8 -1.6 a3.6 3.6 0 0 1 8 1.6 c0 3 -2 6 -8 10z" fill="#E0392B" stroke="#FFF7E0" stroke-width="1.5"/>
+      </g>
+      <!-- nest met de verstopte eieren -->
+      <ellipse cx="95" cy="266" rx="74" ry="17" fill="var(--stro)"/>
+      <path d="M30 262 l14 4 M52 274 l16 -3 M140 274 l14 -5 M150 260 l14 3 M88 280 l16 -2" stroke="#B9842A" stroke-width="2" stroke-linecap="round"/>
+      <!-- poten van de kip: achter de eieren, zodat je ze goed kunt tellen -->
+      <g id="poten" stroke="#F0A030" stroke-width="4" stroke-linecap="round" fill="none">
+        <path d="M82 272 V324 M74 328 l8 -4 l8 4 M112 272 V324 M104 328 l8 -4 l8 4"/>
+      </g>
+      <g id="onder"></g>
+      <!-- de eieren naast de kip -->
+      <g id="naast"></g>
+      <!-- kuikens van deze ronde (einde ronde) -->
+      <g id="rondekuikens"></g>
+      <!-- de kip -->
+      <g id="kip">
+        <path d="M50 222 C22 204 18 178 32 166 C40 186 52 196 66 204 Z" fill="#FFFDF7" stroke="#D8CBB4" stroke-width="2"/>
+        <path d="M44 214 C26 196 30 176 46 172 C48 188 56 198 68 206 Z" fill="#F6EFE2" stroke="#D8CBB4" stroke-width="2"/>
+        <ellipse cx="95" cy="236" rx="64" ry="42" fill="#FFFDF7" stroke="#D8CBB4" stroke-width="2"/>
+        <circle cx="154" cy="200" r="19" fill="#FFFDF7" stroke="#D8CBB4" stroke-width="2"/>
+        <ellipse cx="142" cy="212" rx="13" ry="14" fill="#FFFDF7"/>
+        <path d="M140 186 q1 -12 9 -8 q3 -11 11 -4 q7 -7 10 3 q-12 6 -30 9 z" fill="#E0392B"/>
+        <ellipse cx="170" cy="213" rx="4" ry="6.5" fill="#E0392B"/>
+        <path d="M171 195 L186 201 L171 207 Z" fill="#F2A93B"/>
+        <circle cx="160" cy="195" r="3.2" fill="#2B1E14"/><circle cx="161" cy="194" r="1" fill="#fff"/>
+        <path d="M58 232 C70 208 118 208 130 236 C118 254 78 258 58 232 Z" fill="#F3EBDD" stroke="#D8CBB4" stroke-width="2"/>
+        <path d="M76 236 q14 6 34 0 M84 246 q12 4 24 -2" fill="none" stroke="#D8CBB4" stroke-width="2" stroke-linecap="round"/>
+        <ellipse cx="95" cy="266" rx="67" ry="14" fill="#FFFDF7"/>
+        <path d="M29 268 q11 11 22 0 q11 11 22 0 q11 11 22 0 q11 11 22 0 q11 11 22 0 q11 11 22 0" fill="none" stroke="#D8CBB4" stroke-width="2" stroke-linecap="round"/>
+      </g>
+      <!-- vraagwolkje bij de kop van de kip -->
+      <g id="vraagwolk">
+        <path d="M188 186 l6 -10 h-12 z" fill="#fff" stroke="var(--lijn)" stroke-width="2" stroke-linejoin="round"/>
+        <circle cx="202" cy="164" r="17" fill="#fff" stroke="var(--lijn)" stroke-width="2"/>
+        <path d="M186 180 l9 -6" stroke="#fff" stroke-width="5"/>
+        <text x="202" y="165" font-size="24" fill="var(--hok)">?</text>
+      </g>
+    </svg>
+
+    <p id="hint"></p>
+    <div id="vak">
+      <div id="toetsen"></div>
+      <div id="terugblik" hidden></div>
+    </div>
+    <div id="balk"><span id="balkkuiken"></span><div class="spoor" title="Op tijd en in één keer goed = een kuiken"><i id="vulling"></i></div></div>
+    </div>
+
+    <div class="knoppen" id="knoppen"><button id="opnieuw">Begin opnieuw</button></div>
+    <div id="uitslag" hidden></div>
+  </div>
+
+  <h2 class="recordkop">Jouw records</h2>
+  <div id="records"></div>
+
+  <footer>Voortgang wordt op dit apparaat bewaard. Op het bordje van het hok staat hoeveel eieren er zijn. Een paar liggen naast de kip, de rest ligt onder de kip. Tik of typ hoeveel eieren de kip verstopt. Op tijd en in één keer goed? Dan komt er een kuiken uit het ei, en dat blijft in de ren wonen. Bij een vergissing tilt de kip zich even op, zodat je kunt tellen.</footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+var BEWAAR = "kippenhok-v1";
+var RONDE = 12;
+var NIVEAUS = [
+  {titel:"Tot 5"},
+  {titel:"Tot 10"},
+  {titel:"Samen 10"},
+  {titel:"Alles"}
+];
+var KLEUREN = ["#FFD23F","#FFC93C","#FFE27A","#F7B946","#FFF0B8","#E9A94A"];
+var NS = "http://www.w3.org/2000/svg";
+
+var data = {records:{}, niveau:0, ren:[], kuikens:0};
+function laad(){
+  try{ var s = localStorage.getItem(BEWAAR); if (s) data = JSON.parse(s); }catch(e){}
+  if (!data || typeof data !== "object") data = {};
+  if (!data.records) data.records = {};
+  if (!Array.isArray(data.ren)) data.ren = [];
+  if (typeof data.kuikens !== "number") data.kuikens = data.ren.length;
+  if (typeof data.niveau !== "number" || !NIVEAUS[data.niveau]) data.niveau = 0;
+}
+function bewaar(){ try{ localStorage.setItem(BEWAAR, JSON.stringify(data)); }catch(e){} }
+
+function tussen(a, b){ return a + Math.floor(Math.random()*(b-a+1)); }
+function $(id){ return document.getElementById(id); }
+function wachtTijd(){ return data.niveau === 3 ? 10000 : 8000; }
+
+/* ---------- tekeningen ---------- */
+// Een kuiken (eigen tekening, geen emoji). Met schaal: net uit het ei, de schaal valt eraf.
+function kuikenVorm(c, om){
+  return '<g' + (om ? ' transform="matrix(-1 0 0 1 24 0)"' : "") + '>'
+    + '<path d="M10 19.5v3.2M14 19.5v3.2" stroke="#E8892A" stroke-width="1.4" stroke-linecap="round"/>'
+    + '<ellipse cx="11.5" cy="14.6" rx="7.4" ry="6.2" fill="' + c + '"/>'
+    + '<circle cx="15.6" cy="8" r="4.7" fill="' + c + '"/>'
+    + '<path d="M14.6 3.6q.6-1.8 2-1.6M15.6 3.5q1.4-1.2 2.6-.2" fill="none" stroke="' + c + '" stroke-width="1.2" stroke-linecap="round"/>'
+    + '<ellipse cx="9.8" cy="15" rx="3.6" ry="2.4" fill="rgba(160,100,0,.18)"/>'
+    + '<circle cx="17" cy="7.3" r=".95" fill="#2B2018"/>'
+    + '<path d="M19.8 7.6l3 1.1-3 1.2z" fill="#F08A24"/></g>';
+}
+function kuiken(k, om, nieuw){
+  var c = KLEUREN[k % KLEUREN.length];
+  return '<svg viewBox="0 0 24 24" aria-hidden="true"' + (nieuw ? ' class="nieuw"' : "") + '>' + kuikenVorm(c, om)
+    + (nieuw ? '<path class="schaal" d="M4 16l2.5-2.5 2.5 2.5 3-3 3 3 2.5-2.5 2.5 2.5v1c0 4-3.5 6-8 6s-8-2-8-6z" fill="#FBEBD0" stroke="#B98E5A" stroke-width=".8"/>' : "")
+    + "</svg>";
+}
+function ei(x, y){
+  return '<g transform="translate(' + x + " " + y + ')"><path class="eischaal" d="M0 -12C6.4 -12 9.6 -2.5 9.6 3C9.6 8.8 5.4 12 0 12C-5.4 12 -9.6 8.8 -9.6 3C-9.6 -2.5 -6.4 -12 0 -12Z"/>'
+    + '<ellipse cx="-3.2" cy="-4" rx="2" ry="3.3" fill="#fff" opacity=".75"/></g>';
+}
+
+/* ---------- een ronde maken ---------- */
+// Een paar: n eieren in totaal (op het bordje), k ervan naast de kip. Antwoord: n − k.
+// Elk paar even vaak: een groter totaal kan op meer manieren, dus die komt vaker voor.
+function kiesTotaal(van, tot){
+  var som = 0, n;
+  for (n=van;n<=tot;n++) som += n - 1;
+  var r = Math.random() * som;
+  for (n=van;n<tot;n++){ r -= n - 1; if (r < 0) return n; }
+  return tot;
+}
+function trekPaar(niv){
+  var n;
+  if (niv === 0) n = kiesTotaal(2, 5);
+  else if (niv === 1) n = Math.random() < 0.75 ? kiesTotaal(6, 10) : kiesTotaal(3, 5);   // ~3 op 4 over wat nieuw is
+  else if (niv === 2) n = 10;                                                             // verliefde harten
+  else n = kiesTotaal(2, 10);
+  return {n:n, k:tussen(1, n-1)};
+}
+var vorigeRonde = [];
+function zelfde(a, b){ return a.n === b.n && a.k === b.k; }
+function maakRonde(){
+  var niv = data.niveau, vragen = [];
+  // een enkele keer een 0 (alle eieren liggen naast de kip), nooit als eerste
+  var nulOp = Math.random() < 0.4 ? tussen(3, RONDE-1) : -1;
+  for (var i=0;i<RONDE;i++){
+    var p = null;
+    for (var poging=0; poging<80; poging++){
+      p = trekPaar(niv);
+      if (i === nulOp) p.k = p.n;
+      var antw = p.n - p.k;
+      if (i === 0 && (antw < 1 || antw > 3)) continue;                         // eerst rustig inkomen
+      var vorige = vragen[i-1];
+      if (vorige && vorige.n - vorige.k === antw) continue;                    // niet twee keer hetzelfde antwoord
+      var recent = vorigeRonde.concat(vragen).slice(-5);                        // ook het eind van de vorige ronde
+      if (recent.some(function(q){ return zelfde(q, p); })) continue;          // geen recente paren
+      if (poging < 40 && vragen.some(function(q){ return zelfde(q, p); })) continue;
+      break;
+    }
+    vragen.push(p);
+  }
+  vorigeRonde = vragen;
+  return vragen;
+}
+
+/* ---------- toestand ---------- */
+var vragen = [], nr = 0, vraag = null, bezig = false, fout = false;
+var kuikens = 0, reeks = 0, balkTimer = null, opTimer = null, start = 0, uitslagen = [];
+
+function startBalk(){
+  var b = $("balk"), v = $("vulling");
+  b.classList.remove("weg", "klaar", "verdiend");
+  v.style.transition = "none"; v.style.width = "100%";
+  void v.offsetWidth;
+  v.style.transition = "width " + wachtTijd() + "ms linear"; v.style.width = "0%";
+  clearTimeout(balkTimer);
+  balkTimer = setTimeout(function(){ $("balk").classList.add("weg"); }, wachtTijd());
+}
+function stopBalk(){
+  clearTimeout(balkTimer);
+  var v = $("vulling"); v.style.width = getComputedStyle(v).width; v.style.transition = "none";
+}
+function tekenTeller(bump){
+  $("kuikens").textContent = kuikens;
+  $("reeks").textContent = reeks >= 3 ? "🔥" + reeks : "";
+  if (bump){ var t = $("teller"); t.classList.remove("bump"); void t.offsetWidth; t.classList.add("bump"); }
+}
+function tekenRen(nieuw){
+  // twee rijen, hooguit 40: de nieuwste kuikens; het totaal staat rechts onderin
+  var ren = $("ren"), per = Math.max(6, Math.floor((ren.clientWidth - 60) / 24));
+  var n = Math.min(40, 2 * per), van = Math.max(0, data.ren.length - n), html = "";
+  for (var i=van;i<data.ren.length;i++) html += kuiken(data.ren[i], i % 3 === 1, nieuw && i === data.ren.length - 1);
+  ren.innerHTML = html + '<span class="totaal" title="kuikens in de ren">' + (data.kuikens || "") + "</span>";
+}
+
+/* ---------- het hok ---------- */
+function zetKip(op){ $("hok").classList.toggle("op", op); }
+function tekenEieren(){
+  var onder = vraag.n - vraag.k, h = "";
+  // onder de kip: achterste rij hooguit 5, de rest ervoor (allebei in het midden van het nest)
+  var achter = Math.min(onder, 5), voor = onder - achter;
+  for (var i=0;i<achter;i++) h += ei(95 + (i - (achter-1)/2) * 21, 244);
+  for (var j=0;j<voor;j++) h += ei(95 + (j - (voor-1)/2) * 21, 262);
+  $("onder").innerHTML = h;
+  // naast de kip: rijen van 5, zoals op een rekenrek
+  h = "";
+  for (var m=0;m<vraag.k;m++) h += ei(197 + (m % 5) * 23, m < 5 ? 236 : 263);
+  $("naast").innerHTML = h;
+  $("rondekuikens").innerHTML = "";
+  $("bordtal").textContent = vraag.n;
+  $("bordtal").setAttribute("class", "");
+  $("hok").classList.toggle("tien", data.niveau === 2);
+  $("hok").setAttribute("aria-label", "Op het bordje staat " + vraag.n + ". Naast de kip liggen " + vraag.k + (vraag.k === 1 ? " ei." : " eieren."));
+}
+
+/* ---------- één ei ---------- */
+function toonVraag(){
+  vraag = vragen[nr];
+  bezig = true; fout = false; start = Date.now();
+  clearTimeout(opTimer);
+  $("hint").textContent = "";
+  $("voortgang").textContent = "ei " + (nr+1) + " van " + RONDE;
+  $("hok").classList.remove("goed", "eind");
+  zetKip(false);
+  tekenEieren();
+  Array.prototype.forEach.call($("toetsen").children, function(b){ b.disabled = false; b.className = ""; });
+  startBalk();
+}
+
+function kies(getal){
+  if (!bezig) return;
+  var knop = $("toetsen").children[getal];
+  if (!knop || knop.disabled) return;
+  if ($("toetsen").classList.contains("kort") && getal > 4) return;   // knop is er niet bij Tot 5
+  var juist = vraag.n - vraag.k;
+  if (getal === juist){ knop.className = "goed"; goed(); return; }
+  // fout: de kip tilt zich even op zodat je kunt tellen, het goede cijfer licht groen op
+  fout = true; reeks = 0; tekenTeller(false);
+  stopBalk(); $("balk").classList.add("weg");
+  knop.classList.remove("fout"); void knop.offsetWidth; knop.className = "fout";
+  Array.prototype.forEach.call($("toetsen").children, function(b, i){
+    if (i === juist) b.className = "juist"; else b.disabled = true;
+  });
+  zetKip(true);
+  clearTimeout(opTimer);
+  opTimer = setTimeout(function(){ if (bezig) zetKip(false); }, 2600);
+}
+function goed(){
+  bezig = false;
+  clearTimeout(opTimer);
+  stopBalk();
+  var verdiend = !fout && Date.now() - start <= wachtTijd();
+  uitslagen.push({n:vraag.n, k:vraag.k, kuiken:verdiend});
+  Array.prototype.forEach.call($("toetsen").children, function(b){ if (b.className !== "goed") b.disabled = true; });
+  zetKip(true);
+  var hok = $("hok"); hok.classList.remove("goed"); void hok.getBoundingClientRect(); hok.classList.add("goed");
+  if (verdiend){
+    kuikens++; reeks++; data.kuikens++;
+    data.ren.push(tussen(0, KLEUREN.length-1));
+    if (data.ren.length > 300) data.ren = data.ren.slice(-300);
+    bewaar();
+    tekenRen(true);
+    var b = $("balk"); b.classList.remove("verdiend"); void b.offsetWidth; b.classList.add("verdiend");
+  } else reeks = 0;
+  tekenTeller(verdiend);
+  $("hint").textContent = verdiend ? ["Goed zo!", "Super!", "Top!", "Knap!"][tussen(0,3)] : "Goed zo!";
+  // eerst de kip weer laten zitten, dan pas de nieuwe eieren
+  setTimeout(function(){
+    if (nr + 1 >= RONDE){ volgende(); return; }
+    zetKip(false);
+    setTimeout(volgende, 380);
+  }, 1300);
+}
+function volgende(){
+  nr++;
+  if (nr >= RONDE) klaar(); else toonVraag();
+}
+
+/* ---------- ronde ---------- */
+function startRonde(){
+  vragen = maakRonde(); nr = 0; kuikens = 0; reeks = 0; uitslagen = [];
+  $("uitslag").hidden = true;
+  $("toetsen").hidden = false;
+  $("toetsen").classList.toggle("kort", data.niveau === 0);
+  $("terugblik").hidden = true;
+  $("knoppen").hidden = false;
+  tekenTeller(false);
+  toonVraag();
+}
+function klaar(){
+  bezig = false; vraag = null;
+  clearTimeout(opTimer);
+  stopBalk(); $("balk").classList.add("klaar");
+  $("toetsen").hidden = true;
+  $("knoppen").hidden = true;
+  $("hint").textContent = "";
+
+  var sterren = 1;
+  if (kuikens >= 9) sterren = 2;
+  if (kuikens >= RONDE) sterren = 3;
+  var oud = data.records[data.niveau];
+  data.records[data.niveau] = {
+    sterren: Math.max(oud ? oud.sterren : 0, sterren),
+    kuikens: Math.max(oud ? oud.kuikens : 0, kuikens)
+  };
+  bewaar();
+  tekenRecords();
+
+  // in het hok: de sterren op het bordje, de kip staat op en de kuikens van deze ronde lopen voor het hok
+  var hok = $("hok");
+  hok.classList.remove("tien", "goed");
+  hok.classList.add("eind");
+  zetKip(true);
+  $("onder").innerHTML = ""; $("naast").innerHTML = "";
+  var bt = $("bordtal");
+  bt.innerHTML = "";
+  for (var z=1;z<=3;z++){ var ts = document.createElementNS(NS, "tspan"); ts.textContent = "★"; if (z > sterren) ts.setAttribute("fill", "#E2DAC0"); bt.appendChild(ts); }
+  bt.setAttribute("class", "sterren");
+  var h = "", plek = 0;
+  uitslagen.forEach(function(u, i){
+    if (!u.kuiken) return;
+    var x = 184 + (plek % 6) * 21, y = plek < 6 ? 222 : 252;
+    h += '<g transform="translate(' + x + " " + y + ') scale(1.15)">' + kuikenVorm(KLEUREN[i % KLEUREN.length], plek % 2 === 1) + "</g>";
+    plek++;
+  });
+  $("rondekuikens").innerHTML = h;
+  hok.setAttribute("aria-label", sterren + " sterren, " + kuikens + " kuikens deze ronde");
+
+  // terugblik: elk ei van deze ronde als splitshuisje (totaal, naast de kip, onder de kip)
+  var tb = $("terugblik");
+  tb.innerHTML = uitslagen.map(function(u, i){
+    return '<div class="huisje" style="animation-delay:' + (i * 0.06).toFixed(2) + 's"><b>' + u.n + "</b><span><i>" + u.k + "</i><i>" + (u.n - u.k) + "</i></span>"
+      + (u.kuiken ? kuiken(i, false, false) : '<div class="plek"></div>') + "</div>";
+  }).join("");
+  tb.hidden = false;
+
+  var st = "";
+  for (var k=1;k<=3;k++) st += k <= sterren ? "★" : "<i>★</i>";
+  var t = '<h3>Klaar! <span class="sterren">' + st + "</span></h3>";
+  t += "<p><b>" + kuikens + "</b> nieuwe kuikens in de ren.</p>";
+  if (sterren === 1) t += "<p>Twee sterren haal je met 9 kuikens, drie sterren met alle " + RONDE + ".</p>";
+  else if (sterren === 2) t += "<p>Twee sterren! Laat alle " + RONDE + " kuikens uitkomen voor drie sterren.</p>";
+  else t += "<p>Alle eieren goed, drie sterren. Wat een kuikens!</p>";
+  t += '<button class="hoofd" id="nogeens">Nog een keer</button>';
+  if (sterren >= 2 && NIVEAUS[data.niveau+1]) t += '<button id="verder">Verder: ' + NIVEAUS[data.niveau+1].titel + " →</button>";
+  var u = $("uitslag"); u.innerHTML = t; u.hidden = false;
+  $("nogeens").onclick = startRonde;
+  if ($("verder")) $("verder").onclick = function(){ data.niveau++; bewaar(); tekenNiveaus(); startRonde(); };
+}
+
+function tekenNiveaus(){
+  var box = $("niveaus"); box.innerHTML = "";
+  NIVEAUS.forEach(function(n, i){
+    var b = document.createElement("button");
+    b.textContent = n.titel;
+    if (i === data.niveau) b.className = "aan";
+    b.onclick = function(){ data.niveau = i; bewaar(); tekenNiveaus(); startRonde(); };
+    box.appendChild(b);
+  });
+}
+function tekenRecords(){
+  $("records").innerHTML = NIVEAUS.map(function(n, i){
+    var r = data.records[i], st = "";
+    for (var k=1;k<=3;k++) st += (r && r.sterren >= k) ? "★" : "<i>★</i>";
+    return '<div class="record"><b>' + n.titel + '</b><span class="sterren">' + st + "</span><br>"
+      + (r ? "beste: " + r.kuikens + " " + kuiken(0, false, false) : "nog niet gespeeld") + "</div>";
+  }).join("");
+}
+function tekenToetsen(){
+  var t = $("toetsen");
+  for (var i=0;i<=9;i++){
+    var b = document.createElement("button");
+    b.type = "button"; b.textContent = i; b.setAttribute("aria-label", i);
+    b.onclick = (function(g){ return function(){ kies(g); }; })(i);
+    t.appendChild(b);
+  }
+}
+
+/* ---------- echt toetsenbord: een cijfer is het antwoord ---------- */
+document.addEventListener("keydown", function(e){
+  if (!bezig || e.ctrlKey || e.metaKey || e.altKey) return;
+  if (/^[0-9]$/.test(e.key)){ e.preventDefault(); kies(+e.key); }
+});
+
+/* ---------- start ---------- */
+laad();
+$("balkkuiken").innerHTML = kuiken(0, false, false);
+$("tellerkuiken").innerHTML = kuiken(0, false, false);
+tekenToetsen();
+tekenNiveaus();
+tekenRecords();
+tekenRen(false);
+$("opnieuw").onclick = startRonde;
+window.addEventListener("resize", function(){ tekenRen(false); });
+startRonde();
+})();
+</script>
+</html>

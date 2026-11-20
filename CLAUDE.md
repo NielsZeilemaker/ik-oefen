@@ -14,6 +14,7 @@ Kleine oefenspelletjes voor kinderen (basisschoolleeftijd), live op https://ik-o
 | `klok/` | De Klokkentoren — klokkijken, van hele uren tot digitaal |
 | `geld/` | De Winkel — betalen en wisselgeld, tot €10/€20/€100 en met centen |
 | `spelling/` | Het Ballonnenfeest — spelling: ei/ij, au/ou, d/t, g/ch |
+| `splitsen/` | Het Kippenhok — splitsen tot 10: hoeveel eieren liggen onder de kip? |
 | `fonts/` | Zelf gehoste Fredoka (`fredoka.css` + woff2 + `OFL-fredoka.txt`) |
 | `robots.txt`, `sitemap.xml` | Vindbaarheid |
 
@@ -40,6 +41,14 @@ Kleine oefenspelletjes voor kinderen (basisschoolleeftijd), live op https://ik-o
 1. Nieuwe map met `index.html` volgens bovenstaande opbouw.
 2. Kaart op de startpagina (`index.html`) met eigen kleuren en inline SVG-tekeningetje.
 3. URL toevoegen aan `sitemap.xml`.
+
+## Het Kippenhok (splitsregels)
+
+- Op het bordje van het hok staat het totaal N (2–10); naast de kip liggen k eieren (k ≥ 1, rijen van 5), de rest ligt onder de kip. Het antwoord N − k is altijd één cijfer: toetsen 0–4 / 5–9 (bij Tot 5 alleen 0–4, want het antwoord is hooguit 4), één tik = antwoord, geen OK of ⌫.
+- Niveaus: Tot 5 → Tot 10 (~3 op 4 met N 6–10) → Samen 10 (N altijd 10, hartje op het bordje) → Alles. Elk paar even vaak, nooit twee keer hetzelfde antwoord achter elkaar, geen paar uit de laatste 5; antwoord 0 hooguit één keer per ronde; eerste vraag antwoord 1–3.
+- Goed: de kip staat op en je ziet de eieren eronder. Fout: de kip tilt zich even op om te tellen, het goede cijfer licht groen op en het kind tikt het aan. Geen uitleg, alleen een "?"-wolkje bij de kip.
+- Beloning: een **kuiken** dat blijvend in de ren loopt (hooguit 40 zichtbaar, totaal ernaast), op tijd (8 s, Alles 10 s) en in één keer goed. 12 eieren per ronde; ★ uitgespeeld, ★★ 9 kuikens, ★★★ alle 12. Einde ronde: elk ei als splitshuisje op de plek van het toetsenbord.
+- De poten van de kip staan achter de eieren, anders dekken ze de verstopte eieren af.
 
 ## De Rekentrein (rekenregels)
 
