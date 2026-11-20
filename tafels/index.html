@@ -2,6 +2,8 @@
 <html lang="nl">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <title>De Sterrenwacht — tafels oefenen</title>
 <meta name="description" content="Oefen de tafels van 1 tot en met 10 in De Sterrenwacht. Elke les wordt een sterrenbeeld. Gratis, zonder cookies, tracking of reclame.">
 <link rel="canonical" href="https://ik-oefen.nl/tafels/">
@@ -50,8 +52,13 @@
     min-height:100vh;
   }
   .wrap{max-width:860px;margin:0 auto}
-  .kop{display:grid;grid-template-columns:auto 1fr;column-gap:14px;align-items:center}
-  .kop .ondertitel{grid-column:2}
+  .kop{display:grid;grid-template-columns:auto 1fr;column-gap:14px;align-items:start}
+  .kop .terug{margin-top:calc(clamp(28px,6vw,40px) * .75 - 20px)}   /* midden op de regel van de titel */
+  /* lage schermhoogte (zelfde grens als de andere spellen): ondertitel naast de titel, scheelt een regel */
+  @media (max-height:901px) and (min-width:600px){
+    .koptekst{display:flex;flex-wrap:wrap;align-items:center;column-gap:18px}
+    .koptekst .ondertitel{flex:1 1 260px;max-width:440px;margin:0}
+  }
   .terug{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;color:var(--tekst);border:1px solid var(--lijn);background:var(--kaart);text-decoration:none;transition:background .15s,border-color .15s}
   .terug:hover{background:var(--kaart2);border-color:var(--tekst)}
 
@@ -162,8 +169,10 @@
   <header>
     <div class="kop">
       <a class="terug" href="../" aria-label="Terug naar Ik oefen" title="Terug naar Ik oefen"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-      <h1>De Sterrenwacht <span class="ster">✦</span></h1>
-      <p class="ondertitel">Oefen de tafels, dan gaat je hemel stralen.</p>
+      <div class="koptekst">
+        <h1>De Sterrenwacht <span class="ster">✦</span></h1>
+        <p class="ondertitel">Oefen de tafels, dan gaat je hemel stralen.</p>
+      </div>
     </div>
   </header>
 

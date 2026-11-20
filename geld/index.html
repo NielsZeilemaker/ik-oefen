@@ -2,6 +2,8 @@
 <html lang="nl">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <title>De Winkel — rekenen met geld</title>
 <meta name="description" content="Oefen rekenen met geld in De Winkel: betaal gepast en geef wisselgeld terug, tot €10, €20, €100 en met centen. Gratis, zonder cookies, tracking of reclame.">
 <link rel="canonical" href="https://ik-oefen.nl/geld/">
@@ -26,7 +28,10 @@
     --goed:#2F9E5B;
     --rood:#D9484F;
     --geel:#F2B632;
+    --e:1px;   /* schaal van geld, toonbank en het ding: 1px = gewone maat */
   }
+  /* hoog scherm (staande tablet): geld, toonbank en ding groeien mee met de hoogte, tot 1,3 keer */
+  @media (min-width:600px){ :root{--e:clamp(1px, 1px + (100svh - 880px) / 800, 1.3px)} }
   *{box-sizing:border-box}
   html,body{margin:0}
   body{
@@ -38,22 +43,27 @@
   }
   .wrap{max-width:860px;margin:0 auto}
   header{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:baseline;justify-content:space-between;margin-bottom:22px}
-  .kop{display:grid;grid-template-columns:auto 1fr;column-gap:14px;align-items:center}
-  .kop .ondertitel{grid-column:2}
+  .kop{display:grid;grid-template-columns:auto 1fr;column-gap:14px;align-items:start}
+  .kop .terug{margin-top:calc(clamp(28px,6vw,40px) * .75 - 20px)}   /* midden op de regel van de titel */
+  /* lage schermhoogte: ondertitel naast de titel, scheelt een regel */
+  @media (max-height:901px) and (min-width:600px){
+    .koptekst{display:flex;flex-wrap:wrap;align-items:center;column-gap:18px}
+    .koptekst .ondertitel{flex:1 1 260px;max-width:440px;margin:0}
+  }
   .terug{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;color:var(--tekst);border:1px solid var(--lijn);background:var(--kaart);text-decoration:none;transition:background .15s,border-color .15s}
   .terug:hover{background:var(--kaart2);border-color:var(--tekst)}
   h1{font-family:Fredoka,ui-rounded,system-ui,sans-serif;font-weight:600;font-size:clamp(28px,6vw,40px);margin:0}
   .ondertitel{margin:2px 0 0;font-size:14px;color:var(--zacht)}
 
   .kaart{background:var(--kaart);border:1px solid var(--lijn);border-radius:16px;padding:20px 18px;box-shadow:0 2px 0 rgba(58,42,34,.06)}
-  .leskop{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:6px}
-  .leskop h2{font-family:Fredoka,ui-rounded,sans-serif;font-weight:500;font-size:20px;margin:0}
-  .leskop .rechts{display:flex;align-items:baseline;gap:14px;font-size:13px;color:var(--zacht);white-space:nowrap}
+  /* één rij: niveauknoppen links, blije klanten en voortgang rechts (past het niet, dan zakken die eronder) */
+  .leskop{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-bottom:6px}
+  .leskop .rechts{display:flex;align-items:center;gap:14px;margin-left:auto;font-size:13px;color:var(--zacht);white-space:nowrap}
   .teller{font-family:Fredoka,ui-rounded,sans-serif;font-size:18px;font-weight:600;color:var(--tekst)}
   .teller.bump{animation:pop .45s}
   .teller .reeks{font-size:15px;color:#D9581E;margin-left:4px}
 
-  .niveaus{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+  .niveaus{display:contents}   /* knoppen doen mee in de rij van .leskop */
   .niveaus button{font:inherit;font-size:14px;cursor:pointer;border:1px solid var(--lijn);background:var(--kaart2);color:var(--tekst);border-radius:20px;padding:5px 14px}
   .niveaus button.aan{background:var(--tekst);color:#fff;border-color:var(--tekst)}
 
@@ -69,9 +79,9 @@
   .schap .nieuw{animation:erin .6s cubic-bezier(.3,1.6,.5,1)}
   @keyframes erin{0%{transform:translateY(-30px) scale(.4);opacity:0}100%{transform:none;opacity:1}}
 
-  .opdracht{display:flex;align-items:center;justify-content:center;gap:clamp(10px,3vw,22px);min-height:130px;flex-wrap:wrap;padding:12px 0 4px}
-  .ding{font-size:clamp(64px,18vw,84px);line-height:1;filter:drop-shadow(0 4px 0 rgba(0,0,0,.1))}
-  .prijs{position:relative;font-family:Fredoka,ui-rounded,sans-serif;font-weight:600;font-size:clamp(26px,7vw,34px);line-height:1;
+  .opdracht{display:flex;align-items:center;justify-content:center;gap:clamp(10px,3vw,22px);min-height:calc(130 * var(--e));flex-wrap:wrap;padding:12px 0 4px}
+  .ding{font-size:clamp(64px,18vw,calc(84 * var(--e)));line-height:1;filter:drop-shadow(0 4px 0 rgba(0,0,0,.1))}
+  .prijs{position:relative;font-family:Fredoka,ui-rounded,sans-serif;font-weight:600;font-size:clamp(26px,7vw,calc(34 * var(--e)));line-height:1;
     background:var(--geel);padding:10px 16px 12px 24px;border-radius:6px 12px 12px 6px;transform:rotate(-4deg);box-shadow:0 3px 0 rgba(0,0,0,.15);white-space:nowrap}
   .prijs::before{content:"";position:absolute;left:8px;top:50%;width:8px;height:8px;margin-top:-4px;border-radius:50%;background:var(--kaart)}
   .betaaldmet{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:14px;color:var(--zacht);font-weight:600}
@@ -82,10 +92,10 @@
   .soort:empty{visibility:hidden}
 
   /* toonbank: hier leg je het geld neer */
-  .toonbank{position:relative;margin:8px 0 0;min-height:112px;background:linear-gradient(var(--hout),var(--hout2));
+  .toonbank{position:relative;margin:2px 0 0;min-height:calc(112 * var(--e));background:linear-gradient(var(--hout),var(--hout2));
     border-radius:10px;padding:12px;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px;
     box-shadow:inset 0 -6px 0 rgba(0,0,0,.12)}
-  .toonbank:empty::before{content:"";width:70%;height:64px;border:3px dashed rgba(255,255,255,.45);border-radius:10px}
+  .toonbank:empty::before{content:"";width:70%;height:calc(64 * var(--e));border:3px dashed rgba(255,255,255,.45);border-radius:10px}
   .toonbank.te{animation:wiebel .25s 2}
   .toonbank.goed{box-shadow:inset 0 -6px 0 rgba(0,0,0,.12),0 0 0 4px var(--goed)}
   .toonbank .geld{cursor:pointer}
@@ -94,7 +104,7 @@
 
   /* portemonnee / kassala */
   .beurs{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:10px;margin-top:14px;padding:12px;
-    background:var(--kaart2);border-radius:14px;min-height:96px}
+    background:var(--kaart2);border-radius:14px;min-height:calc(96 * var(--e))}
   .beurs[hidden]{display:none}
   .beurs .geld{cursor:pointer;touch-action:manipulation}
   .beurs .geld:active{transform:translateY(2px) scale(.96)}
@@ -107,12 +117,12 @@
   .geld small{font-size:.42em;font-weight:500;margin-top:2px}
   .munt{border-radius:50%;width:var(--d);height:var(--d);font-size:calc(var(--d) * .4);
     background:radial-gradient(circle at 35% 30%,#FFF4C2,var(--m) 55%,var(--m2));box-shadow:inset 0 0 0 calc(var(--d) * .07) var(--m2),0 3px 0 rgba(0,0,0,.18)}
-  .munt.c10{--d:44px;--m:#E7C04F;--m2:#B38A1E}
-  .munt.c20{--d:48px;--m:#E7C04F;--m2:#B38A1E}
-  .munt.c50{--d:52px;--m:#E7C04F;--m2:#B38A1E}
-  .munt.e1{--d:54px;--m:#E9C25A;--m2:#B88A1F;background:radial-gradient(circle,#E3E6EA 0 52%,#B8BEC6 53% 56%,#E9C25A 57%,#C99A2E 100%)}
-  .munt.e2{--d:60px;--m:#C9CED6;--m2:#8E959F;background:radial-gradient(circle,#F0CD63 0 52%,#C99A2E 53% 56%,#DDE1E6 57%,#A7AEB8 100%)}
-  .briefje{width:84px;height:48px;border-radius:6px;font-size:22px;background:var(--b);color:#fff;text-shadow:0 1px 0 rgba(0,0,0,.25);
+  .munt.c10{--d:calc(44 * var(--e));--m:#E7C04F;--m2:#B38A1E}
+  .munt.c20{--d:calc(48 * var(--e));--m:#E7C04F;--m2:#B38A1E}
+  .munt.c50{--d:calc(52 * var(--e));--m:#E7C04F;--m2:#B38A1E}
+  .munt.e1{--d:calc(54 * var(--e));--m:#E9C25A;--m2:#B88A1F;background:radial-gradient(circle,#E3E6EA 0 52%,#B8BEC6 53% 56%,#E9C25A 57%,#C99A2E 100%)}
+  .munt.e2{--d:calc(60 * var(--e));--m:#C9CED6;--m2:#8E959F;background:radial-gradient(circle,#F0CD63 0 52%,#C99A2E 53% 56%,#DDE1E6 57%,#A7AEB8 100%)}
+  .briefje{width:calc(84 * var(--e));height:calc(48 * var(--e));border-radius:6px;font-size:calc(22 * var(--e));background:var(--b);color:#fff;text-shadow:0 1px 0 rgba(0,0,0,.25);
     box-shadow:inset 0 0 0 3px rgba(255,255,255,.35),0 3px 0 rgba(0,0,0,.18);position:relative;overflow:hidden}
   .briefje::after{content:"";position:absolute;right:-10px;top:-10px;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.18)}
   .briefje small{color:#fff}
@@ -122,9 +132,9 @@
   .briefje.e50{--b:#E58A2E}
   .briefje.e100{--b:#3FA36B}
   @media (max-width:420px){ .beurs{gap:8px;padding:10px 8px} .beurs .briefje{width:70px;height:44px;font-size:20px} }
-  .toonbank .munt.c10{--d:36px}.toonbank .munt.c20{--d:39px}.toonbank .munt.c50{--d:42px}
-  .toonbank .munt.e1{--d:44px}.toonbank .munt.e2{--d:48px}
-  .toonbank .briefje{width:70px;height:40px;font-size:18px}
+  .toonbank .munt.c10{--d:calc(36 * var(--e))}.toonbank .munt.c20{--d:calc(39 * var(--e))}.toonbank .munt.c50{--d:calc(42 * var(--e))}
+  .toonbank .munt.e1{--d:calc(44 * var(--e))}.toonbank .munt.e2{--d:calc(48 * var(--e))}
+  .toonbank .briefje{width:calc(70 * var(--e));height:calc(40 * var(--e));font-size:calc(18 * var(--e))}
 
   /* einde ronde: terugblik op de klanten van deze ronde */
   .eindster{font-size:clamp(48px,14vw,60px);line-height:1;color:var(--geel);letter-spacing:4px;text-shadow:0 3px 0 rgba(0,0,0,.12)}
@@ -148,6 +158,22 @@
   @media (prefers-reduced-motion:reduce){ .toonbank.te,.toonbank .geld.erin,.toonbank .klantje,.schap .nieuw,#balk.verdiend .gezicht,.teller.bump{animation:none} }
   @keyframes wiebel{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
   @keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.4) rotate(-10deg)}100%{transform:scale(1)}}
+
+  /* lagere schermen (ook telefoon): wat minder lucht, zodat toonbank en beurs samen in beeld zijn */
+  @media (max-height:880px){
+    header{margin-bottom:14px}
+    .schap{max-height:74px}   /* precies twee planken vol */
+    .opdracht{padding-top:4px}
+    .beurs{margin-top:10px}
+  }
+  /* te laag om alles onder elkaar te passen (≈ 760px nodig) maar breed genoeg: winkel links, toonbank en beurs rechts */
+  @media (max-height:759px) and (min-width:800px){
+    .speelveld{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:20px;align-items:start}
+    .winkel{margin-right:0;padding-right:0}
+    .kassa{padding-top:10px}
+    .toonbank{min-height:128px}   /* ruimte voor twee rijen geld, zodat de beurs niet verspringt */
+    .opdracht{gap:12px}   /* ding, prijs, pijl en briefje op één rij in de halve breedte */
+  }
 
   .knoppen[hidden]{display:none}
   .knoppen{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:16px}
@@ -175,32 +201,36 @@
   <header>
     <div class="kop">
       <a class="terug" href="../" aria-label="Terug naar Ik oefen" title="Terug naar Ik oefen"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-      <h1>De Winkel 🛒</h1>
-      <p class="ondertitel">Betaal gepast en geef wisselgeld. Elke blije klant zet iets nieuws in je schap.</p>
+      <div class="koptekst">
+        <h1>De Winkel 🛒</h1>
+        <p class="ondertitel">Betaal gepast en geef wisselgeld. Elke blije klant zet iets nieuws in je schap.</p>
+      </div>
     </div>
   </header>
 
   <div class="kaart">
-    <div class="niveaus" id="niveaus"></div>
     <div class="leskop">
-      <h2 id="titel">Tot €10</h2>
+      <div class="niveaus" id="niveaus"></div>
       <div class="rechts">
         <span class="teller" id="teller" title="blije klanten">😊 <b id="blij">0</b><span class="reeks" id="reeks"></span></span>
         <span id="voortgang">klant 1 van 10</span>
       </div>
     </div>
 
-    <div class="winkel">
-      <div class="luifel" aria-hidden="true"></div>
-      <div class="schap" id="schap" aria-label="jouw schap"></div>
-      <div class="soortrij"><span class="soort" id="soort"></span></div>
-      <div class="opdracht" id="opdracht" aria-live="polite"></div>
-      <div class="toonbank" id="toonbank" aria-label="toonbank: tik op geld om het terug te pakken"></div>
+    <div class="speelveld">
+      <div class="winkel">
+        <div class="luifel" aria-hidden="true"></div>
+        <div class="schap" id="schap" aria-label="jouw schap"></div>
+        <div class="soortrij"><span class="soort" id="soort"></span></div>
+        <div class="opdracht" id="opdracht" aria-live="polite"></div>
+      </div>
+      <div class="kassa">
+        <div class="toonbank" id="toonbank" aria-label="toonbank: tik op geld om het terug te pakken"></div>
+        <p id="hint"></p>
+        <div id="balk"><span class="gezicht" aria-hidden="true">😊</span><div class="spoor" title="Op tijd en in één keer goed = blije klant"><i id="vulling"></i></div></div>
+        <div class="beurs" id="beurs" aria-label="tik op geld om het neer te leggen"></div>
+      </div>
     </div>
-
-    <p id="hint"></p>
-    <div id="balk"><span class="gezicht" aria-hidden="true">😊</span><div class="spoor" title="Op tijd en in één keer goed = blije klant"><i id="vulling"></i></div></div>
-    <div class="beurs" id="beurs" aria-label="tik op geld om het neer te leggen"></div>
 
     <div class="knoppen" id="knoppen"><button id="opnieuw">Begin opnieuw</button></div>
     <div id="uitslag" hidden></div>
@@ -424,7 +454,6 @@ function startRonde(){
   $("uitslag").hidden = true;
   $("beurs").hidden = false;
   $("knoppen").hidden = false;
-  $("titel").textContent = NIVEAUS[data.niveau].titel;
   tekenBeurs();
   tekenTeller(false);
   toonKlant();

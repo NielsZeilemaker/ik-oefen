@@ -2,6 +2,8 @@
 <html lang="nl">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <title>De Klokkentoren — klokkijken oefenen</title>
 <meta name="description" content="Oefen klokkijken met De Klokkentoren: hele en halve uren, kwartieren, minuten en de digitale klok. Zet zelf de wijzers. Gratis, zonder cookies, tracking of reclame.">
 <link rel="canonical" href="https://ik-oefen.nl/klok/">
@@ -40,19 +42,24 @@
   }
   .wrap{max-width:860px;margin:0 auto}
   header{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:baseline;justify-content:space-between;margin-bottom:22px}
-  .kop{display:grid;grid-template-columns:auto 1fr;column-gap:14px;align-items:center}
-  .kop .ondertitel{grid-column:2}
+  .kop{display:grid;grid-template-columns:auto 1fr;column-gap:14px;align-items:start}
+  .kop .terug{margin-top:calc(clamp(28px,6vw,40px) * .75 - 20px)}   /* midden op de regel van de titel */
+  /* lage schermhoogte (zelfde grens als klok-naast-antwoorden): ondertitel naast de titel, scheelt een regel */
+  @media (max-height:901px) and (min-width:600px){
+    .koptekst{display:flex;flex-wrap:wrap;align-items:center;column-gap:18px}
+    .koptekst .ondertitel{flex:1 1 260px;max-width:440px;margin:0}
+  }
   .terug{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;color:var(--tekst);border:1px solid var(--lijn);background:var(--kaart);text-decoration:none;transition:background .15s,border-color .15s}
   .terug:hover{background:var(--kaart2);border-color:var(--tekst)}
   h1{font-family:Fredoka,ui-rounded,system-ui,sans-serif;font-weight:600;font-size:clamp(28px,6vw,40px);margin:0}
   .ondertitel{margin:2px 0 0;font-size:14px;color:var(--zacht)}
 
   .kaart{background:var(--kaart);border:1px solid var(--lijn);border-radius:16px;padding:20px 18px;box-shadow:0 2px 0 rgba(43,40,64,.06)}
-  .leskop{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:6px}
-  .leskop h2{font-family:Fredoka,ui-rounded,sans-serif;font-weight:500;font-size:20px;margin:0}
-  .leskop .rechts{display:flex;align-items:baseline;gap:14px;font-size:13px;color:var(--zacht);white-space:nowrap}
+  /* één rij: niveauknoppen links, munten en voortgang rechts (past het niet, dan zakken die eronder) */
+  .leskop{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-bottom:6px}
+  .leskop .rechts{display:flex;align-items:center;gap:14px;margin-left:auto;font-size:13px;color:var(--zacht);white-space:nowrap}
 
-  .niveaus{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+  .niveaus{display:contents}   /* knoppen doen mee in de rij van .leskop */
   .niveaus button{font:inherit;font-size:14px;cursor:pointer;border:1px solid var(--lijn);background:var(--kaart2);color:var(--tekst);border-radius:20px;padding:5px 14px}
   .niveaus button.aan{background:var(--tekst);color:#fff;border-color:var(--tekst)}
 
@@ -68,8 +75,27 @@
   .vraag .klein{font-size:15px}
 
   /* de toren */
-  /* groeit mee op een tablet (grote wijzerplaat = makkelijk draaien), maar past in de hoogte */
-  .toren{display:block;width:clamp(300px, (100svh - 330px) * .8, 460px);max-width:100%;height:auto;margin:0 auto;overflow:visible;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
+  .toren{display:block;width:clamp(300px, (100svh - 530px) * .806, 460px);max-width:100%;height:auto;margin:0 auto;overflow:visible;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
+  /* de klok zo groot als in de hoogte past, zodat de antwoordknoppen eronder in beeld blijven (groot op een staande tablet) */
+  /* te laag om onder elkaar te passen (klok 300 + knoppen ≈ 900px)? dan de klok links en vraag + antwoorden rechts */
+  @media (max-height:901px) and (min-width:600px){
+    .speelveld{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:24px;
+      grid-template-rows:1fr auto auto auto 1fr auto;
+      grid-template-areas:"toren ." "toren vraag" "toren hint" "toren antwoord" "toren ." "balk ."}
+    .speelveld .toren{grid-area:toren;width:clamp(260px, min((100svh - 300px) * .806, 100vw - 360px), 440px);margin:0}
+    .speelveld .vraag{grid-area:vraag} .speelveld #hint{grid-area:hint}
+    .speelveld #muntbalk{grid-area:balk;width:100%;margin-top:6px} .speelveld #antwoord{grid-area:antwoord;min-height:272px}
+    .speelveld .keuzes,.speelveld .keuzes.drie{grid-template-columns:1fr}
+    /* zet-vraag (geen keuzes): de vraag groot en midden naast de klok, geen leeg vak eronder */
+    .speelveld #antwoord:empty{min-height:0;margin:0}
+    .speelveld .vraag .tijd{font-size:clamp(30px,4.2vw,44px)} .speelveld .vraag .digi{font-size:clamp(34px,4.6vw,48px)}
+    .speelveld .vraag .wat{font-size:17px}
+  }
+  /* heel laag scherm: de keuzes in twee kolommen, anders passen ze niet naast de klok */
+  @media (max-height:700px) and (min-width:900px){
+    .speelveld .keuzes{grid-template-columns:1fr 1fr} .speelveld .keuzes.drie{grid-template-columns:1fr 1fr 1fr}
+    .speelveld #antwoord{min-height:128px}
+  }
   .toren .wijzerplaat{cursor:default}
   .toren.zet .wijzerplaat{cursor:grab}
   .toren.slepen .wijzerplaat{cursor:grabbing}
@@ -119,7 +145,13 @@
 
   /* antwoorden */
   #antwoord{min-height:128px;display:flex;align-items:center;justify-content:center;margin-top:8px}
-  .keuzes{display:grid;grid-template-columns:1fr 1fr;gap:10px;width:min(440px,100%)}
+  .keuzerij{display:flex;align-items:center;justify-content:center;gap:10px;width:min(500px,100%)}
+  .keuzes{display:grid;grid-template-columns:1fr 1fr;gap:10px;flex:1;min-width:0;max-width:440px}
+  .lees{flex:none;width:48px;height:48px;border-radius:50%;display:grid;place-items:center;padding:0;cursor:pointer;touch-action:manipulation;
+    background:var(--kaart);color:var(--tekst);border:1px solid var(--lijn);border-bottom:3px solid rgba(0,0,0,.2)}
+  .lees.bezig{background:var(--geel);border-color:var(--geel)}
+  .keuzes button.voor{outline:4px solid var(--geel);outline-offset:2px;background:#FFF3CF}
+  @media (prefers-reduced-motion:no-preference){ .keuzes button.voor{animation:pop .4s} }
   .keuzes.drie{grid-template-columns:1fr 1fr 1fr}
   .keuzes button{font-family:Fredoka,ui-rounded,sans-serif;font-weight:500;font-size:clamp(17px,4.6vw,21px);line-height:1.2;
     min-height:56px;padding:6px 10px;border-radius:12px;background:var(--kaart2);color:var(--tekst);
@@ -162,21 +194,23 @@
   <header>
     <div class="kop">
       <a class="terug" href="../" aria-label="Terug naar Ik oefen" title="Terug naar Ik oefen"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-      <h1>De Klokkentoren 🕰️</h1>
-      <p class="ondertitel">Lees de klok en draai zelf de grote wijzer. Elk goed antwoord laat een raampje branden.</p>
+      <div class="koptekst">
+        <h1>De Klokkentoren 🕰️</h1>
+        <p class="ondertitel">Lees de klok en draai zelf de grote wijzer. Elk goed antwoord laat een raampje branden.</p>
+      </div>
     </div>
   </header>
 
   <div class="kaart">
-    <div class="niveaus" id="niveaus"></div>
     <div class="leskop">
-      <h2 id="titel">Heel en half</h2>
+      <div class="niveaus" id="niveaus"></div>
       <div class="rechts">
         <span class="teller" id="teller" title="gouden munten"><i class="munt"></i><b id="munten">0</b><span class="reeks" id="reeks"></span></span>
         <span id="voortgang">vraag 1 van 12</span>
       </div>
     </div>
 
+    <div class="speelveld">
     <div class="vraag" id="vraag" aria-live="polite"></div>
 
     <svg class="toren" id="toren" viewBox="0 0 300 372" tabindex="0" role="img" aria-label="klok in de toren">
@@ -219,6 +253,7 @@
       <div class="balk" title="Goed voordat de balk leeg is = gouden munt"><i id="muntvulling"></i></div>
     </div>
     <div id="antwoord"></div>
+    </div>
 
     <div class="knoppen"><button id="opnieuw">Begin opnieuw</button></div>
     <div id="uitslag" hidden></div>
@@ -453,6 +488,7 @@ function startStand(t){
   return mod(t + (Math.random() < 0.5 ? -afstand : afstand), 720);
 }
 function toonVraag(){
+  stopVoorlezen();
   $("groteWijzer").classList.remove("wenk");
   vraag = vragen[nr];
   bezig = true;
@@ -498,10 +534,81 @@ function toonVraag(){
       opties.forEach(function(o){ html += '<button data-k="' + o + '">' + woorden(o) + '</button>'; });
     }
     toren.setAttribute("aria-label", "klok");
-    aw.innerHTML = '<div class="keuzes' + (opties.length === 3 ? " drie" : "") + '">' + html + '</div>';
-    Array.prototype.forEach.call(aw.querySelectorAll("button"), function(b){ b.onclick = function(){ kies(b); }; });
+    aw.innerHTML = '<div class="keuzerij">' + (stemNL() ? LEESKNOP : "") +
+      '<div class="keuzes' + (opties.length === 3 ? " drie" : "") + '">' + html + '</div></div>';
+    Array.prototype.forEach.call(aw.querySelectorAll(".keuzes button"), function(b){ b.onclick = function(){ kies(b); }; });
+    if (aw.querySelector(".lees")) aw.querySelector(".lees").onclick = leesVoor;
   }
   startMuntbalk();
+}
+
+/* ---------- voorlezen ---------- */
+// Op verzoek (🔊) leest de klok de keuzes één voor één voor; het knopje dat aan de beurt is licht geel op.
+// Alleen met een Nederlandse stem op het apparaat zelf; anders is er geen knop. De gouden balk wacht zolang.
+var LEESKNOP = '<button class="lees" type="button" aria-label="lees de antwoorden voor" title="lees voor">' +
+  '<svg viewBox="0 0 24 24" width="26" height="26" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/>' +
+  '<path d="M16 8.5a5 5 0 0 1 0 7M18.5 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>';
+var spraak = window.speechSynthesis || null, leesBeurt = 0, leesUiting = null, leesPauze = 0;
+function stemNL(){
+  if (!spraak || typeof SpeechSynthesisUtterance === "undefined") return null;
+  var nl = spraak.getVoices().filter(function(v){ return /^nl([-_]|$)/i.test(v.lang); });
+  return nl.filter(function(v){ return v.localService; })[0] || nl[0] || null;
+}
+if (spraak && spraak.addEventListener) spraak.addEventListener("voiceschanged", function(){
+  // stemmen laden soms pas later: zet de knop er alsnog bij
+  var rij = document.querySelector("#antwoord .keuzerij");
+  if (rij && !rij.querySelector(".lees") && stemNL() && bezig){
+    rij.insertAdjacentHTML("afterbegin", LEESKNOP); rij.querySelector(".lees").onclick = leesVoor;
+  }
+});
+// "15:30" als "15 uur 30", zodat de stem het als tijd uitspreekt
+function spreekbaar(tekst){ return tekst.replace(/^0?(\d+):0?(\d+)$/, function(m, u, mi){ return u + " uur" + (+mi ? " " + mi : ""); }); }
+function leesVoor(){
+  var stem = stemNL();
+  if (!stem || !bezig) return;
+  stopVoorlezen();
+  var beurt = ++leesBeurt, knoppen = $("antwoord").querySelectorAll(".keuzes button"), i = 0;
+  var lk = $("antwoord").querySelector(".lees"); if (lk) lk.classList.add("bezig");
+  pauzeerMuntbalk();
+  function volgendeOptie(){
+    if (beurt !== leesBeurt) return;
+    Array.prototype.forEach.call(knoppen, function(b){ b.classList.remove("voor"); });
+    while (i < knoppen.length && knoppen[i].disabled) i++;
+    if (i >= knoppen.length){ stopVoorlezen(); return; }
+    var knop = knoppen[i++], gedaan = false;
+    knop.classList.add("voor");
+    var u = new SpeechSynthesisUtterance(spreekbaar(knop.textContent));
+    u.voice = stem; u.lang = stem.lang; u.rate = 0.9;
+    var verder = function(){ if (gedaan) return; gedaan = true; setTimeout(volgendeOptie, 350); };
+    u.onend = verder; u.onerror = verder;
+    setTimeout(verder, 1500 + 120 * knop.textContent.length);   // vangnet als onend niet komt
+    leesUiting = u;                                               // bewaren: anders ruimt Chrome hem op zonder onend
+    spraak.speak(u);
+  }
+  volgendeOptie();
+}
+function stopVoorlezen(){
+  leesBeurt++;
+  if (spraak && (spraak.speaking || spraak.pending)) spraak.cancel();
+  leesUiting = null;
+  Array.prototype.forEach.call(document.querySelectorAll(".keuzes button.voor, .lees.bezig"), function(b){ b.classList.remove("voor", "bezig"); });
+  hervatMuntbalk();
+}
+function pauzeerMuntbalk(){
+  if (leesPauze || !bezig || $("muntbalk").classList.contains("weg")) return;
+  leesPauze = Date.now();
+  stopMuntbalk();
+}
+function hervatMuntbalk(){
+  if (!leesPauze) return;
+  vraagStart += Date.now() - leesPauze;                          // voorlezen telt niet mee voor de munt
+  leesPauze = 0;
+  if (!bezig) return;
+  var rest = Math.max(0, wachtTijd() - (Date.now() - vraagStart)), v = $("muntvulling");
+  void v.offsetWidth;
+  v.style.transition = "width " + rest + "ms linear"; v.style.width = "0%";
+  clearTimeout(muntTimer);
+  muntTimer = setTimeout(function(){ $("muntbalk").classList.add("weg"); }, rest);
 }
 
 /* ---------- antwoorden ---------- */
@@ -539,7 +646,8 @@ function kies(knop){
   if (!bezig || knop.disabled) return;
   var k = +knop.getAttribute("data-k"), s = vraag.soort;
   var goed = s === "digikies" ? k === vraag.t24 : k === mod(s === "digiwoord" ? vraag.t24 : vraag.t, 720);
-  var knoppen = $("antwoord").querySelectorAll("button");
+  stopVoorlezen();
+  var knoppen = $("antwoord").querySelectorAll(".keuzes button");
   if (goed){
     knop.classList.add("goed");
     Array.prototype.forEach.call(knoppen, function(b){ if (b !== knop) b.disabled = true; });
@@ -626,7 +734,7 @@ function toets(ev){
     return;
   }
   if (bezig && /^[1-4]$/.test(ev.key)){
-    var b = $("antwoord").querySelectorAll("button")[+ev.key - 1];
+    var b = $("antwoord").querySelectorAll(".keuzes button")[+ev.key - 1];
     if (b) kies(b);
   }
 }
@@ -635,13 +743,13 @@ function toets(ev){
 function startRonde(){
   vragen = maakRonde(); nr = 0; munten = 0; reeks = 0; fouten = 0; lastig = {};
   $("uitslag").hidden = true;
-  $("titel").textContent = NIVEAUS[data.niveau].titel;
   for (var i=0;i<RONDE;i++) $("raam"+i).setAttribute("class", "raam");
   tekenTeller(false);
   toonVraag();
 }
 
 function klaar(){
+  stopVoorlezen();
   bezig = false; vraag = null;
   stopMuntbalk();
   $("muntbalk").classList.add("klaar");

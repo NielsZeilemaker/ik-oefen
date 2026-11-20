@@ -2,6 +2,8 @@
 <html lang="nl">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <title>Het Ballonnenfeest — ei of ij, au of ou, d of t, g of ch</title>
 <meta name="description" content="Oefen spelling op Het Ballonnenfeest: kies ei of ij, au of ou, d of t en g of ch. Elk goed woord laat een ballon opstijgen. Gratis, zonder cookies, tracking of reclame.">
 <link rel="canonical" href="https://ik-oefen.nl/spelling/">
@@ -38,23 +40,28 @@
   }
   .wrap{max-width:860px;margin:0 auto}
   header{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:baseline;justify-content:space-between;margin-bottom:22px}
-  .kop{display:grid;grid-template-columns:auto 1fr;column-gap:14px;align-items:center}
-  .kop .ondertitel{grid-column:2}
+  .kop{display:grid;grid-template-columns:auto 1fr;column-gap:14px;align-items:start}
+  .kop .terug{margin-top:calc(clamp(28px,6vw,40px) * .75 - 20px)}   /* midden op de regel van de titel */
+  /* lage schermhoogte (zelfde grens als De Klokkentoren): ondertitel naast de titel, scheelt een regel */
+  @media (max-height:901px) and (min-width:600px){
+    .koptekst{display:flex;flex-wrap:wrap;align-items:center;column-gap:18px}
+    .koptekst .ondertitel{flex:1 1 260px;max-width:440px;margin:0}
+  }
   .terug{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;color:var(--tekst);border:1px solid var(--lijn);background:var(--kaart);text-decoration:none;transition:background .15s,border-color .15s}
   .terug:hover{background:var(--kaart2);border-color:var(--tekst)}
   h1{font-family:Fredoka,ui-rounded,system-ui,sans-serif;font-weight:600;font-size:clamp(28px,6vw,40px);margin:0}
   .ondertitel{margin:2px 0 0;font-size:14px;color:var(--zacht)}
 
   .kaart{background:var(--kaart);border:1px solid var(--lijn);border-radius:16px;padding:20px 18px;box-shadow:0 2px 0 rgba(31,53,80,.06)}
-  .leskop{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:6px}
-  .leskop h2{font-family:Fredoka,ui-rounded,sans-serif;font-weight:500;font-size:20px;margin:0}
-  .leskop .rechts{display:flex;align-items:baseline;gap:14px;font-size:13px;color:var(--zacht);white-space:nowrap}
+  /* één rij: niveauknoppen links, ballonnen en voortgang rechts (past het niet, dan zakken die eronder) */
+  .leskop{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-bottom:6px}
+  .leskop .rechts{display:flex;align-items:center;gap:14px;margin-left:auto;font-size:13px;color:var(--zacht);white-space:nowrap}
   .teller{font-family:Fredoka,ui-rounded,sans-serif;font-size:18px;font-weight:600;color:var(--tekst)}
   .teller.bump{animation:pop .45s}
   #tellerballon svg{width:14px;height:21px;vertical-align:-3px}
   .teller .reeks{font-size:15px;color:#D9581E;margin-left:4px}
 
-  .niveaus{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+  .niveaus{display:contents}   /* knoppen doen mee in de rij van .leskop */
   .niveaus button{font:inherit;font-size:14px;cursor:pointer;border:1px solid var(--lijn);background:var(--kaart2);color:var(--tekst);border-radius:20px;padding:5px 14px}
   .niveaus button.aan{background:var(--tekst);color:#fff;border-color:var(--tekst)}
 
@@ -93,6 +100,16 @@
   .keuze{font-family:Fredoka,ui-rounded,sans-serif;font-weight:600;font-size:clamp(34px,10vw,44px);min-width:clamp(120px,36vw,150px);
     padding:10px 18px 14px;border-radius:18px;border:0;cursor:pointer;touch-action:manipulation;color:var(--tekst);
     background:#FFF3C9;box-shadow:0 6px 0 #E0C778}
+  /* hoog scherm (staande tablet): plaatje, woord en knoppen groeien mee met de hoogte.
+     --extra is 0 tot 860px hoog en groeit tot 300px; vaste min-heights, dus niets verspringt. */
+  @media (min-width:600px){
+    .kaart{--extra:clamp(0px, 100svh - 860px, 300px)}
+    .plaatjerij{min-height:calc(118px + var(--extra) * .3)}
+    .plaatje{font-size:calc(92px + var(--extra) * .27)}
+    .woord{min-height:calc(76px + var(--extra) * .14);font-size:calc(52px + var(--extra) * .1)}
+    .keuzes{min-height:calc(86px + var(--extra) * .12)}
+    .keuze{font-size:calc(44px + var(--extra) * .08);min-width:calc(150px + var(--extra) * .25)}
+  }
   .keuze:active{transform:translateY(3px);box-shadow:0 3px 0 #E0C778}
   .keuze:disabled{opacity:.35;cursor:default;transform:none}
   .keuze.juist{background:#DDF3DE;box-shadow:0 6px 0 #9BCB9F;outline:4px solid var(--goed);outline-offset:3px}
@@ -144,15 +161,16 @@
       <a class="terug" href="../" aria-label="Terug naar alle spellen">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
       </a>
-      <h1>Het Ballonnenfeest</h1>
-      <p class="ondertitel">Kies de goede letters. Elk woord dat in één keer goed is, laat een ballon opstijgen.</p>
+      <div class="koptekst">
+        <h1>Het Ballonnenfeest</h1>
+        <p class="ondertitel">Kies de goede letters. Elk woord dat in één keer goed is, laat een ballon opstijgen.</p>
+      </div>
     </div>
   </header>
 
   <div class="kaart">
-    <div class="niveaus" id="niveaus"></div>
     <div class="leskop">
-      <h2 id="titel">ei of ij</h2>
+      <div class="niveaus" id="niveaus"></div>
       <div class="rechts">
         <span class="teller" id="teller" title="ballonnen deze ronde"><span id="tellerballon"></span> <b id="ballonnen">0</b><span class="reeks" id="reeks"></span></span>
         <span id="voortgang">woord 1 van 12</span>
@@ -386,7 +404,6 @@ function startRonde(){
   $("uitslag").hidden = true;
   $("keuzes").hidden = false;
   $("knoppen").hidden = false;
-  $("titel").textContent = NIVEAUS[data.niveau].titel;
   tekenTeller(false);
   toonWoord();
 }

@@ -2,6 +2,8 @@
 <html lang="nl">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <title>De Berenkaart — provincies oefenen</title>
 <meta name="description" content="Leer de provincies van Nederland met De Berenkaart: zoek ze op de kaart of noem ze bij naam en verdien beertjes. Gratis, zonder cookies, tracking of reclame.">
 <link rel="canonical" href="https://ik-oefen.nl/provincies/">
@@ -33,8 +35,13 @@
   }
   .wrap{max-width:860px;margin:0 auto}
   header{margin-bottom:18px}
-  .kop{display:grid;grid-template-columns:auto 1fr;column-gap:14px;align-items:center}
-  .kop .ondertitel{grid-column:2}
+  .kop{display:grid;grid-template-columns:auto 1fr;column-gap:14px;align-items:start}
+  .kop .terug{margin-top:calc(clamp(28px,6vw,40px) * .75 - 20px)}   /* midden op de regel van de titel */
+  /* lage schermhoogte (zelfde grens als de andere spellen): ondertitel naast de titel, scheelt een regel */
+  @media (max-height:901px) and (min-width:600px){
+    .koptekst{display:flex;flex-wrap:wrap;align-items:center;column-gap:18px}
+    .koptekst .ondertitel{flex:1 1 260px;max-width:440px;margin:0}
+  }
   .terug{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;color:var(--tekst);border:1px solid var(--lijn);background:var(--kaart);text-decoration:none;transition:background .15s,border-color .15s}
   .terug:hover{background:#F4E8CC;border-color:var(--tekst)}
   h1{font-family:Fredoka,ui-rounded,system-ui,sans-serif;font-weight:600;font-size:clamp(28px,6vw,40px);margin:0}
@@ -49,7 +56,9 @@
   #hint b{color:var(--fout);font-weight:600}
   .herkansing{display:inline-block;font-size:12px;border:1px solid var(--honing);color:#9A6412;border-radius:20px;padding:0 8px}
 
-  #kaart{display:block;width:100%;height:auto;max-height:76vh;margin:4px auto 0;touch-action:manipulation;user-select:none;-webkit-user-select:none}
+  /* de kaart zo groot als in de hoogte past, zodat namen, beertjes en knop eronder in beeld blijven (staande tablet) */
+  #kaart{display:block;width:clamp(420px, (100svh - 590px) * 1.4, 100%);max-width:100%;height:auto;margin:4px auto 0;touch-action:manipulation;user-select:none;-webkit-user-select:none}
+  @media (max-width:560px){ #kaart{width:100%} }   /* telefoon: kaart vult de breedte, vraag en namen plakken boven en onder */
   .prov path{fill:var(--land);stroke:var(--tekst);stroke-width:1.6;stroke-linejoin:round;fill-rule:evenodd;transition:fill .25s}
   .prov{cursor:pointer;outline:none;-webkit-tap-highlight-color:transparent}
   @media (hover:hover){#kaart:not(.welke) .prov:hover path{fill:#F4E8CC}}
@@ -121,14 +130,31 @@
   #plankleeg{font-size:14px;color:var(--zacht);align-self:end;grid-column:1/-1}
   #plankmeer{font-size:14px;color:var(--zacht);margin:6px 0 0}
   footer{margin-top:26px;font-size:13px;color:var(--zacht)}
+
+  /* liggend scherm dat te laag is om onder elkaar te passen: kaart links (zo hoog als het scherm), al het andere rechts */
+  @media (max-height:1000px) and (min-width:700px) and (orientation:landscape){
+    .wrap{max-width:1300px}
+    .vel{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:8px;   /* de kaart heeft zelf al rand voor de namen */
+     align-items:start;
+      grid-template-rows:auto auto auto auto auto 1fr;
+      grid-template-areas:"kaart modus" "kaart vraag" "kaart namen" "kaart beren" "kaart uitslag" "kaart knoppen"}
+    #kaart{grid-area:kaart;width:clamp(300px, min((100svh - 150px) * 1.4, 100vw - 400px), 960px);margin:0}
+    .modus{grid-area:modus} #berenrij{grid-area:beren;width:100%} #uitslag{grid-area:uitslag}
+    .knoppen{grid-area:knoppen}
+    .vraagbalk{grid-area:vraag;position:static}
+    #vraag{font-size:clamp(24px,2.6vw,34px);min-height:2.4em}   /* ruimte voor twee regels: niets verspringt */
+    #namen{grid-area:namen;position:static;border-top:0;padding-top:0}
+  }
 </style>
 
 <div class="wrap">
   <header>
     <div class="kop">
       <a class="terug" href="../" aria-label="Terug naar Ik oefen" title="Terug naar Ik oefen"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-      <h1>De Berenkaart</h1>
-      <p class="ondertitel">Zoek de provincies op de kaart, of noem ze bij naam, en verdien beertjes.</p>
+      <div class="koptekst">
+        <h1>De Berenkaart</h1>
+        <p class="ondertitel">Zoek de provincies op de kaart, of noem ze bij naam, en verdien beertjes.</p>
+      </div>
     </div>
   </header>
 
@@ -363,10 +389,13 @@ function volgende(){
   zetHint(v.herkansing ? '<span class="herkansing">herkansing</span>' : "");
 }
 // op een kleine telefoon kan de knipperende provincie buiten beeld vallen: schuif hem tussen vraag en namen
+// (staan vraag en namen naast de kaart, dan gewoon binnen het scherm)
 function haalInBeeld(naam){
   var r = groep[naam].getBoundingClientRect();
-  var boven = document.querySelector(".vraagbalk").getBoundingClientRect().bottom;
-  var onder = document.getElementById("namen").getBoundingClientRect().top;
+  var namen = document.getElementById("namen").getBoundingClientRect();
+  var naast = namen.left >= document.getElementById("kaart").getBoundingClientRect().right;
+  var boven = naast ? 0 : document.querySelector(".vraagbalk").getBoundingClientRect().bottom;
+  var onder = naast ? window.innerHeight : namen.top;
   if (r.top < boven || r.bottom > onder){
     var glad = !window.matchMedia("(prefers-reduced-motion:reduce)").matches;
     window.scrollBy({top:(r.top + r.bottom)/2 - (boven + onder)/2, behavior:glad ? "smooth" : "auto"});

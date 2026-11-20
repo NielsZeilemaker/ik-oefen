@@ -2,6 +2,8 @@
 <html lang="nl">
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <title>De Rekentrein — plussen en minnen tot 100</title>
 <meta name="description" content="Oefen plussen en minnen tot 20, 50, 100 of 1000 met De Rekentrein: het antwoord rijdt mee naar de volgende som. Gratis, zonder cookies, tracking of reclame.">
 <link rel="canonical" href="https://ik-oefen.nl/rekenen/">
@@ -36,19 +38,24 @@
   }
   .wrap{max-width:860px;margin:0 auto}
   header{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:baseline;justify-content:space-between;margin-bottom:22px}
-  .kop{display:grid;grid-template-columns:auto 1fr;column-gap:14px;align-items:center}
-  .kop .ondertitel{grid-column:2}
+  .kop{display:grid;grid-template-columns:auto 1fr;column-gap:14px;align-items:start}
+  .kop .terug{margin-top:calc(clamp(28px,6vw,40px) * .75 - 20px)}   /* midden op de regel van de titel */
+  /* lage schermhoogte (zelfde grens als in de andere spellen): ondertitel naast de titel, scheelt een regel */
+  @media (max-height:901px) and (min-width:600px){
+    .koptekst{display:flex;flex-wrap:wrap;align-items:center;column-gap:18px}
+    .koptekst .ondertitel{flex:1 1 260px;max-width:440px;margin:0}
+  }
   .terug{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;color:var(--tekst);border:1px solid var(--lijn);background:var(--kaart);text-decoration:none;transition:background .15s,border-color .15s}
   .terug:hover{background:var(--kaart2);border-color:var(--tekst)}
   h1{font-family:Fredoka,ui-rounded,system-ui,sans-serif;font-weight:600;font-size:clamp(28px,6vw,40px);margin:0}
   .ondertitel{margin:2px 0 0;font-size:14px;color:var(--zacht)}
 
   .kaart{background:var(--kaart);border:1px solid var(--lijn);border-radius:16px;padding:20px 18px;box-shadow:0 2px 0 rgba(35,49,63,.06)}
-  .leskop{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:6px}
-  .leskop h2{font-family:Fredoka,ui-rounded,sans-serif;font-weight:500;font-size:20px;margin:0}
+  /* één rij: niveauknoppen links, munten en voortgang rechts (past het niet, dan zakken die eronder) */
+  .leskop{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-bottom:6px}
   .leskop span{font-size:13px;color:var(--zacht);white-space:nowrap}
 
-  .niveaus{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px}
+  .niveaus{display:contents}   /* knoppen doen mee in de rij van .leskop */
   .niveaus button{font:inherit;font-size:14px;cursor:pointer;border:1px solid var(--lijn);background:var(--kaart2);color:var(--tekst);border-radius:20px;padding:5px 14px}
   .niveaus button.aan{background:var(--tekst);color:#fff;border-color:var(--tekst)}
 
@@ -146,7 +153,7 @@
   .teller .munt{font-size:20px}
   .teller.bump{animation:muntpop .45s}
   .leskop .reeks{font-size:15px;color:#D9581E;font-weight:600;margin-left:4px}
-  .leskop .rechts{display:flex;align-items:baseline;gap:14px}
+  .leskop .rechts{display:flex;align-items:center;gap:14px;margin-left:auto}
   #lijn .as{stroke:var(--tekst);stroke-width:2;stroke-linecap:round}
   #lijn .boog{fill:none;stroke:#4A3FB0;stroke-width:3;stroke-linecap:round}
   #lijn .sprong{font-family:Fredoka,ui-rounded,sans-serif;font-weight:600;font-size:17px;fill:#4A3FB0;text-anchor:middle}
@@ -160,13 +167,29 @@
   .knoppen label{font-size:14px;display:flex;align-items:center;gap:6px;cursor:pointer;margin-left:auto}
 
   .werkvlak{display:flex;justify-content:center;margin-top:14px}
-  #toetsen{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:min(260px,100%)}
-  #toetsen button{font-family:Fredoka,ui-rounded,sans-serif;font-size:24px;font-weight:500;height:54px;border-radius:12px;
+  /* toetsen zo groot als in de hoogte past (groot op een staande tablet, nooit kleiner dan 44px), zodat OK in beeld blijft */
+  #toetsen{--toets:clamp(44px, (100svh - 600px) / 4, 64px);
+    display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:min(calc(var(--toets) * 4.8),100%)}
+  #toetsen button{font-family:Fredoka,ui-rounded,sans-serif;font-size:24px;font-weight:500;height:var(--toets);border-radius:12px;
     background:var(--kaart2);color:var(--tekst);border:1px solid var(--lijn);border-bottom:4px solid rgba(0,0,0,.2);
     padding:0;cursor:pointer;touch-action:manipulation}
   #toetsen button:hover{background:#E8DFCB}
   #toetsen button:active{transform:translateY(2px);border-bottom-width:2px}
   #toetsen .ok{background:var(--geel);border-color:transparent;border-bottom-color:#B9861A}
+
+  /* te laag om onder elkaar te passen (trein + hulp + toetsen ≈ 780px)? dan de trein links en de toetsen rechts;
+     pas vanaf 800px breed, anders wordt de trein naast de toetsen te klein */
+  @media (max-height:760px) and (min-width:800px){
+    .speelveld{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:24px;align-items:center;
+      grid-template-areas:"spoor toetsen" "hint toetsen" "hulp toetsen"}
+    .speelveld .spoor{grid-area:spoor;margin-right:0;padding-right:0;container-type:inline-size}
+    .speelveld #hint{grid-area:hint} .speelveld #hulpvak{grid-area:hulp}
+    .speelveld .werkvlak{grid-area:toetsen;margin:0}
+    .speelveld #toetsen{--toets:clamp(44px, (100svh - 260px) / 4.4, 64px);width:calc(var(--toets) * 4.8)}
+    /* de trein krimpt mee met de smallere kolom (zonder container-eenheden: de gewone maat) */
+    .speelveld .wagon{font-size:min(52px, 10.4cqw)} .speelveld .teken{font-size:min(46px, 9.2cqw)}
+    .speelveld .som.groot .wagon{font-size:min(46px, 8.6cqw)} .speelveld .som.groot .teken{font-size:min(40px, 7.4cqw)}
+  }
 
   .meters{display:flex;flex-wrap:wrap;gap:6px 22px;margin-top:18px;font-size:14px;color:var(--zacht);justify-content:center}
   .meters b{font-family:Fredoka,ui-rounded,sans-serif;font-size:17px;font-weight:600;color:var(--tekst)}
@@ -192,21 +215,23 @@
   <header>
     <div class="kop">
       <a class="terug" href="../" aria-label="Terug naar Ik oefen" title="Terug naar Ik oefen"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-      <h1>De Rekentrein 🚂</h1>
-      <p class="ondertitel">Het antwoord haakt aan en rijdt mee naar de volgende som.</p>
+      <div class="koptekst">
+        <h1>De Rekentrein 🚂</h1>
+        <p class="ondertitel">Het antwoord haakt aan en rijdt mee naar de volgende som.</p>
+      </div>
     </div>
   </header>
 
   <div class="kaart">
-    <div class="niveaus" id="niveaus"></div>
     <div class="leskop">
-      <h2 id="titel">Tot 100</h2>
+      <div class="niveaus" id="niveaus"></div>
       <div class="rechts">
         <span class="teller" id="teller" title="gouden munten"><i class="munt"></i><b id="munten">0</b><span class="reeks" id="reeks"></span></span>
         <span id="voortgang">som 1 van 20</span>
       </div>
     </div>
 
+    <div class="speelveld">
     <div class="spoor"><div class="som" id="som" aria-live="polite"></div></div>
     <p id="hint"></p>
     <div id="hulpvak">
@@ -219,6 +244,7 @@
     </div>
 
     <div class="werkvlak"><div id="toetsen"></div></div>
+    </div>
 
     <div class="meters">
       <div>tijd <b id="klok">0:00</b></div>
@@ -516,7 +542,6 @@ function startRonde(){
   verbergLijn(); planHulp(); startMuntbalk();
   clearInterval(klokTimer); klokTimer = null;
   document.getElementById("klok").textContent = "0:00";
-  document.getElementById("titel").textContent = NIVEAUS[data.niveau].titel;
   document.getElementById("uitslag").hidden = true;
   zetHint("");
   var el = document.getElementById("som");

@@ -17,6 +17,7 @@ Kleine oefenspelletjes voor kinderen (basisschoolleeftijd), live op https://ik-o
 | `splitsen/` | Het Kippenhok — splitsen tot 10: hoeveel eieren liggen onder de kip? |
 | `fonts/` | Zelf gehoste Fredoka (`fredoka.css` + woff2 + `OFL-fredoka.txt`) |
 | `robots.txt`, `sitemap.xml` | Vindbaarheid |
+| `favicon.svg`, `apple-touch-icon.png` | Icoon van de site |
 
 ## Harde regels
 
@@ -34,6 +35,7 @@ Kleine oefenspelletjes voor kinderen (basisschoolleeftijd), live op https://ik-o
 - Moet werken op telefoonbreedte (390px) zonder horizontaal scrollen. Vermijd verspringende layout: reserveer ruimte voor elementen die later verschijnen.
 - `<head>`-meta per pagina: `description`, `canonical` (`https://ik-oefen.nl/<map>/`) en Open Graph (`og:title`, `og:description`, `og:url`, `og:locale nl_NL`).
 - Elke pagina begint met `<!doctype html>` en `<html lang="nl">` (geen quirks-modus).
+- Favicon op elke pagina, vóór `<title>`: `<link rel="icon" href="/favicon.svg" type="image/svg+xml">` en `<link rel="apple-touch-icon" href="/apple-touch-icon.png">` (oranje vlak met witte ster; de PNG is 180×180 zonder ronde hoeken, iOS rondt zelf af).
 - `hidden` werkt niet op `<svg>`; verberg een omhullende `<div>`.
 
 ## Nieuw spel toevoegen
@@ -41,6 +43,7 @@ Kleine oefenspelletjes voor kinderen (basisschoolleeftijd), live op https://ik-o
 1. Nieuwe map met `index.html` volgens bovenstaande opbouw.
 2. Kaart op de startpagina (`index.html`) met eigen kleuren en inline SVG-tekeningetje.
 3. URL toevoegen aan `sitemap.xml`.
+4. Het onderwerp toevoegen aan de opsomming in `description` én `og:description` van de startpagina ("rekenen, splitsen, tafels, …").
 
 ## Het Kippenhok (splitsregels)
 
@@ -50,6 +53,11 @@ Kleine oefenspelletjes voor kinderen (basisschoolleeftijd), live op https://ik-o
 - Beloning: een **kuiken** dat blijvend in de ren loopt (hooguit 40 zichtbaar, totaal ernaast), op tijd (8 s, Alles 10 s) en in één keer goed. 12 eieren per ronde; ★ uitgespeeld, ★★ 9 kuikens, ★★★ alle 12. Einde ronde: elk ei als splitshuisje op de plek van het toetsenbord.
 - De poten van de kip staan achter de eieren, anders dekken ze de verstopte eieren af.
 
+## De Berenkaart (layout)
+
+- De kaart is zo groot als in de hoogte past (X=590). Op een liggend scherm tot 1000px hoog en vanaf 700px breed: kaart links, de rest rechts, zonder plakken en zonder `haalInBeeld`-scroll. De lege marges van de kaart zijn voor de namen met lijntjes: niet wegknippen.
+- De Letterhof en De Sterrenwacht hebben geen niveauknoppen: de lestitel blijft staan. Alles past ook op 1366×650; alleen de kop schaalt mee.
+
 ## De Rekentrein (rekenregels)
 
 - Ketting: elke som gebruikt de laatste twee getallen (`a op b`), het antwoord rijdt mee naar de volgende som.
@@ -57,6 +65,7 @@ Kleine oefenspelletjes voor kinderen (basisschoolleeftijd), live op https://ik-o
 - Om de 4–6 sommen stapt een vers getal in (bordje "nieuw!"), en recente paren worden vermeden om rondjes te doorbreken.
 - Getallenlijn-hulp: verschijnt na 8 s zonder invoer (12 s bij tot 1000) of na een fout, **niet** als het tweede getal < 10. Hooguit **2 boogjes**, geen getallen of streepjes op de lijn, alleen de sprong boven de boog: eerst tientallen (incl. honderdtallen), dan eenheden; bij 8 of 9 een tiental te ver en terug (31 + 18 → +20, −2), tenzij dat over de grens gaat. Een terugsprong staat onder de lijn.
 - Gouden munt: alleen als de som in één keer goed is vóór de balk leeg is (en zonder lijn). Sterren: ★ uitgespeeld, ★★ 15 munten, ★★★ alle 20.
+- Layout: de toetsen schalen met de hoogte (44–64px via `--toets`), de trein niet. Lager dan 760px en minstens 800px breed: trein en getallenlijn links, toetsen rechts (trein krimpt mee via `cqw`).
 
 ## De Klokkentoren (klokregels)
 
@@ -64,7 +73,10 @@ Kleine oefenspelletjes voor kinderen (basisschoolleeftijd), live op https://ik-o
 - Vraagsoorten: wijzers zelf slepen (de kern), "hoe laat is het?" (keuze), "over een kwartier" (vanaf kwartieren), en bij digitaal: 15:30 zetten, digitale tijd kiezen, en digitaal → woorden.
 - Grote wijzer blauw, kleine wijzer rood. Alleen de grote wijzer is te draaien (overal op de wijzerplaat te pakken), de kleine loopt mee zoals bij het knopje van een echte klok. Tijdens slepen volgt hij soepel je vinger; bij loslaten glijdt hij naar de dichtstbijzijnde stap van het niveau. De klok start 1 à 2 uur van het antwoord (ervoor of erna); bij "over een kwartier" op de gegeven tijd. De grote wijzer pulseert geel tot je hem pakt.
 - Tijden in woorden zoals op school: "tien voor half vijf", "één over half één". Afleiders doen echte vergissingen na (uur ernaast, over/voor omgedraaid, wijzers verwisseld).
-- **Geen hulp en geen uitlegzinnen** (groep 3 leest nog niet vlot, en het kind moet het zelf doen). Geen Klaar-knop: staat de klok goed bij het loslaten (of na een pijltjestoets), dan telt het meteen. Fout bij kiezen: het goede antwoord licht groen op en het kind tikt het aan.
+- **Geen hulp en geen uitlegzinnen** (groep 3 leest nog niet vlot, en het kind moet het zelf doen). Wel een 🔊-knop naast de keuzes: leest ze op verzoek één voor één voor (Web Speech, alleen met een Nederlandse stem op het apparaat; anders geen knop), het knopje dat aan de beurt is licht geel op, en de gouden balk wacht zolang. Geen Klaar-knop: staat de klok goed bij het loslaten (of na een pijltjestoets), dan telt het meteen. Fout bij kiezen: het goede antwoord licht groen op en het kind tikt het aan.
+- De klok is zo groot als in de hoogte past (tot 460px), zodat de antwoordknoppen eronder in beeld blijven; groot op een staande tablet, minstens 300px. Past dat niet in de hoogte (lager dan ~900px) en is het scherm minstens 600px breed, dan staat de klok links (gouden balk eronder) en vraag + antwoorden rechts in één kolom. De keuze hangt alleen af van de beschikbare hoogte, niet van het apparaat.
+- Slepen op een tablet: alleen de eerste vinger telt (een hand op het scherm stoort niet), en `touchstart`/`touchmove` worden zelf geblokkeerd (Safari negeert `touch-action` op een `<svg>`).
+- Geen niveautitel boven de klok (de actieve niveauknop zegt het al); munten en "vraag 1 van 12" staan rechts in de rij van de niveauknoppen. De ondertitel staat onder de titel; alleen bij een lage schermhoogte (klok naast de antwoorden) ernaast.
 - 12 vragen per ronde, elk een raampje in de toren (goud = munt). Sterren: ★ uitgespeeld, ★★ 9 munten, ★★★ alle 12.
 
 ## De Winkel (geldregels)
@@ -75,6 +87,7 @@ Kleine oefenspelletjes voor kinderen (basisschoolleeftijd), live op https://ik-o
 - Beloning heet hier **blije klant 😊** (niet "munt", want munten zijn het onderwerp): op tijd en in één keer goed. Elke blije klant zet het gekochte ding (emoji) blijvend in het schap. Sterren: ★ uitgespeeld, ★★ 7 blij, ★★★ alle 10.
 - Einde ronde (geen "dicht"-bordje): grote sterren, en op de toonbank elke klant van de ronde als kaartje met wat hij kocht en 😊 (blij) of 🙂. De beurs verdwijnt.
 - Munten en briefjes zijn eigen CSS-tekeningen, geen afbeeldingen van echte euro's. Weinig tekst: alleen "Betaal" / "Geef terug" en prijskaartjes.
+- Layout: schaal `--e` (1px, tot 1.3px op hoge schermen vanaf 600px breed); geld, toonbank en ding rekenen met `calc(N * var(--e))`. Lager dan 760px en minstens 800px breed: winkel links, toonbank met beurs rechts. Beurs en toonbank altijd samen in beeld.
 
 ## Het Ballonnenfeest (spellingregels)
 
@@ -84,6 +97,7 @@ Kleine oefenspelletjes voor kinderen (basisschoolleeftijd), live op https://ik-o
 - Fout: het gat wiebelt, de goede knop licht groen op en het kind tikt die aan. Geen uitleg.
 - Geen geluid of voorlezen: voegt weinig toe.
 - Beloning: een **ballon** die opstijgt in de lucht (eigen SVG, blijvend, zweeft zachtjes), op tijd (10 s) en in één keer goed. 12 woorden per ronde; ★ uitgespeeld, ★★ 9 ballonnen, ★★★ alle 12. Einde ronde: sterren en alle woorden van de ronde als kaartjes (met ballon als verdiend).
+- Layout: het speelveld is klein en blijft altijd onder elkaar; op hoge schermen (≥600px breed) groeien plaatje, woord en knoppen mee via `--extra = clamp(0px, 100svh - 860px, 300px)`, met vaste min-heights tegen verspringen.
 
 ## Lessen uit de spellen (ontwerp)
 
@@ -97,6 +111,9 @@ Kleine oefenspelletjes voor kinderen (basisschoolleeftijd), live op https://ik-o
 ## Lessen uit de spellen (techniek)
 
 - `hidden` verliest van een `display:flex/grid` in de CSS: zet er `.x[hidden]{display:none}` bij.
+- **Schalen met de schermhoogte, niet met het apparaat.** Het hoofdbeeld (klok, kaart) of de bediening (toetsen, geld) schaalt met `clamp(min, (100svh - X) * …, max)`, met X gemeten, zodat de bediening zonder scrollen in beeld blijft. Is het scherm te laag om alles onder elkaar te laten passen (en breed genoeg), dan komt het beeld links en de bediening rechts. Telefoon (smal) blijft onder elkaar. Grenzen per spel staan bij het spel.
+- **Kop in elk spel**: `.koptekst` om h1 + ondertitel; terugknop midden op de titelregel (`margin-top:calc(clamp(28px,6vw,40px) * .75 - 20px)`); ondertitel naast de titel bij `(max-height:901px) and (min-width:600px)`, anders eronder.
+- **Spellen met niveauknoppen**: geen niveautitel (de actieve knop zegt het al); teller en voortgang staan rechts in de rij van de knoppen (`#niveaus` in `.leskop` met `display:contents`, rechterkant `margin-left:auto`).
 - `overflow:hidden` op een ouder knipt een `box-shadow`-rand (bijv. groene rand bij goed) af: geef de ouder wat padding.
 - Emoji tonen niet in de headless browser hier (geen emojifont): vakjes in een screenshot zijn normaal, controleer emoji op een echt apparaat.
 - Een testpagina die het spel in een `<iframe>` zet, heeft `<meta charset="utf-8">` nodig (anders gaat "één" mis).
