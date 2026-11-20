@@ -13,6 +13,7 @@ Kleine oefenspelletjes voor kinderen (basisschoolleeftijd), live op https://ik-o
 | `rekenen/` | De Rekentrein — plussen en minnen tot 20/50/100/1000 |
 | `klok/` | De Klokkentoren — klokkijken, van hele uren tot digitaal |
 | `geld/` | De Winkel — betalen en wisselgeld, tot €10/€20/€100 en met centen |
+| `spelling/` | Het Ballonnenfeest — spelling: ei/ij, au/ou, d/t, g/ch |
 | `fonts/` | Zelf gehoste Fredoka (`fredoka.css` + woff2 + `OFL-fredoka.txt`) |
 | `robots.txt`, `sitemap.xml` | Vindbaarheid |
 
@@ -65,6 +66,34 @@ Kleine oefenspelletjes voor kinderen (basisschoolleeftijd), live op https://ik-o
 - Beloning heet hier **blije klant 😊** (niet "munt", want munten zijn het onderwerp): op tijd en in één keer goed. Elke blije klant zet het gekochte ding (emoji) blijvend in het schap. Sterren: ★ uitgespeeld, ★★ 7 blij, ★★★ alle 10.
 - Einde ronde (geen "dicht"-bordje): grote sterren, en op de toonbank elke klant van de ronde als kaartje met wat hij kocht en 😊 (blij) of 🙂. De beurs verdwijnt.
 - Munten en briefjes zijn eigen CSS-tekeningen, geen afbeeldingen van echte euro's. Weinig tekst: alleen "Betaal" / "Geef terug" en prijskaartjes.
+
+## Het Ballonnenfeest (spellingregels)
+
+- Niveaus: ei / ij → au / ou → d / t (aan het eind) → g / ch → Alles. Vanaf niveau 2: 9 woorden van het niveau + 3 herhaling, de eerste altijd van het niveau. Per soort ongeveer half/half verdeeld over de twee antwoorden.
+- Een woord = plaatje (emoji) + het woord met een gat (`"🐐 g[ei]t"`); de letters eromheen maken duidelijk welk woord het is. Kies uit twee grote knoppen, altijd in dezelfde volgorde. Toetsenbord: de eerste letter (e/i, a/o, d/t, g/c).
+- Kies woorden waarbij het andere antwoord geen bestaand woord is (dus geen "licht/ligt"), en emoji die maar één ding betekenen.
+- Fout: het gat wiebelt, de goede knop licht groen op en het kind tikt die aan. Geen uitleg.
+- Geen geluid of voorlezen: voegt weinig toe.
+- Beloning: een **ballon** die opstijgt in de lucht (eigen SVG, blijvend, zweeft zachtjes), op tijd (10 s) en in één keer goed. 12 woorden per ronde; ★ uitgespeeld, ★★ 9 ballonnen, ★★★ alle 12. Einde ronde: sterren en alle woorden van de ronde als kaartjes (met ballon als verdiend).
+
+## Lessen uit de spellen (ontwerp)
+
+- **Weinig tekst, geen uitleg.** Een kind in groep 3 leest nog niet vlot: geen uitlegzinnen of hulptekst in beeld, alleen korte labels ("Betaal") en lof ("Goed zo!"). Liever een hulpmiddel weglaten dan het uitleggen; hulp alleen als erom gevraagd wordt.
+- **Geen Klaar/OK-knop als het antwoord een toestand is** (klok gezet, geld neergelegd): controleer vanzelf zodra het klopt (bij loslaten / na elke tik). Een fout telt pas bij een echte vergissing (te veel geld, verkeerde keuze).
+- **Slepen**: één ding tegelijk sleepbaar, geen overlappende grijpvlakken. Pointer events met `setPointerCapture`, `touch-action:none` op het sleepvlak. Tijdens slepen soepel de vinger volgen, pas bij loslaten naar een stap laten glijden (niet tussen stappen laten verspringen). Draaien met een "uitgerolde" hoek in `style.transform`, zodat iets altijd de korte kant op draait.
+- **Beloning past bij het thema** en heet niet zoals het onderwerp (in De Winkel "blije klant", geen "munt"). Elk spel een eigen wereld: geen thema hergebruiken (De Letterhof is al de tuin). Een blijvende verzameling (het schap) motiveert over dagen heen.
+- **Einde ronde**: laat in het speelveld iets zien dat terugblikt (sterren, wat je deze ronde deed), geen leeg vak of bordje als "dicht". Verberg dan de bediening die niets meer doet (beurs, "Begin opnieuw").
+- **Niveaus en records**: 4 of 5 niveaus zodat de recordkaarten mooi uitlijnen; houd niveaunamen kort zodat ze niet afbreken ("Heel en half").
+
+## Lessen uit de spellen (techniek)
+
+- `hidden` verliest van een `display:flex/grid` in de CSS: zet er `.x[hidden]{display:none}` bij.
+- `overflow:hidden` op een ouder knipt een `box-shadow`-rand (bijv. groene rand bij goed) af: geef de ouder wat padding.
+- Emoji tonen niet in de headless browser hier (geen emojifont): vakjes in een screenshot zijn normaal, controleer emoji op een echt apparaat.
+- Een testpagina die het spel in een `<iframe>` zet, heeft `<meta charset="utf-8">` nodig (anders gaat "één" mis).
+- Het script staat in een IIFE en de pagina heeft geen `</body>`: voeg een autospeler voor een testkopie in vóór de laatste `})();`, zodat hij bij de interne functies kan.
+- Start de testserver met `timeout 60 python3 -m http.server …`; `pkill -f http.server` kan je eigen shell meenemen.
+- De eerste vraag van een ronde is bewust de makkelijkste soort: speel door om andere vraagsoorten te zien.
 
 ## Testen
 
