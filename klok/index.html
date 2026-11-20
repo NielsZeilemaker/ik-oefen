@@ -68,7 +68,8 @@
   .vraag .klein{font-size:15px}
 
   /* de toren */
-  .toren{display:block;width:min(300px,100%);height:auto;margin:0 auto;overflow:visible;touch-action:none;user-select:none;-webkit-user-select:none}
+  /* groeit mee op een tablet (grote wijzerplaat = makkelijk draaien), maar past in de hoogte */
+  .toren{display:block;width:clamp(300px, (100svh - 330px) * .8, 460px);max-width:100%;height:auto;margin:0 auto;overflow:visible;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
   .toren .wijzerplaat{cursor:default}
   .toren.zet .wijzerplaat{cursor:grab}
   .toren.slepen .wijzerplaat{cursor:grabbing}
@@ -560,7 +561,8 @@ function volgende(){
 }
 
 /* ---------- slepen ---------- */
-var sleep = null;   // "groot" of "klein"
+var sleep = null;   // "groot" tijdens het slepen
+var vinger = null;  // pointerId van de vinger die sleept; andere vingers (of een hand op het scherm) tellen niet
 function hoekVan(ev){
   var svg = $("toren"), pt = svg.createSVGPoint();
   pt.x = ev.clientX; pt.y = ev.clientY;
@@ -578,7 +580,7 @@ function zetGroot(hoek){
   if (d > 30) d -= 60;
   if (d < -30) d += 60;
   ruw += d;                                          // over de 12 = volgend uur
-  zetWijzers(ruw, 0.05);
+  zetWijzers(ruw, 0);                               // direct je vinger volgen, zonder na-ijlen
 }
 function rondAf(){
   stand = mod(Math.round(ruw / NIVEAUS[data.niveau].stap) * NIVEAUS[data.niveau].stap, 720);
@@ -586,10 +588,10 @@ function rondAf(){
   zetWijzers(stand, 0.25);
 }
 function pakVast(ev){
-  if (!magZetten()) return;
+  if (!magZetten() || sleep) return;           // al aan het slepen: tweede vinger negeren
   var p = hoekVan(ev);
-  if (p.r > 115 || p.r < 10) return;           // buiten de klok, of midden: richting onduidelijk
-  sleep = "groot";
+  if (p.r > 135 || p.r < 8) return;            // ver buiten de klok, of midden: richting onduidelijk
+  sleep = "groot"; vinger = ev.pointerId;
   ruw = stand;
   $("toren").classList.add("slepen");
   $("groteWijzer").classList.remove("wenk");
@@ -599,14 +601,15 @@ function pakVast(ev){
   beweeg(ev);
 }
 function beweeg(ev){
-  if (!sleep || !magZetten()) return;
+  if (!sleep || ev.pointerId !== vinger || !magZetten()) return;
   var p = hoekVan(ev);
   zetGroot(p.hoek);
 }
-function laatLos(){
+function laatLos(ev){
+  if (sleep && ev && ev.pointerId !== vinger) return;
   var was = sleep;
   if (was) rondAf();
-  sleep = null; $("toren").classList.remove("slepen");
+  sleep = null; vinger = null; $("toren").classList.remove("slepen");
   $("groteWijzer").classList.remove("vast");
   if (was) controleerZet();
 }
@@ -705,6 +708,11 @@ toren.addEventListener("pointerdown", pakVast);
 toren.addEventListener("pointermove", beweeg);
 toren.addEventListener("pointerup", laatLos);
 toren.addEventListener("pointercancel", laatLos);
+// Safari op iPad/iPhone negeert touch-action soms op een <svg>: dan scrolt of zoomt de pagina
+// mee en breekt het slepen af. Blokkeer dat zelf zolang de klok gezet mag worden.
+function geenScroll(ev){ if (magZetten() || sleep) ev.preventDefault(); }
+toren.addEventListener("touchstart", geenScroll, {passive:false});
+toren.addEventListener("touchmove", geenScroll, {passive:false});
 document.addEventListener("keydown", toets);
 startRonde();
 })();
