@@ -1,0 +1,500 @@
+<!doctype html>
+<html lang="nl">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>De Winkel — rekenen met geld</title>
+<meta name="description" content="Oefen rekenen met geld in De Winkel: betaal gepast en geef wisselgeld terug, tot €10, €20, €100 en met centen. Gratis, zonder cookies, tracking of reclame.">
+<link rel="canonical" href="https://ik-oefen.nl/geld/">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="nl_NL">
+<meta property="og:site_name" content="Ik oefen">
+<meta property="og:title" content="De Winkel — rekenen met geld">
+<meta property="og:description" content="Oefen rekenen met geld in De Winkel: betaal gepast en geef wisselgeld terug, tot €10, €20, €100 en met centen. Gratis, zonder cookies, tracking of reclame.">
+<meta property="og:url" content="https://ik-oefen.nl/geld/">
+<link rel="stylesheet" href="../fonts/fredoka.css">
+<style>
+  :root{
+    --papier:#FFF6EC;
+    --kaart:#FFFDF8;
+    --kaart2:#F4EADB;
+    --tekst:#3A2A22;
+    --zacht:rgba(58,42,34,.62);
+    --lijn:rgba(58,42,34,.16);
+    --luifel:#E25B4B;
+    --hout:#B9824F;
+    --hout2:#9C6A3D;
+    --goed:#2F9E5B;
+    --rood:#D9484F;
+    --geel:#F2B632;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:linear-gradient(#FCE3D2, var(--papier) 40%, #F3F0E2);
+    background-attachment:fixed;
+    color:var(--tekst);
+    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:16px;line-height:1.5;padding:20px 16px 48px;min-height:100vh;
+  }
+  .wrap{max-width:860px;margin:0 auto}
+  header{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:baseline;justify-content:space-between;margin-bottom:22px}
+  .kop{display:grid;grid-template-columns:auto 1fr;column-gap:14px;align-items:center}
+  .kop .ondertitel{grid-column:2}
+  .terug{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;color:var(--tekst);border:1px solid var(--lijn);background:var(--kaart);text-decoration:none;transition:background .15s,border-color .15s}
+  .terug:hover{background:var(--kaart2);border-color:var(--tekst)}
+  h1{font-family:Fredoka,ui-rounded,system-ui,sans-serif;font-weight:600;font-size:clamp(28px,6vw,40px);margin:0}
+  .ondertitel{margin:2px 0 0;font-size:14px;color:var(--zacht)}
+
+  .kaart{background:var(--kaart);border:1px solid var(--lijn);border-radius:16px;padding:20px 18px;box-shadow:0 2px 0 rgba(58,42,34,.06)}
+  .leskop{display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-bottom:6px}
+  .leskop h2{font-family:Fredoka,ui-rounded,sans-serif;font-weight:500;font-size:20px;margin:0}
+  .leskop .rechts{display:flex;align-items:baseline;gap:14px;font-size:13px;color:var(--zacht);white-space:nowrap}
+  .teller{font-family:Fredoka,ui-rounded,sans-serif;font-size:18px;font-weight:600;color:var(--tekst)}
+  .teller.bump{animation:pop .45s}
+  .teller .reeks{font-size:15px;color:#D9581E;margin-left:4px}
+
+  .niveaus{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+  .niveaus button{font:inherit;font-size:14px;cursor:pointer;border:1px solid var(--lijn);background:var(--kaart2);color:var(--tekst);border-radius:20px;padding:5px 14px}
+  .niveaus button.aan{background:var(--tekst);color:#fff;border-color:var(--tekst)}
+
+  /* de winkel */
+  .winkel{position:relative;margin:6px -18px 0;padding:0 18px 6px;overflow:hidden}
+  .luifel{height:26px;background:repeating-linear-gradient(90deg,var(--luifel) 0 34px,var(--geel) 34px 68px);
+    border-radius:0 0 14px 14px;box-shadow:0 4px 0 rgba(0,0,0,.08)}
+  .luifel{clip-path:polygon(0 0,100% 0,100% 70%,97% 100%,94% 70%,91% 100%,88% 70%,85% 100%,82% 70%,79% 100%,76% 70%,73% 100%,70% 70%,67% 100%,64% 70%,61% 100%,58% 70%,55% 100%,52% 70%,49% 100%,46% 70%,43% 100%,40% 70%,37% 100%,34% 70%,31% 100%,28% 70%,25% 100%,22% 70%,19% 100%,16% 70%,13% 100%,10% 70%,7% 100%,4% 70%,1% 100%,0 70%)}
+  .schap{display:flex;flex-wrap:wrap;align-content:flex-end;gap:0 2px;min-height:44px;max-height:88px;overflow:hidden;
+    padding:6px 8px 0;margin:10px 0 0;border-bottom:6px solid var(--hout2);font-size:26px;line-height:1.3}
+  .schap:empty::before{content:"Hier komen je spullen";font-size:13px;color:var(--zacht);align-self:center}
+  .schap span{display:inline-block}
+  .schap .nieuw{animation:erin .6s cubic-bezier(.3,1.6,.5,1)}
+  @keyframes erin{0%{transform:translateY(-30px) scale(.4);opacity:0}100%{transform:none;opacity:1}}
+
+  .opdracht{display:flex;align-items:center;justify-content:center;gap:clamp(10px,3vw,22px);min-height:130px;flex-wrap:wrap;padding:12px 0 4px}
+  .ding{font-size:clamp(64px,18vw,84px);line-height:1;filter:drop-shadow(0 4px 0 rgba(0,0,0,.1))}
+  .prijs{position:relative;font-family:Fredoka,ui-rounded,sans-serif;font-weight:600;font-size:clamp(26px,7vw,34px);line-height:1;
+    background:var(--geel);padding:10px 16px 12px 24px;border-radius:6px 12px 12px 6px;transform:rotate(-4deg);box-shadow:0 3px 0 rgba(0,0,0,.15);white-space:nowrap}
+  .prijs::before{content:"";position:absolute;left:8px;top:50%;width:8px;height:8px;margin-top:-4px;border-radius:50%;background:var(--kaart)}
+  .betaaldmet{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:14px;color:var(--zacht);font-weight:600}
+  .pijl{font-size:28px;color:var(--zacht)}
+  .soort{display:inline-flex;align-items:center;gap:6px;font-family:Fredoka,ui-rounded,sans-serif;font-weight:600;font-size:17px;
+    background:var(--tekst);color:#fff;border-radius:20px;padding:3px 14px}
+  .soortrij{text-align:center;margin-top:6px}
+  .soort:empty{visibility:hidden}
+
+  /* toonbank: hier leg je het geld neer */
+  .toonbank{position:relative;margin:8px 0 0;min-height:112px;background:linear-gradient(var(--hout),var(--hout2));
+    border-radius:10px;padding:12px;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px;
+    box-shadow:inset 0 -6px 0 rgba(0,0,0,.12)}
+  .toonbank:empty::before{content:"";width:70%;height:64px;border:3px dashed rgba(255,255,255,.45);border-radius:10px}
+  .toonbank.te{animation:wiebel .25s 2}
+  .toonbank.goed{box-shadow:inset 0 -6px 0 rgba(0,0,0,.12),0 0 0 4px var(--goed)}
+  .toonbank .geld{cursor:pointer}
+  .toonbank .geld.erin{animation:leg .25s ease-out}
+  @keyframes leg{0%{transform:translateY(40px) scale(.7);opacity:.3}100%{transform:none;opacity:1}}
+
+  /* portemonnee / kassala */
+  .beurs{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:10px;margin-top:14px;padding:12px;
+    background:var(--kaart2);border-radius:14px;min-height:96px}
+  .beurs[hidden]{display:none}
+  .beurs .geld{cursor:pointer;touch-action:manipulation}
+  .beurs .geld:active{transform:translateY(2px) scale(.96)}
+  .beurs .geld:focus-visible{outline:3px solid #5B8DEF;outline-offset:3px}
+
+  /* munten en briefjes (eigen tekening, geen echte euro-afbeeldingen) */
+  .geld{font-family:Fredoka,ui-rounded,sans-serif;font-weight:600;border:0;padding:0;color:#3A2A22;display:inline-flex;flex-direction:column;
+    align-items:center;justify-content:center;line-height:1;flex:none;user-select:none;-webkit-user-select:none}
+  .geld b{font-size:1em}
+  .geld small{font-size:.42em;font-weight:500;margin-top:2px}
+  .munt{border-radius:50%;width:var(--d);height:var(--d);font-size:calc(var(--d) * .4);
+    background:radial-gradient(circle at 35% 30%,#FFF4C2,var(--m) 55%,var(--m2));box-shadow:inset 0 0 0 calc(var(--d) * .07) var(--m2),0 3px 0 rgba(0,0,0,.18)}
+  .munt.c10{--d:44px;--m:#E7C04F;--m2:#B38A1E}
+  .munt.c20{--d:48px;--m:#E7C04F;--m2:#B38A1E}
+  .munt.c50{--d:52px;--m:#E7C04F;--m2:#B38A1E}
+  .munt.e1{--d:54px;--m:#E9C25A;--m2:#B88A1F;background:radial-gradient(circle,#E3E6EA 0 52%,#B8BEC6 53% 56%,#E9C25A 57%,#C99A2E 100%)}
+  .munt.e2{--d:60px;--m:#C9CED6;--m2:#8E959F;background:radial-gradient(circle,#F0CD63 0 52%,#C99A2E 53% 56%,#DDE1E6 57%,#A7AEB8 100%)}
+  .briefje{width:84px;height:48px;border-radius:6px;font-size:22px;background:var(--b);color:#fff;text-shadow:0 1px 0 rgba(0,0,0,.25);
+    box-shadow:inset 0 0 0 3px rgba(255,255,255,.35),0 3px 0 rgba(0,0,0,.18);position:relative;overflow:hidden}
+  .briefje::after{content:"";position:absolute;right:-10px;top:-10px;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.18)}
+  .briefje small{color:#fff}
+  .briefje.e5{--b:#8C949E}
+  .briefje.e10{--b:#D9625A}
+  .briefje.e20{--b:#4F7FD1}
+  .briefje.e50{--b:#E58A2E}
+  .briefje.e100{--b:#3FA36B}
+  @media (max-width:420px){ .beurs{gap:8px;padding:10px 8px} .beurs .briefje{width:70px;height:44px;font-size:20px} }
+  .toonbank .munt.c10{--d:36px}.toonbank .munt.c20{--d:39px}.toonbank .munt.c50{--d:42px}
+  .toonbank .munt.e1{--d:44px}.toonbank .munt.e2{--d:48px}
+  .toonbank .briefje{width:70px;height:40px;font-size:18px}
+
+  /* einde ronde: terugblik op de klanten van deze ronde */
+  .eindster{font-size:clamp(48px,14vw,60px);line-height:1;color:var(--geel);letter-spacing:4px;text-shadow:0 3px 0 rgba(0,0,0,.12)}
+  .eindster i{font-style:normal;color:rgba(0,0,0,.12);text-shadow:none}
+  .toonbank .klantje{display:inline-flex;flex-direction:column;align-items:center;gap:2px;background:rgba(255,255,255,.88);
+    border-radius:10px;padding:4px 6px 3px;min-width:42px;box-shadow:0 2px 0 rgba(0,0,0,.12);animation:leg .3s ease-out both}
+  .klantje .wat{font-size:24px;line-height:1.1}
+  .klantje .hoe{font-size:18px;line-height:1}
+
+  #hint{text-align:center;min-height:1.8em;font-family:Fredoka,ui-rounded,sans-serif;font-weight:600;font-size:18px;margin:2px 0 0}
+
+  /* tijdbalk: op tijd en in één keer goed = blije klant */
+  #balk{display:flex;align-items:center;gap:10px;max-width:340px;margin:6px auto 0;height:30px}
+  #balk .gezicht{font-size:24px;transition:filter .3s,opacity .3s}
+  #balk .spoor{flex:1;height:12px;border-radius:6px;background:var(--kaart2);overflow:hidden;box-shadow:inset 0 1px 2px rgba(0,0,0,.12)}
+  #balk .spoor i{display:block;height:100%;width:100%;border-radius:6px;background:linear-gradient(90deg,#F2B632,#FFD866)}
+  #balk.weg .gezicht{filter:grayscale(1);opacity:.4}
+  #balk.klaar{visibility:hidden}
+  #balk.verdiend .gezicht{animation:pop .5s}
+
+  @media (prefers-reduced-motion:reduce){ .toonbank.te,.toonbank .geld.erin,.toonbank .klantje,.schap .nieuw,#balk.verdiend .gezicht,.teller.bump{animation:none} }
+  @keyframes wiebel{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+  @keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.4) rotate(-10deg)}100%{transform:scale(1)}}
+
+  .knoppen[hidden]{display:none}
+  .knoppen{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:16px}
+  .knoppen button{font:inherit;font-size:14px;cursor:pointer;border:1px solid var(--tekst);background:var(--tekst);color:#fff;border-radius:8px;padding:7px 14px}
+  :focus-visible{outline:3px solid #5B8DEF;outline-offset:2px}
+
+  #uitslag{margin-top:18px;border-top:1px solid var(--lijn);padding-top:16px}
+  #uitslag h3{font-family:Fredoka,ui-rounded,sans-serif;font-weight:500;font-size:20px;margin:0 0 8px}
+  #uitslag p{margin:0 0 10px;font-size:15px}
+  #uitslag .sterren{color:var(--geel);font-size:26px;letter-spacing:3px}
+  #uitslag .sterren i{font-style:normal;color:var(--lijn)}
+  #uitslag button{font:inherit;font-size:15px;cursor:pointer;border-radius:8px;padding:7px 14px;margin:4px 8px 0 0;border:1px solid var(--tekst);background:var(--kaart);color:var(--tekst)}
+  #uitslag button.hoofd{background:var(--tekst);color:#fff}
+
+  h2.recordkop{font-family:Fredoka,ui-rounded,sans-serif;font-weight:500;font-size:20px;margin:30px 0 8px}
+  #records{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+  .record{background:var(--kaart);border:1px solid var(--lijn);border-radius:12px;padding:10px 12px;font-size:14px}
+  .record b{display:block;font-family:Fredoka,ui-rounded,sans-serif;font-size:17px;font-weight:600}
+  .record .sterren{color:var(--geel);font-size:18px;letter-spacing:2px}
+  .record .sterren i{font-style:normal;color:var(--lijn)}
+  footer{margin-top:30px;font-size:13px;color:var(--zacht)}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="kop">
+      <a class="terug" href="../" aria-label="Terug naar Ik oefen" title="Terug naar Ik oefen"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      <h1>De Winkel 🛒</h1>
+      <p class="ondertitel">Betaal gepast en geef wisselgeld. Elke blije klant zet iets nieuws in je schap.</p>
+    </div>
+  </header>
+
+  <div class="kaart">
+    <div class="niveaus" id="niveaus"></div>
+    <div class="leskop">
+      <h2 id="titel">Tot €10</h2>
+      <div class="rechts">
+        <span class="teller" id="teller" title="blije klanten">😊 <b id="blij">0</b><span class="reeks" id="reeks"></span></span>
+        <span id="voortgang">klant 1 van 10</span>
+      </div>
+    </div>
+
+    <div class="winkel">
+      <div class="luifel" aria-hidden="true"></div>
+      <div class="schap" id="schap" aria-label="jouw schap"></div>
+      <div class="soortrij"><span class="soort" id="soort"></span></div>
+      <div class="opdracht" id="opdracht" aria-live="polite"></div>
+      <div class="toonbank" id="toonbank" aria-label="toonbank: tik op geld om het terug te pakken"></div>
+    </div>
+
+    <p id="hint"></p>
+    <div id="balk"><span class="gezicht" aria-hidden="true">😊</span><div class="spoor" title="Op tijd en in één keer goed = blije klant"><i id="vulling"></i></div></div>
+    <div class="beurs" id="beurs" aria-label="tik op geld om het neer te leggen"></div>
+
+    <div class="knoppen" id="knoppen"><button id="opnieuw">Begin opnieuw</button></div>
+    <div id="uitslag" hidden></div>
+  </div>
+
+  <h2 class="recordkop">Jouw records</h2>
+  <div id="records"></div>
+
+  <footer>Voortgang wordt op dit apparaat bewaard. Tik op geld om het op de toonbank te leggen; tik op de toonbank om het terug te pakken. Klopt het precies, dan gaat het vanzelf verder. Leg je te veel neer, dan springt het laatste geld terug. Op tijd en in één keer goed? Dan heb je een blije klant en komt er iets nieuws in je schap. Het geld is getekend, het zijn geen echte euro's.</footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+var BEWAAR = "winkel-v1";
+var RONDE = 10;
+// bedragen in centen
+var NIVEAUS = [
+  {titel:"Tot €10",     geld:[100,200,500,1000],                 betaal:[100,1000,100], terug:null},
+  {titel:"Tot €20",     geld:[100,200,500,1000,2000],            betaal:[300,2000,100], terug:[[200,1900,100],[500,1000,2000]]},
+  {titel:"Tot €100",    geld:[100,200,500,1000,2000,5000],       betaal:[1100,10000,100], terug:[[600,9500,100],[2000,5000,10000]]},
+  {titel:"Met centen",  geld:[10,20,50,100,200,500,1000],        betaal:[50,2000,10],  terug:[[60,1900,10],[500,1000,2000]]}
+];
+// spullen per prijsklasse (emoji: geen plaatjes van buiten nodig)
+var SPULLEN = [
+  {tot:300,   lijst:["🍎","🍌","🍐","🍪","🧃","🍭","🥐","🍬","🖍️","🎈","🥕","🍓"]},
+  {tot:1000,  lijst:["🍦","🧁","🍫","🥪","🍕","📒","🧦","🎨","🪀","🧢","🍩","🥤"]},
+  {tot:2500,  lijst:["🧸","⚽","📚","🪁","🎲","🧩","🎒","🪴","🏀","🎁"]},
+  {tot:10001, lijst:["🎧","🛼","👟","🛹","🎸","🔭","⌚","🧥","🎮","🚂"]}
+];
+
+var data = {records:{}, niveau:0, schap:[]};
+function laad(){
+  try{ var s = localStorage.getItem(BEWAAR); if (s) data = JSON.parse(s); }catch(e){}
+  if (!data || typeof data !== "object") data = {};
+  if (!data.records) data.records = {};
+  if (!Array.isArray(data.schap)) data.schap = [];
+  if (typeof data.niveau !== "number" || !NIVEAUS[data.niveau]) data.niveau = 0;
+}
+function bewaar(){ try{ localStorage.setItem(BEWAAR, JSON.stringify(data)); }catch(e){} }
+
+function tussen(a, b){ return a + Math.floor(Math.random()*(b-a+1)); }
+function stapTussen(r){ return tussen(r[0]/r[2], r[1]/r[2]) * r[2]; }
+function schud(a){ for (var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)), t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+function $(id){ return document.getElementById(id); }
+
+function euro(c){
+  if (c % 100 === 0) return "€" + (c/100);
+  return "€" + Math.floor(c/100) + "," + String(c % 100).padStart(2, "0");
+}
+// HTML voor één munt of briefje
+function geldHTML(c, tag){
+  tag = tag || "span";
+  var briefje = c >= 500, cls = c >= 100 ? "e" + (c/100) : "c" + c;
+  var getal = c >= 100 ? c/100 : c, eenheid = c >= 100 ? "euro" : "cent";
+  var label = c >= 100 ? c/100 + " euro" : c + " cent";
+  return "<" + tag + ' class="geld ' + (briefje ? "briefje " : "munt ") + cls + '" data-c="' + c + '" aria-label="' + label + '"'
+       + (tag === "button" ? ' type="button"' : "") + "><b>" + getal + "</b><small>" + eenheid + "</small></" + tag + ">";
+}
+function ding(prijs){
+  for (var i=0;i<SPULLEN.length;i++) if (prijs <= SPULLEN[i].tot){ var l = SPULLEN[i].lijst; return l[tussen(0, l.length-1)]; }
+  return "🎁";
+}
+
+/* ---------- klanten maken ---------- */
+function maakRonde(){
+  var n = NIVEAUS[data.niveau], soorten = [], uit = [], gezien = {};
+  for (var i=0;i<RONDE;i++) soorten.push(n.terug && i >= 6 ? "terug" : "betaal");
+  schud(soorten);
+  if (soorten[0] === "terug"){ var j = soorten.indexOf("betaal"); soorten[j] = "terug"; soorten[0] = "betaal"; }
+  soorten.forEach(function(s){
+    var k, sleutel, poging = 0;
+    do {
+      if (s === "betaal"){
+        var p = stapTussen(n.betaal);
+        // met centen: meestal echt centen erbij, niet alleen hele euro's
+        if (data.niveau === 3 && p % 100 === 0 && Math.random() < 0.8) p += 10 * tussen(1, 9);
+        k = {soort:s, prijs:p, doel:p};
+      } else {
+        var r = n.terug[0], p2 = stapTussen(r);
+        if (data.niveau === 3 && p2 % 100 === 0) p2 += 10 * tussen(1, 9);
+        var biljet = n.terug[1].filter(function(b){ return b > p2; })[0];
+        if (!biljet){ p2 = r[0]; biljet = n.terug[1][0]; }
+        k = {soort:s, prijs:p2, met:biljet, doel:biljet - p2};
+      }
+      sleutel = s + k.prijs;
+    } while (gezien[sleutel] && ++poging < 30);
+    gezien[sleutel] = 1;
+    k.ding = ding(k.prijs);
+    uit.push(k);
+  });
+  return uit;
+}
+
+/* ---------- toestand ---------- */
+var klanten = [], nr = 0, klant = null, gelegd = [], bezig = false;
+var blij = 0, reeks = 0, fouten = 0, balkTimer = null, start = 0;
+
+function wachtTijd(){
+  var t = klant && klant.soort === "terug" ? 22000 : 16000;
+  if (data.niveau >= 2) t += 6000;
+  return t;
+}
+function startBalk(){
+  var b = $("balk"), v = $("vulling");
+  b.classList.remove("weg", "klaar", "verdiend");
+  v.style.transition = "none"; v.style.width = "100%";
+  void v.offsetWidth;
+  v.style.transition = "width " + wachtTijd() + "ms linear"; v.style.width = "0%";
+  clearTimeout(balkTimer);
+  balkTimer = setTimeout(function(){ $("balk").classList.add("weg"); }, wachtTijd());
+}
+function stopBalk(){
+  clearTimeout(balkTimer);
+  var v = $("vulling"); v.style.width = getComputedStyle(v).width; v.style.transition = "none";
+}
+function tekenTeller(bump){
+  $("blij").textContent = blij;
+  $("reeks").textContent = reeks >= 3 ? "🔥" + reeks : "";
+  if (bump){ var t = $("teller"); t.classList.remove("bump"); void t.offsetWidth; t.classList.add("bump"); }
+}
+function tekenSchap(nieuw){
+  var s = data.schap.slice(-60);
+  $("schap").innerHTML = s.map(function(d, i){ return "<span" + (nieuw && i === s.length-1 ? ' class="nieuw"' : "") + ">" + d + "</span>"; }).join("");
+}
+
+function tekenBeurs(){
+  var n = NIVEAUS[data.niveau];
+  $("beurs").innerHTML = n.geld.map(function(c){ return geldHTML(c, "button"); }).join("");
+  Array.prototype.forEach.call($("beurs").querySelectorAll(".geld"), function(b){
+    b.onclick = function(){ leg(+b.getAttribute("data-c")); };
+  });
+}
+function tekenToonbank(nieuwste){
+  var tb = $("toonbank");
+  tb.innerHTML = gelegd.slice().sort(function(a, b){ return b - a; }).map(function(c){ return geldHTML(c, "button"); }).join("");
+  var laatste = null;
+  Array.prototype.forEach.call(tb.querySelectorAll(".geld"), function(b){
+    var c = +b.getAttribute("data-c");
+    if (c === nieuwste && !laatste){ laatste = b; b.classList.add("erin"); }
+    b.onclick = function(){ pakTerug(c); };
+  });
+}
+function som(){ return gelegd.reduce(function(a, b){ return a + b; }, 0); }
+
+/* ---------- een klant ---------- */
+function toonKlant(){
+  klant = klanten[nr];
+  gelegd = []; bezig = true; start = Date.now();
+  $("hint").textContent = "";
+  $("toonbank").classList.remove("goed", "te");
+  $("voortgang").textContent = "klant " + (nr+1) + " van " + RONDE;
+  var o = '<span class="ding" aria-hidden="true">' + klant.ding + '</span><span class="prijs">' + euro(klant.prijs) + "</span>";
+  if (klant.soort === "betaal"){
+    $("soort").innerHTML = "👛 Betaal";
+  } else {
+    $("soort").innerHTML = "🔁 Geef terug";
+    o += '<span class="pijl" aria-hidden="true">←</span><span class="betaaldmet">' + geldHTML(klant.met) + "</span>";
+  }
+  $("opdracht").innerHTML = o;
+  $("opdracht").setAttribute("aria-label", klant.soort === "betaal"
+    ? "Betaal " + euro(klant.prijs)
+    : "Het kost " + euro(klant.prijs) + ", de klant betaalt met " + euro(klant.met) + ". Geef terug.");
+  tekenToonbank();
+  startBalk();
+}
+
+function leg(c){
+  if (!bezig) return;
+  gelegd.push(c);
+  tekenToonbank(c);
+  var s = som();
+  if (s === klant.doel) goed();
+  else if (s > klant.doel) teVeel();
+}
+function pakTerug(c){
+  if (!bezig) return;
+  var i = gelegd.indexOf(c);
+  if (i >= 0){ gelegd.splice(i, 1); tekenToonbank(); }
+}
+// Te veel neergelegd: het laatste geld springt terug.
+function teVeel(){
+  if (!klant.fout){ klant.fout = true; fouten++; }
+  reeks = 0; tekenTeller(false);
+  stopBalk(); $("balk").classList.add("weg");
+  var tb = $("toonbank");
+  tb.classList.remove("te"); void tb.offsetWidth; tb.classList.add("te");
+  bezig = false;
+  setTimeout(function(){
+    gelegd.pop(); tekenToonbank(); tb.classList.remove("te");
+    bezig = true;
+  }, 550);
+}
+function goed(){
+  bezig = false;
+  stopBalk();
+  var verdiend = !klant.fout && Date.now() - start <= wachtTijd();
+  $("toonbank").classList.add("goed");
+  klant.blij = verdiend;
+  if (verdiend){
+    blij++; reeks++;
+    data.schap.push(klant.ding);
+    if (data.schap.length > 200) data.schap = data.schap.slice(-200);
+    bewaar();
+    tekenSchap(true);
+    var b = $("balk"); b.classList.remove("verdiend"); void b.offsetWidth; b.classList.add("verdiend");
+  } else reeks = 0;
+  tekenTeller(verdiend);
+  $("hint").textContent = verdiend ? ["Dankjewel! 😊", "Precies goed!", "Top!", "Super!"][tussen(0,3)] : "Goed zo!";
+  setTimeout(volgende, 1200);
+}
+function volgende(){
+  nr++;
+  if (nr >= RONDE) klaar(); else toonKlant();
+}
+
+/* ---------- ronde ---------- */
+function startRonde(){
+  klanten = maakRonde(); nr = 0; blij = 0; reeks = 0; fouten = 0;
+  $("uitslag").hidden = true;
+  $("beurs").hidden = false;
+  $("knoppen").hidden = false;
+  $("titel").textContent = NIVEAUS[data.niveau].titel;
+  tekenBeurs();
+  tekenTeller(false);
+  toonKlant();
+}
+function klaar(){
+  bezig = false; klant = null;
+  stopBalk(); $("balk").classList.add("klaar");
+  $("soort").innerHTML = "";
+  // Op de toonbank: elke klant van deze ronde met wat hij kocht en hoe hij naar huis ging.
+  $("toonbank").classList.remove("goed", "te");
+  $("toonbank").innerHTML = klanten.map(function(k, i){
+    return '<span class="klantje" style="animation-delay:' + (i * 0.12).toFixed(2) + 's"><span class="wat">' + k.ding
+      + '</span><span class="hoe">' + (k.blij ? "😊" : "🙂") + "</span></span>";
+  }).join("");
+  $("beurs").hidden = true;
+  $("knoppen").hidden = true;
+  $("hint").textContent = "";
+
+  var sterren = 1;
+  if (blij >= 7) sterren = 2;
+  if (blij >= RONDE) sterren = 3;
+  var oud = data.records[data.niveau];
+  data.records[data.niveau] = {
+    sterren: Math.max(oud ? oud.sterren : 0, sterren),
+    blij: Math.max(oud ? oud.blij : 0, blij)
+  };
+  bewaar();
+  tekenRecords();
+
+  var st = "";
+  for (var k=1;k<=3;k++) st += k <= sterren ? "★" : "<i>★</i>";
+  $("opdracht").innerHTML = '<span class="eindster" aria-label="' + sterren + ' sterren">' + st + "</span>";
+  var t = '<h3>Klaar! <span class="sterren">' + st + "</span></h3>";
+  t += "<p><b>" + blij + "</b> van de " + RONDE + " klanten gingen blij naar huis" + (fouten ? "." : ", en je gaf nooit te veel.") + "</p>";
+  if (sterren === 1) t += "<p>Twee sterren haal je met 7 blije klanten, drie sterren met alle " + RONDE + ".</p>";
+  else if (sterren === 2) t += "<p>Twee sterren! Maak alle " + RONDE + " klanten blij voor drie sterren.</p>";
+  else t += "<p>Alle klanten blij, drie sterren. Wat een winkel!</p>";
+  t += '<button class="hoofd" id="nogeens">Nog een keer</button>';
+  if (sterren >= 2 && NIVEAUS[data.niveau+1]) t += '<button id="verder">Verder: ' + NIVEAUS[data.niveau+1].titel + " →</button>";
+  var u = $("uitslag"); u.innerHTML = t; u.hidden = false;
+  $("nogeens").onclick = startRonde;
+  if ($("verder")) $("verder").onclick = function(){ data.niveau++; bewaar(); tekenNiveaus(); startRonde(); };
+}
+
+function tekenNiveaus(){
+  var box = $("niveaus"); box.innerHTML = "";
+  NIVEAUS.forEach(function(n, i){
+    var b = document.createElement("button");
+    b.textContent = n.titel;
+    if (i === data.niveau) b.className = "aan";
+    b.onclick = function(){ data.niveau = i; bewaar(); tekenNiveaus(); startRonde(); };
+    box.appendChild(b);
+  });
+}
+function tekenRecords(){
+  $("records").innerHTML = NIVEAUS.map(function(n, i){
+    var r = data.records[i], st = "";
+    for (var k=1;k<=3;k++) st += (r && r.sterren >= k) ? "★" : "<i>★</i>";
+    return '<div class="record"><b>' + n.titel + '</b><span class="sterren">' + st + "</span><br>"
+      + (r ? "beste: " + r.blij + " blije klanten" : "nog niet gespeeld") + "</div>";
+  }).join("");
+}
+
+/* ---------- start ---------- */
+laad();
+tekenNiveaus();
+tekenRecords();
+tekenSchap(false);
+$("opnieuw").onclick = startRonde;
+startRonde();
+})();
+</script>
+</html>

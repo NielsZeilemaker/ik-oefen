@@ -12,6 +12,7 @@ Kleine oefenspelletjes voor kinderen (basisschoolleeftijd), live op https://ik-o
 | `provincies/` | De Berenkaart — provincies oefenen |
 | `rekenen/` | De Rekentrein — plussen en minnen tot 20/50/100/1000 |
 | `klok/` | De Klokkentoren — klokkijken, van hele uren tot digitaal |
+| `geld/` | De Winkel — betalen en wisselgeld, tot €10/€20/€100 en met centen |
 | `fonts/` | Zelf gehoste Fredoka (`fredoka.css` + woff2 + `OFL-fredoka.txt`) |
 | `robots.txt`, `sitemap.xml` | Vindbaarheid |
 
@@ -55,6 +56,15 @@ Kleine oefenspelletjes voor kinderen (basisschoolleeftijd), live op https://ik-o
 - Tijden in woorden zoals op school: "tien voor half vijf", "één over half één". Afleiders doen echte vergissingen na (uur ernaast, over/voor omgedraaid, wijzers verwisseld).
 - **Geen hulp en geen uitlegzinnen** (groep 3 leest nog niet vlot, en het kind moet het zelf doen). Geen Klaar-knop: staat de klok goed bij het loslaten (of na een pijltjestoets), dan telt het meteen. Fout bij kiezen: het goede antwoord licht groen op en het kind tikt het aan.
 - 12 vragen per ronde, elk een raampje in de toren (goud = munt). Sterren: ★ uitgespeeld, ★★ 9 munten, ★★★ alle 12.
+
+## De Winkel (geldregels)
+
+- Bedragen intern in centen. Niveaus: tot €10 (munten 1, 2 en briefjes 5, 10), tot €20, tot €100, met centen (10, 20, 50 cent).
+- Twee soorten: **Betaal** (gepast betalen) en **Geef terug** (wisselgeld: klant betaalt met het eerstvolgende briefje boven de prijs). Niveau 1 alleen betalen; daarna 6 betaal + 4 terug per ronde van 10.
+- Tik geld uit de beurs op de toonbank, tik op de toonbank om terug te pakken. Klopt het precies, dan gaat het vanzelf verder (geen knop). Te veel: de toonbank wiebelt en het laatste geld springt terug (telt als fout). Geen lopend totaal tonen: tellen is de oefening.
+- Beloning heet hier **blije klant 😊** (niet "munt", want munten zijn het onderwerp): op tijd en in één keer goed. Elke blije klant zet het gekochte ding (emoji) blijvend in het schap. Sterren: ★ uitgespeeld, ★★ 7 blij, ★★★ alle 10.
+- Einde ronde (geen "dicht"-bordje): grote sterren, en op de toonbank elke klant van de ronde als kaartje met wat hij kocht en 😊 (blij) of 🙂. De beurs verdwijnt.
+- Munten en briefjes zijn eigen CSS-tekeningen, geen afbeeldingen van echte euro's. Weinig tekst: alleen "Betaal" / "Geef terug" en prijskaartjes.
 
 ## Testen
 
