@@ -15,6 +15,7 @@ Kleine oefenspelletjes voor kinderen (basisschoolleeftijd), live op https://ik-o
 | `geld/` | De Winkel — betalen en wisselgeld, tot €10/€20/€100 en met centen |
 | `spelling/` | Het Ballonnenfeest — spelling: ei/ij, au/ou, d/t, g/ch |
 | `splitsen/` | Het Kippenhok — splitsen tot 10: hoeveel eieren liggen onder de kip? |
+| `verdelen/` | De Kikkervijver — aanvullen tot N: hoeveel kikkers moeten er nog op het blad? |
 | `fonts/` | Zelf gehoste Fredoka (`fredoka.css` + woff2 + `OFL-fredoka.txt`) |
 | `robots.txt`, `sitemap.xml` | Vindbaarheid |
 | `favicon.svg`, `apple-touch-icon.png` | Icoon van de site |
@@ -52,6 +53,15 @@ Kleine oefenspelletjes voor kinderen (basisschoolleeftijd), live op https://ik-o
 - Goed: de kip staat op en je ziet de eieren eronder. Fout: de kip tilt zich even op om te tellen, het goede cijfer licht groen op en het kind tikt het aan. Geen uitleg, alleen een "?"-wolkje bij de kip.
 - Beloning: een **kuiken** dat blijvend in de ren loopt (hooguit 40 zichtbaar, totaal ernaast), op tijd (8 s, Alles 10 s) en in één keer goed. 12 eieren per ronde; ★ uitgespeeld, ★★ 9 kuikens, ★★★ alle 12. Einde ronde: elk ei als splitshuisje op de plek van het toetsenbord.
 - De poten van de kip staan achter de eieren, anders dekken ze de verstopte eieren af.
+
+## De Kikkervijver (verdeelregels)
+
+- Aanvullen tot N: een bordje op de oever toont N. Het linkerblad heeft k kikkers die blijven zitten; het rechterblad begint leeg. Op de oever staan altijd precies 5 kikkers op een rij: pak je er een, dan springt er een nieuwe op dat plekje (de voorraad is eindeloos, dus te veel kan altijd).
+- Sleep of tik een kikker van de oever op het rechterblad, of terug (geen fout). Toetsen: → erop, ← terug. Elke kikker houdt zijn plekje op de oever (er schuift niets op); een kikker die terugkomt neemt de plek van de nieuwste kikker op de oever, zodat het er 5 blijven.
+- Precies N telt pas na 0,9 s rust; opnieuw pakken breekt dat af. Te veel: het rechterblad wiebelt, de laatste kikker springt terug en het telt als fout (geen lelie). Nergens een lopende telling: tellen is de oefening. Geen huisje of tekst in het speelveld (het splitshuisje en "kan het anders?" waren zonder uitleg niet te snappen, en zonder fout was het te makkelijk).
+- Niveaus: Tot 5 (2–5), Tot 10 (4–10), Duiken (de kikkers links duiken na 2 s onder, de balk start dan; na een fout komen ze even boven), Eerlijk (even 4–10, beide bladen beginnen leeg; goed = N in de vijver en gelijk verdeeld, N maar ongelijk = beide bladen wiebelen = fout, te veel = de laatste springt terug).
+- Layout: bij `(max-height:901px) and (min-width:600px)` wordt de tekening 500×330 (`kiesIndeling()`, via `matchMedia`, ook bij draaien/verkleinen): de oever is dan een staande strook rechts van de vijver (bordje boven, de 5 kikkers onder elkaar met stap 50), en de tijdbalk staat staand daarnaast (lof weer rechts daarvan). Anders 380×420 met de oever en een liggende balk eronder. Het script zet `--vul` op de vulling, de CSS kiest breedte of hoogte. Grijpvlak 50×50, zodat de staande rij niet overlapt.
+- Waterlelie als het in één keer goed is binnen 12 s (+1 s per te verplaatsen kikker boven 4); blijft in de vijver (nieuwste 5 + teller). ★★ 7, ★★★ 10. Einde ronde: sterren op het bordje, de lelies van de ronde op de bladen.
 
 ## De Berenkaart (layout)
 

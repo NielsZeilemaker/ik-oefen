@@ -1,0 +1,789 @@
+<!doctype html>
+<html lang="nl">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<title>De Kikkervijver — aanvullen tot het getal</title>
+<meta name="description" content="Oefen splitsen en aanvullen in De Kikkervijver: zet precies genoeg kikkers op het lelieblad. Tot 5, tot 10, onthouden en eerlijk delen. Gratis, zonder cookies, tracking of reclame.">
+<link rel="canonical" href="https://ik-oefen.nl/verdelen/">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="nl_NL">
+<meta property="og:site_name" content="Ik oefen">
+<meta property="og:title" content="De Kikkervijver — aanvullen en splitsen oefenen">
+<meta property="og:description" content="Oefen splitsen en aanvullen in De Kikkervijver: zet precies genoeg kikkers op het lelieblad. Tot 5, tot 10, onthouden en eerlijk delen. Gratis, zonder cookies, tracking of reclame.">
+<meta property="og:url" content="https://ik-oefen.nl/verdelen/">
+<link rel="stylesheet" href="../fonts/fredoka.css">
+<style>
+  :root{
+    --papier:#E2F4F2;
+    --kaart:#FCFEFD;
+    --kaart2:#DDF0EE;
+    --tekst:#173B40;
+    --zacht:rgba(23,59,64,.62);
+    --lijn:rgba(23,59,64,.16);
+    --blad:#4C9E58;
+    --bladrand:#2E7A3E;
+    --goed:#2F9E5B;
+    --rood:#D9484F;
+    --geel:#F2B632;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:linear-gradient(#CDEDEA, var(--papier) 40%, #EEF5E6);
+    background-attachment:fixed;
+    color:var(--tekst);
+    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:16px;line-height:1.5;padding:20px 16px 48px;min-height:100vh;
+  }
+  .wrap{max-width:860px;margin:0 auto}
+  header{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:baseline;justify-content:space-between;margin-bottom:22px}
+  .kop{display:grid;grid-template-columns:auto 1fr;column-gap:14px;align-items:start}
+  .kop .terug{margin-top:calc(clamp(28px,6vw,40px) * .75 - 20px)}   /* midden op de regel van de titel */
+  /* lage schermhoogte (zelfde grens als De Klokkentoren): ondertitel naast de titel, scheelt een regel */
+  @media (max-height:901px) and (min-width:600px){
+    .koptekst{display:flex;flex-wrap:wrap;align-items:center;column-gap:18px}
+    .koptekst .ondertitel{flex:1 1 260px;max-width:440px;margin:0}
+  }
+  .terug{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;color:var(--tekst);border:1px solid var(--lijn);background:var(--kaart);text-decoration:none;transition:background .15s,border-color .15s}
+  .terug:hover{background:var(--kaart2);border-color:var(--tekst)}
+  h1{font-family:Fredoka,ui-rounded,system-ui,sans-serif;font-weight:600;font-size:clamp(28px,6vw,40px);margin:0}
+  .ondertitel{margin:2px 0 0;font-size:14px;color:var(--zacht)}
+
+  .kaart{background:var(--kaart);border:1px solid var(--lijn);border-radius:16px;padding:20px 18px;box-shadow:0 2px 0 rgba(23,59,64,.06)}
+  /* één rij: niveauknoppen links, lelies en voortgang rechts (past het niet, dan zakken die eronder) */
+  .leskop{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-bottom:6px}
+  .leskop .rechts{display:flex;align-items:center;gap:14px;margin-left:auto;font-size:13px;color:var(--zacht);white-space:nowrap}
+  .teller{display:inline-flex;align-items:center;gap:5px;font-family:Fredoka,ui-rounded,sans-serif;font-size:18px;font-weight:600;color:var(--tekst)}
+  .teller svg{width:22px;height:22px}
+  .teller.bump{animation:pop .45s}
+  .teller .reeks{font-size:15px;color:#D9581E;margin-left:4px}
+
+  .niveaus{display:contents}   /* knoppen doen mee in de rij van .leskop */
+  .niveaus button{font:inherit;font-size:14px;cursor:pointer;border:1px solid var(--lijn);background:var(--kaart2);color:var(--tekst);border-radius:20px;padding:5px 14px}
+  .niveaus button.aan{background:var(--tekst);color:#fff;border-color:var(--tekst)}
+
+  /* ---------- de vijver met de oever eronder (één tekening, zodat slepen overal hetzelfde werkt) ---------- */
+  /* zo groot als in de hoogte past, zodat de balk eronder in beeld blijft; op een telefoon zo breed als kan */
+  .vijver{display:block;width:clamp(260px, (100svh - 330px) * .905, 600px);max-width:100%;height:auto;margin:6px auto 0;
+    overflow:visible;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
+  .vijver:focus{outline:none}
+  .vijver:focus-visible .waterrand{stroke:#5B8DEF;stroke-width:5}
+  .blad path.vlak{fill:var(--blad);stroke:var(--bladrand);stroke-width:3;transition:fill .2s,stroke .2s}
+  .blad.doel path.vlak{fill:#62B96B;stroke:#F2D04A;stroke-width:6}
+  .oever .gras{transition:fill .2s,stroke .2s}
+  .oever.doel .gras{fill:#BDE38A;stroke:#F2D04A;stroke-width:5}
+  .bordgetal{font-family:Fredoka,ui-rounded,sans-serif;font-weight:600;font-size:42px;fill:#3A2412;text-anchor:middle;dominant-baseline:central}
+  .bordgetal.sterren{font-size:24px;letter-spacing:1px}
+  .kikker{cursor:grab;transition:transform .35s cubic-bezier(.3,.7,.3,1)}
+  .kikker.blijft{cursor:default}
+  .kikker.sleep{cursor:grabbing;transition:none}
+  .kikker.sleep .lijf{transform:scale(1.12)}
+  #kikkers.vast .kikker{transition:none}
+  .lijf{transition:transform .15s,opacity .5s}
+  .kikker .grijp{fill:transparent}
+  /* duiken: de kikker zakt weg, er blijven kringen en belletjes in het water */
+  .kikker.onder .lijf{opacity:0;transform:translateY(14px) scale(.55);transition:transform .6s,opacity .6s}
+  .rimpel{opacity:0;transition:opacity .4s;fill:none;stroke:#fff;stroke-width:2}
+  .rimpel circle{fill:#fff;stroke:none;opacity:.8}
+  .kikker.onder .rimpel{opacity:.85}
+  @media (prefers-reduced-motion:no-preference){
+    .kikker.spring .lijf{animation:spring .35s ease-out}
+    .kikker.kwaak .lijf{animation:spring .4s ease-out 2}
+    .kikker.nieuw .lijf{animation:nieuw .4s cubic-bezier(.2,.9,.3,1.3) both}
+    .kikker.mis .lijf,.blad.mis .wiebelvlak{animation:wiebel .25s 2}
+    .kikker.onder .rimpel ellipse{animation:kring 1.8s ease-out infinite;transform-box:fill-box;transform-origin:center}
+    .kikker.onder .rimpel ellipse+ellipse{animation-delay:-.9s}
+    .kikker.onder .rimpel circle{animation:bel 1.6s ease-in infinite}
+    .bloei{animation:bloei .7s cubic-bezier(.2,.9,.3,1.3) both}
+  }
+  @keyframes spring{0%{transform:translateY(0)}45%{transform:translateY(-18px) scale(1.06)}100%{transform:translateY(0)}}
+  @keyframes nieuw{0%{transform:translateY(20px) scale(.3);opacity:0}100%{transform:none;opacity:1}}
+  @keyframes kring{0%{transform:scale(.5);opacity:1}100%{transform:scale(1.25);opacity:0}}
+  @keyframes bel{0%{transform:translateY(0);opacity:.9}100%{transform:translateY(-12px);opacity:0}}
+  @keyframes bloei{0%{transform:scale(0) rotate(-40deg);opacity:0}100%{transform:none;opacity:1}}
+  .totaal text{font-family:Fredoka,ui-rounded,sans-serif;font-weight:600;font-size:16px;fill:var(--tekst)}
+
+  #hint{text-align:center;min-height:1.8em;font-family:Fredoka,ui-rounded,sans-serif;font-weight:600;font-size:18px;margin:8px 0 0}
+
+  /* tijdbalk: op tijd en in één keer goed = een waterlelie */
+  #balk{display:flex;align-items:center;gap:10px;max-width:340px;margin:2px auto 0;height:34px}
+  #balk svg{width:28px;height:28px;flex:none;transition:filter .3s,opacity .3s}
+  #balk .spoor{flex:1;height:12px;border-radius:6px;background:var(--kaart2);overflow:hidden;box-shadow:inset 0 1px 2px rgba(0,0,0,.12)}
+  /* het script zet --vul (100% → 0%); liggend krimpt de breedte, staand de hoogte */
+  #balk .spoor i{display:block;height:100%;width:var(--vul,100%);border-radius:6px;background:linear-gradient(90deg,#F17FAA,#FBC4DA)}
+  #balk.weg svg{filter:grayscale(1);opacity:.4}
+  #balk.klaar{visibility:hidden}
+  #balk.verdiend svg{animation:pop .5s}
+
+  /* laag scherm (≥600px breed): vijver links, de balk staand ernaast, lof daar rechts van */
+  @media (max-height:901px) and (min-width:600px){
+    .speelveld{display:grid;grid-template-columns:auto auto minmax(0,1fr);column-gap:22px;align-items:center;
+      grid-template-areas:"vijver balk hint"}
+    .speelveld .vijver{grid-area:vijver;width:clamp(340px, min((100svh - 262px) * 1.515, 100vw - 330px), 780px);margin:0}
+    .speelveld #hint{grid-area:hint;text-align:left;margin:0}
+    .speelveld #balk{grid-area:balk;flex-direction:column;align-self:stretch;width:34px;height:auto;max-width:none;margin:0;padding:12px 0}
+    .speelveld #balk .spoor{flex:1;width:12px;height:auto;display:flex;flex-direction:column;justify-content:flex-end}
+    .speelveld #balk .spoor i{width:100%;height:var(--vul,100%);background:linear-gradient(0deg,#F17FAA,#FBC4DA)}
+  }
+
+  @media (prefers-reduced-motion:reduce){ .teller.bump,#balk.verdiend svg,.kikker .lijf,.blad.mis .wiebelvlak,.bloei{animation:none} .kikker{transition:none} }
+  @keyframes wiebel{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+  @keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.4) rotate(-10deg)}100%{transform:scale(1)}}
+
+  .knoppen[hidden]{display:none}
+  .knoppen{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:16px}
+  .knoppen button{font:inherit;font-size:14px;cursor:pointer;border:1px solid var(--tekst);background:var(--tekst);color:#fff;border-radius:8px;padding:7px 14px}
+  :focus-visible{outline:3px solid #5B8DEF;outline-offset:2px}
+
+  #uitslag{margin-top:18px;border-top:1px solid var(--lijn);padding-top:16px}
+  #uitslag h3{font-family:Fredoka,ui-rounded,sans-serif;font-weight:500;font-size:20px;margin:0 0 8px}
+  #uitslag p{margin:0 0 10px;font-size:15px}
+  #uitslag .sterren{color:var(--geel);font-size:26px;letter-spacing:3px}
+  #uitslag .sterren i{font-style:normal;color:var(--lijn)}
+  #uitslag button{font:inherit;font-size:15px;cursor:pointer;border-radius:8px;padding:7px 14px;margin:4px 8px 0 0;border:1px solid var(--tekst);background:var(--kaart);color:var(--tekst)}
+  #uitslag button.hoofd{background:var(--tekst);color:#fff}
+
+  h2.recordkop{font-family:Fredoka,ui-rounded,sans-serif;font-weight:500;font-size:20px;margin:30px 0 8px}
+  #records{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+  .record{background:var(--kaart);border:1px solid var(--lijn);border-radius:12px;padding:10px 12px;font-size:14px}
+  .record b{display:block;font-family:Fredoka,ui-rounded,sans-serif;font-size:17px;font-weight:600}
+  .record .sterren{color:var(--geel);font-size:18px;letter-spacing:2px}
+  .record .sterren i{font-style:normal;color:var(--lijn)}
+  .record svg{width:18px;height:18px;vertical-align:-4px}
+
+  footer{margin-top:28px;font-size:13px;color:var(--zacht)}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="kop">
+      <a class="terug" href="../" aria-label="Terug naar Ik oefen" title="Terug naar Ik oefen"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      <div class="koptekst">
+        <h1>De Kikkervijver</h1>
+        <p class="ondertitel">Zet precies genoeg kikkers op het blad. Op tijd en in één keer goed? Dan bloeit er een waterlelie.</p>
+      </div>
+    </div>
+  </header>
+
+  <div class="kaart">
+    <div class="leskop">
+      <div class="niveaus" id="niveaus"></div>
+      <div class="rechts">
+        <span class="teller" id="teller" title="waterlelies deze ronde"><span id="tellerlelie"></span><b id="lelies">0</b><span class="reeks" id="reeks"></span></span>
+        <span id="voortgang">vraag 1 van 10</span>
+      </div>
+    </div>
+
+    <div class="speelveld" id="speelveld">
+      <svg class="vijver" id="vijver" viewBox="0 0 380 420" tabindex="0" role="img" aria-label="vijver met kikkers">
+        <defs>
+          <radialGradient id="waterkleur" cx="50%" cy="40%" r="70%">
+            <stop offset="0" stop-color="#93D6DA"/><stop offset="1" stop-color="#5DAFBA"/>
+          </radialGradient>
+          <!-- een kikker, van voren gezien; middelpunt 0,0 -->
+          <g id="kikkerbeeld">
+            <ellipse cx="-17" cy="13" rx="9" ry="6.5" fill="#6FA932"/>
+            <ellipse cx="17" cy="13" rx="9" ry="6.5" fill="#6FA932"/>
+            <ellipse cx="0" cy="5" rx="19" ry="15" fill="#A8DB4C" stroke="#4F7F1E" stroke-width="1.6"/>
+            <ellipse cx="0" cy="10" rx="11" ry="8" fill="#DDF3A6"/>
+            <circle cx="-9" cy="-10" r="7.5" fill="#A8DB4C" stroke="#4F7F1E" stroke-width="1.6"/>
+            <circle cx="9" cy="-10" r="7.5" fill="#A8DB4C" stroke="#4F7F1E" stroke-width="1.6"/>
+            <circle cx="-9" cy="-10" r="5" fill="#fff"/>
+            <circle cx="9" cy="-10" r="5" fill="#fff"/>
+            <circle cx="-8.4" cy="-9.4" r="2.6" fill="#1D2B17"/>
+            <circle cx="9.6" cy="-9.4" r="2.6" fill="#1D2B17"/>
+            <circle cx="-12" cy="2" r="2.4" fill="#F28FA8" opacity=".55"/>
+            <circle cx="12" cy="2" r="2.4" fill="#F28FA8" opacity=".55"/>
+            <path d="M-7 1 Q0 7 7 1" fill="none" stroke="#2F4F12" stroke-width="1.8" stroke-linecap="round"/>
+            <ellipse cx="-8" cy="19" rx="5" ry="3" fill="#6FA932"/>
+            <ellipse cx="8" cy="19" rx="5" ry="3" fill="#6FA932"/>
+          </g>
+        </defs>
+        <!-- de vijver -->
+        <rect class="waterrand" id="waterrand" x="2" y="2" width="376" height="296" rx="34" fill="url(#waterkleur)" stroke="#3E8E93" stroke-width="3"/>
+        <g fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".35">
+          <path d="M150 60 q14 -6 28 0"/><path d="M200 246 q12 -5 24 0"/><path d="M178 150 q6 -3 12 0"/><path d="M60 286 q10 -4 20 0"/>
+        </g>
+        <g id="leliegroep"></g>
+        <g class="blad" id="blad0" transform="translate(98 150)"></g>
+        <g class="blad" id="blad1" transform="translate(282 150) scale(-1 1)"></g>
+        <!-- de oever met gras, en het bordje met het getal -->
+        <g class="oever" id="oever">
+          <rect class="gras" id="gras" x="2" y="304" width="376" height="114" rx="20" fill="#A7D46F" stroke="#7FB24E" stroke-width="2"/>
+          <g id="graspluk" fill="none" stroke="#6E9E3E" stroke-width="2" stroke-linecap="round" opacity=".6">
+            <path d="M118 414 l-4 -12 M122 414 l0 -14 M126 414 l4 -11"/><path d="M250 415 l-3 -10 M254 415 l1 -12 M258 415 l4 -9"/>
+            <path d="M360 412 l-3 -11 M364 412 l1 -13 M368 412 l4 -10"/><path d="M20 412 l-2 -10 M24 412 l1 -12"/>
+          </g>
+        </g>
+        <g id="bord" aria-hidden="true">
+          <rect id="paal" x="52" y="360" width="12" height="54" rx="3" fill="#8B5E3C"/>
+          <rect x="12" y="310" width="92" height="60" rx="9" fill="#D39A62" stroke="#8B5E3C" stroke-width="3"/>
+          <path d="M20 326 h30 M64 352 h32 M24 360 h18" stroke="#B57D47" stroke-width="2" stroke-linecap="round" fill="none"/>
+          <circle cx="20" cy="318" r="2" fill="#8B5E3C"/><circle cx="96" cy="318" r="2" fill="#8B5E3C"/>
+          <text class="bordgetal" id="bordgetal" x="58" y="341"></text>
+        </g>
+        <g id="terugblik"></g>
+        <g id="kikkers"></g>
+        <g class="totaal" id="totaal"></g>
+      </svg>
+
+      <p id="hint" aria-live="polite"></p>
+      <div id="balk"><span id="balklelie"></span><div class="spoor" title="Op tijd en in één keer goed = een waterlelie"><i id="vulling"></i></div></div>
+    </div>
+
+    <div class="knoppen" id="knoppen"><button id="opnieuw">Begin opnieuw</button></div>
+    <div id="uitslag" hidden></div>
+  </div>
+
+  <h2 class="recordkop">Jouw records</h2>
+  <div id="records"></div>
+
+  <footer>Voortgang wordt op dit apparaat bewaard. Het bordje zegt hoeveel kikkers er in de vijver moeten. Op het linkerblad zitten er al een paar: zet er precies genoeg bij op het rechterblad. Sleep een kikker van de kant naar het blad, of tik hem aan; tik of sleep hem terug als het er te veel worden. Met een toetsenbord: pijltje rechts zet een kikker op het blad, pijltje links haalt er een terug. Bij Duiken duiken de kikkers op het linkerblad onder water: onthoud hoeveel het er waren. Bij Eerlijk moeten alle kikkers van de kant, en op beide bladen evenveel. Op tijd en in één keer goed? Dan bloeit er een waterlelie in de vijver.</footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+var BEWAAR = "kikkervijver-v1";
+var RONDE = 10;
+var WACHT = 12000;   // tijd voor een lelie (plus een beetje per kikker)
+var PAUZE = 900;     // zo lang moet het kloppen voordat het telt
+var DUIK = 2000;     // bij Duiken: na zoveel tijd gaan de kikkers onder water
+var NIVEAUS = [
+  {titel:"Tot 5",   van:2, tot:5},
+  {titel:"Tot 10",  van:4, tot:10},
+  {titel:"Duiken",  van:4, tot:10, duik:true},
+  {titel:"Eerlijk", eerlijk:true}
+];
+// kleuren van de waterlelies: [buitenste blaadjes, binnenste blaadjes]
+var KLEUREN = [["#F59AC0","#FDD3E5"],["#FFFFFF","#FFF0C9"],["#C9A3F0","#EEDFFC"],["#FFAE88","#FFE0CF"],["#F2759F","#FFC2D6"]];
+
+// de tekening (viewBox 380×420): vijver tot y=300 met twee bladen, daaronder de oever.
+// Op een laag, breed scherm (zij) is het 500×330: de oever staat dan als strook rechts naast de vijver.
+var MIDDEN = 190, BLAD_X = [98, 282], BLAD_Y = 150, STAP_X = 54, STAP_Y = 52, OEVER_Y = 302, OEVER_X = 382;
+var BREED, HOOG, zij = false;
+var ZIJ = window.matchMedia ? window.matchMedia("(max-height:901px) and (min-width:600px)") : null;
+var LINKS = 0, RECHTS = 1, OEVER = 2;
+// hoe de kikkers op een blad zitten: aantal per rij, zodat ze makkelijk te tellen zijn
+var RIJEN = [[], [1], [2], [1,2], [2,2], [2,1,2], [3,3], [2,3,2], [2,2,2,2], [2,3,2,2], [2,3,3,2]];
+// plekken voor waterlelies rond de bladeren (de nieuwste vijf worden getekend)
+var LELIEPLEK = [[26,28],[354,272],[354,28],[26,272],[190,24]];
+
+var data = {records:{}, niveau:0, vijver:[], totaal:0};
+function laad(){
+  try{ var s = localStorage.getItem(BEWAAR); if (s) data = JSON.parse(s); }catch(e){}
+  if (!data || typeof data !== "object") data = {};
+  if (!data.records) data.records = {};
+  if (!Array.isArray(data.vijver)) data.vijver = [];
+  if (typeof data.totaal !== "number") data.totaal = data.vijver.length;
+  if (typeof data.niveau !== "number" || !NIVEAUS[data.niveau]) data.niveau = 0;
+  delete data.gevonden;   // van een oudere versie
+}
+function bewaar(){ try{ localStorage.setItem(BEWAAR, JSON.stringify(data)); }catch(e){} }
+
+function tussen(a, b){ return a + Math.floor(Math.random()*(b-a+1)); }
+function schud(a){ for (var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)), t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+function laatste(a){ return a.length ? a[a.length-1] : null; }
+// de kikker op het achterste plekje van de kant
+function achteraan(){ var a = plaatsen[OEVER].slice().sort(function(x, y){ return x.vak - y.vak; }); return laatste(a); }
+function $(id){ return document.getElementById(id); }
+var NS = "http://www.w3.org/2000/svg";
+function el(naam, attr, ouder){
+  var e = document.createElementNS(NS, naam);
+  for (var k in attr) e.setAttribute(k, attr[k]);
+  if (ouder) ouder.appendChild(e);
+  return e;
+}
+function eerlijk(){ return !!NIVEAUS[data.niveau].eerlijk; }
+function duiken(){ return !!NIVEAUS[data.niveau].duik; }
+
+/* ---------- tekeningen ---------- */
+// een waterlelie op een klein blad, middelpunt 0,0 (eigen tekening, geen emoji)
+function lelieTekening(k){
+  var c = KLEUREN[k % KLEUREN.length], s = '<path d="M0 0 L13.6 -6.3 A15 15 0 1 0 13.6 6.3 Z" fill="#3E8F4C" stroke="#2E7A3E" stroke-width="1"/>';
+  for (var i=0;i<8;i++) s += '<ellipse cx="0" cy="-7" rx="3.4" ry="7" fill="' + c[0] + '" stroke="rgba(0,0,0,.12)" stroke-width=".5" transform="rotate(' + (i*45) + ')"/>';
+  for (var j=0;j<6;j++) s += '<ellipse cx="0" cy="-4.6" rx="2.6" ry="5" fill="' + c[1] + '" transform="rotate(' + (j*60+30) + ')"/>';
+  return s + '<circle r="2.8" fill="#F5C342"/>';
+}
+function lelie(k){ return '<svg viewBox="-17 -17 34 34" aria-hidden="true">' + lelieTekening(k) + "</svg>"; }
+
+// een lelieblad met een inkeping naar buiten en nerven
+function tekenBladeren(){
+  var punt = function(g){ var a = g * Math.PI/180; return (88*Math.cos(a)).toFixed(1) + " " + (118*Math.sin(a)).toFixed(1); };
+  var d = "M-38 24 L" + punt(150) + " A88 118 0 1 0 " + punt(170) + " Z";
+  var nerven = "";
+  [-60, -20, 20, 60, 100, 200, 240].forEach(function(g){ nerven += "M-38 24 L" + punt(g) + " "; });
+  for (var b=0;b<2;b++){
+    $("blad"+b).innerHTML = '<g class="wiebelvlak"><ellipse cx="4" cy="8" rx="88" ry="118" fill="#000" opacity=".1"/>'
+      + '<path class="vlak" d="' + d + '"/>'
+      + '<path d="' + nerven + '" fill="none" stroke="#8CCB7A" stroke-width="2" opacity=".35"/></g>';
+  }
+}
+
+/* ---------- vragen maken ---------- */
+// N = hoeveel er in de vijver moeten, k = hoeveel er al op het linkerblad zitten.
+// Op de kant zitten er altijd 5; pak je er een, dan springt er een nieuwe bij. Zo kun je te veel pakken.
+function maakVraag(N, k){
+  var v = {N:N, k:k};
+  if (eerlijk()){ v.k = 0; v.nodig = N; }
+  else v.nodig = N - k;
+  v.wacht = WACHT + Math.max(0, v.nodig - 4) * 1000;
+  return v;
+}
+function maakRonde(){
+  var n = NIVEAUS[data.niveau], lijst = [], gebruikt = {}, vorigeN = 0, i;
+  if (n.eerlijk){
+    // even aantallen 4 tot 10, de eerste is 4; nooit twee keer hetzelfde achter elkaar
+    var rij = schud([6,8,10,4,6,8,10,6,8]);
+    for (var p=0;p<30;p++){ var ok = true; for (i=1;i<rij.length;i++) if (rij[i] === rij[i-1]) ok = false; if (ok && rij[0] !== 4) break; schud(rij); }
+    [4].concat(rij).forEach(function(N){ lijst.push(maakVraag(N, 0)); });
+    return lijst;
+  }
+  for (i=0;i<RONDE;i++){
+    var N, k;
+    for (var poging=0; poging<80; poging++){
+      N = tussen(n.van, n.tot); k = tussen(1, N-1);
+      if (i === 0 && (N > 6 || N - k > 3)) continue;           // rustig beginnen
+      if (poging < 60 && N === vorigeN) continue;               // niet twee keer hetzelfde getal
+      if (poging < 70 && gebruikt[N + "-" + k]) continue;       // geen paar dat al geweest is
+      break;
+    }
+    gebruikt[N + "-" + k] = 1; vorigeN = N;
+    lijst.push(maakVraag(N, k));
+  }
+  return lijst;
+}
+
+/* ---------- toestand ---------- */
+var vragen = [], nr = 0, vraag = null, bezig = false, fout = false;
+var leliesRonde = 0, reeks = 0, start = 0, uitslagen = [];
+var balkTimer = null, pauzeTimer = null, duikTimer = null, bovenTimer = null;
+var kikkers = [], plaatsen = [[], [], []];
+
+function startBalk(){
+  var b = $("balk"), v = $("vulling");
+  b.classList.remove("weg", "klaar", "verdiend");
+  zetVulling(100, 0);
+  void v.offsetWidth;
+  zetVulling(0, vraag.wacht);
+  clearTimeout(balkTimer);
+  balkTimer = setTimeout(function(){ $("balk").classList.add("weg"); }, vraag.wacht);
+}
+function volleBalk(){
+  var b = $("balk"), v = $("vulling");
+  b.classList.remove("weg", "klaar", "verdiend");
+  clearTimeout(balkTimer);
+  zetVulling(100, 0);
+}
+// de balk loopt liggend (breedte) of staand naast de vijver (hoogte): zet ze allebei, de CSS kiest
+function zetVulling(procent, ms){
+  var v = $("vulling");
+  v.style.transition = ms ? "width " + ms + "ms linear, height " + ms + "ms linear" : "none";
+  v.style.setProperty("--vul", procent + "%");
+}
+function stopBalk(){
+  clearTimeout(balkTimer);
+  var v = $("vulling"), spoor = v.parentNode, staand = spoor.clientHeight > spoor.clientWidth;
+  var deel = staand ? v.offsetHeight / (spoor.clientHeight || 1) : v.offsetWidth / (spoor.clientWidth || 1);
+  zetVulling(Math.round(deel * 1000) / 10, 0);
+}
+function tekenTeller(bump){
+  $("lelies").textContent = leliesRonde;
+  $("reeks").textContent = reeks >= 3 ? "🔥" + reeks : "";
+  if (bump){ var t = $("teller"); t.classList.remove("bump"); void t.offsetWidth; t.classList.add("bump"); }
+}
+// de verzameling: de nieuwste vijf lelies rond de bladeren, en hoeveel het er in totaal zijn
+function tekenLelies(nieuw){
+  var g = $("leliegroep"), t = data.vijver.slice(-LELIEPLEK.length), s = "";
+  t.forEach(function(k, i){
+    var p = LELIEPLEK[(data.totaal - t.length + i) % LELIEPLEK.length];
+    var isNieuw = nieuw && i === t.length - 1;
+    s += '<g transform="translate(' + p[0] + " " + p[1] + ')"><g' + (isNieuw ? ' class="bloei" style="transform-box:fill-box;transform-origin:center"' : "") + ">" + lelieTekening(k) + "</g></g>";
+  });
+  g.innerHTML = s;
+  var tot = $("totaal");
+  if (!data.totaal){ tot.innerHTML = ""; return; }
+  var tekst = String(data.totaal), br = 46 + tekst.length * 9;
+  tot.innerHTML = '<rect x="' + (190 - br/2) + '" y="275" width="' + br + '" height="22" rx="11" fill="#fff" opacity=".85"/>'
+    + '<g transform="translate(' + (190 - br/2 + 15) + ' 286) scale(.55)">' + lelieTekening(0) + "</g>"
+    + '<text x="' + (190 - br/2 + 28) + '" y="291.5">' + tekst + "</text>";
+}
+
+/* ---------- kikkers ---------- */
+function plekken(n){
+  var r = RIJEN[Math.min(n, 10)], uit = [];
+  r.forEach(function(c, i){
+    var y = (i - (r.length-1)/2) * STAP_Y;
+    for (var j=0;j<c;j++) uit.push([(j - (c-1)/2) * STAP_X, y]);
+  });
+  return uit;
+}
+// op de kant: één nette rij van vijf, rechts van het bordje (zij: onder elkaar, onder het bordje)
+var OEVER_AANTAL = 5, geboren = 0;
+function oeverPlek(i){ return zij ? [441, 96 + i * 50] : [140 + i * 52, 360]; }
+function zetAttr(id, a){ var e = $(id); for (var n in a) e.setAttribute(n, a[n]); }
+function kiesIndeling(){
+  zij = !!(ZIJ && ZIJ.matches);
+  BREED = zij ? 500 : 380; HOOG = zij ? 330 : 420;
+  $("vijver").setAttribute("viewBox", "0 0 " + BREED + " " + HOOG);
+  zetAttr("waterrand", {height: zij ? 326 : 296});
+  zetAttr("gras", zij ? {x:384, y:2, width:114, height:326} : {x:2, y:304, width:376, height:114});
+  $("graspluk").style.display = zij ? "none" : "";
+  $("paal").style.display = zij ? "none" : "";
+  // het bordje bovenaan de strook (normaal: x 12, y 310)
+  if (zij) $("bord").setAttribute("transform", "translate(383 -302)"); else $("bord").removeAttribute("transform");
+  if (kikkers.length){
+    var g = $("kikkers"); g.classList.add("vast");
+    schik(OEVER);
+    void g.getBoundingClientRect(); g.classList.remove("vast");
+  }
+}
+function zetPlek(k, x, y){ k.x = x; k.y = y; k.el.style.transform = "translate(" + x.toFixed(1) + "px," + y.toFixed(1) + "px)"; }
+function schik(plaats){
+  if (plaats === OEVER){
+    // elke kikker houdt zijn eigen plekje op de kant (geen opschuiven);
+    // een kikker die terugkomt, neemt het eerste lege plekje
+    var bezet = {};
+    plaatsen[OEVER].forEach(function(k){ if (k.vak != null) bezet[k.vak] = true; });
+    plaatsen[OEVER].forEach(function(k){
+      if (k.vak == null){ var v = 0; while (bezet[v]) v++; k.vak = v; bezet[v] = true; }
+      var p = oeverPlek(k.vak); zetPlek(k, p[0], p[1]);
+    });
+    return;
+  }
+  var p = plekken(plaatsen[plaats].length);
+  plaatsen[plaats].forEach(function(k, i){ zetPlek(k, BLAD_X[plaats] + p[i][0], BLAD_Y + p[i][1]); });
+}
+function maakKikker(plaats, blijft){
+  var e = el("g", {"class":"kikker" + (blijft ? " blijft" : "")}, $("kikkers"));
+  // grijpvlak 50×50: zo groot als één plek (stap 50–54), dus nooit overlappend met een buur
+  el("rect", {"class":"grijp", x:-25, y:-25, width:50, height:50}, e);
+  var r = el("g", {"class":"rimpel"}, e);
+  el("ellipse", {cx:0, cy:8, rx:20, ry:7}, r); el("ellipse", {cx:0, cy:8, rx:20, ry:7}, r);
+  el("circle", {cx:-6, cy:2, r:2.2}, r); el("circle", {cx:5, cy:-2, r:1.6}, r);
+  var lijf = el("g", {"class":"lijf"}, e);
+  el("use", {href:"#kikkerbeeld"}, lijf);
+  var k = {el:e, plaats:plaats, blijft:blijft, geboren:++geboren};
+  e._kikker = k;
+  kikkers.push(k); plaatsen[plaats].push(k);
+  return k;
+}
+// een nieuwe kikker springt op de kant, op het plekje dat net leeg is
+function vulOever(vak){
+  var k = maakKikker(OEVER, false);
+  k.vak = vak;
+  var p = oeverPlek(vak); zetPlek(k, p[0], p[1]);
+  opnieuwAnimeren(k.el, "nieuw");
+}
+// de kant is vol: de nieuwste kikker daar maakt plaats voor wie terugkomt
+function maakPlaats(terug){
+  var jongste = null;
+  plaatsen[OEVER].forEach(function(k){ if (k !== terug && (!jongste || k.geboren > jongste.geboren)) jongste = k; });
+  if (!jongste) return;
+  plaatsen[OEVER].splice(plaatsen[OEVER].indexOf(jongste), 1);
+  kikkers.splice(kikkers.indexOf(jongste), 1);
+  jongste.el.remove();
+  terug.vak = jongste.vak;
+}
+function maakKikkers(){
+  var g = $("kikkers"); g.innerHTML = ""; g.classList.add("vast");
+  kikkers = []; plaatsen = [[], [], []];
+  for (var i=0;i<vraag.k;i++) maakKikker(LINKS, true);
+  for (var j=0;j<OEVER_AANTAL;j++) maakKikker(OEVER, false);
+  schik(LINKS); schik(RECHTS); schik(OEVER);
+  void g.getBoundingClientRect();
+  g.classList.remove("vast");
+  zegStand();
+}
+function zegStand(){
+  $("vijver").setAttribute("aria-label", "Er moeten " + vraag.N + " kikkers in de vijver. Links " + (duiken() ? "?" : plaatsen[LINKS].length)
+    + ", rechts " + plaatsen[RECHTS].length + ", op de kant " + plaatsen[OEVER].length + ". Pijltje rechts zet een kikker op het blad, pijltje links haalt er een terug.");
+}
+// eerst alle eenmalige animaties eraf: "spring" en "kwaak" gebruiken dezelfde keyframes,
+// en een animatie met dezelfde naam start anders niet opnieuw
+function opnieuwAnimeren(e, klasse){ e.classList.remove("spring", "kwaak", "mis", "nieuw"); void e.getBoundingClientRect(); e.classList.add(klasse); }
+// een kikker springt naar een andere plek
+function verplaats(k, naar, stil){
+  var van = k.plaats, vak = k.vak;
+  plaatsen[van].splice(plaatsen[van].indexOf(k), 1);
+  plaatsen[naar].push(k); k.plaats = naar; k.vak = null;
+  if (van === OEVER) vulOever(vak);
+  if (naar === OEVER) maakPlaats(k);
+  opnieuwAnimeren(k.el, "spring");
+  schik(van); schik(naar);
+  zegStand();
+  if (!stil) controleer(k);
+}
+
+/* ---------- duiken ---------- */
+function duik(){ plaatsen[LINKS].forEach(function(k){ k.el.classList.add("onder"); }); }
+function boven(){ plaatsen[LINKS].forEach(function(k){ k.el.classList.remove("onder"); }); }
+
+/* ---------- controleren: vanzelf na het loslaten ---------- */
+function wiebel(bladen){
+  bladen.forEach(function(b){
+    opnieuwAnimeren($("blad" + b), "mis");
+    plaatsen[b].forEach(function(k){ opnieuwAnimeren(k.el, "mis"); });
+  });
+}
+function telFout(){
+  if (!fout){ fout = true; stopBalk(); $("balk").classList.add("weg"); }
+  reeks = 0; tekenTeller(false);
+  if (duiken() && plaatsen[LINKS].length){
+    // even boven water, zodat je kunt tellen
+    clearTimeout(duikTimer); clearTimeout(bovenTimer);
+    boven();
+    bovenTimer = setTimeout(function(){ if (bezig) duik(); }, 1600);
+  }
+}
+// k = de kikker die net verplaatst is; null = er veranderde niets (alleen de pauze opnieuw starten)
+function controleer(k){
+  if (!bezig) return;
+  clearTimeout(pauzeTimer);
+  var l = plaatsen[LINKS].length, r = plaatsen[RECHTS].length;
+  if (eerlijk() && l + r === vraag.N){
+    if (l === r) pauzeTimer = setTimeout(goed, PAUZE);
+    else if (k){ wiebel([LINKS, RECHTS]); telFout(); }    // ongelijk verdeeld
+    return;
+  }
+  if (l + r === vraag.N) pauzeTimer = setTimeout(goed, PAUZE);
+  else if (l + r > vraag.N && k && k.plaats !== OEVER){
+    // te veel: het blad wiebelt en de laatste kikker springt terug naar de kant
+    var blad = k.plaats;
+    wiebel([blad]); telFout();
+    setTimeout(function(){
+      if (bezig && k && k.plaats === blad && !(sleep && sleep.k === k)) verplaats(k, OEVER);
+    }, 420);
+  }
+}
+
+function goed(){
+  if (!bezig) return;
+  bezig = false;
+  clearTimeout(duikTimer); clearTimeout(bovenTimer);
+  stopBalk();
+  var verdiend = !fout && (!start || Date.now() - start <= vraag.wacht);
+  uitslagen.push({lelie:verdiend});
+  boven();
+  // de kikkers in de vijver springen blij op
+  plaatsen[LINKS].concat(plaatsen[RECHTS]).forEach(function(k){ opnieuwAnimeren(k.el, "kwaak"); });
+  if (verdiend){
+    leliesRonde++; reeks++;
+    var kleur = tussen(0, KLEUREN.length-1);
+    uitslagen[uitslagen.length-1].kleur = kleur;
+    data.vijver.push(kleur); data.totaal++;
+    if (data.vijver.length > 50) data.vijver = data.vijver.slice(-50);
+    bewaar();
+    tekenLelies(true);
+    var b = $("balk"); b.classList.remove("verdiend"); void b.offsetWidth; b.classList.add("verdiend");
+  } else reeks = 0;
+  tekenTeller(verdiend);
+  $("hint").textContent = verdiend ? ["Goed zo!", "Super!", "Top!", "Knap!"][tussen(0,3)] : "Goed zo!";
+  setTimeout(volgende, 1500);
+}
+
+/* ---------- één vraag ---------- */
+function toonVraag(){
+  vraag = vragen[nr];
+  bezig = true; fout = false; start = 0;
+  clearTimeout(pauzeTimer); clearTimeout(duikTimer); clearTimeout(bovenTimer);
+  $("hint").textContent = "";
+  $("voortgang").textContent = "vraag " + (nr+1) + " van " + RONDE;
+  $("bordgetal").setAttribute("class", "bordgetal");
+  $("bordgetal").textContent = vraag.N;
+  maakKikkers();
+  if (duiken()){
+    // eerst kijken en onthouden; de tijd loopt pas als ze onder water zijn
+    volleBalk();
+    duikTimer = setTimeout(function(){ if (!bezig) return; duik(); start = Date.now(); if (!fout) startBalk(); }, DUIK);
+  } else { start = Date.now(); startBalk(); }
+}
+function volgende(){
+  nr++;
+  if (nr >= RONDE) klaar(); else toonVraag();
+}
+
+/* ---------- slepen ---------- */
+var sleep = null;   // {k, dx, dy, x0, y0, bewogen} tijdens het slepen
+var vinger = null;  // pointerId van de vinger die sleept; andere vingers tellen niet
+function svgPunt(ev){
+  var svg = $("vijver"), pt = svg.createSVGPoint();
+  pt.x = ev.clientX; pt.y = ev.clientY;
+  return pt.matrixTransform(svg.getScreenCTM().inverse());
+}
+// waar mag hij heen als je hem hier loslaat? (null = terug naar zijn plek)
+function doelVan(k, p){
+  var opOever = zij ? p.x > OEVER_X - 4 : p.y > OEVER_Y - 4;
+  var t = opOever ? OEVER : (p.x < MIDDEN ? LINKS : RECHTS);
+  if (t === k.plaats) return null;
+  if (!eerlijk() && t === LINKS) return null;
+  return t;
+}
+// aantikken: van de kant naar het blad, van het blad terug naar de kant
+function tikDoel(k){
+  if (k.plaats !== OEVER) return OEVER;
+  if (!eerlijk()) return RECHTS;
+  return plaatsen[LINKS].length <= plaatsen[RECHTS].length ? LINKS : RECHTS;
+}
+function wisDoel(){ $("blad0").classList.remove("doel"); $("blad1").classList.remove("doel"); $("oever").classList.remove("doel"); }
+function pakVast(ev){
+  if (!bezig || sleep) return;                     // al aan het slepen: tweede vinger negeren
+  if (ev.pointerType === "mouse" && ev.button !== 0) return;
+  var g = ev.target && ev.target.closest ? ev.target.closest(".kikker") : null;
+  if (!g || !g._kikker || g._kikker.blijft) return;
+  clearTimeout(pauzeTimer);                        // weer bezig: het telt nog niet
+  var k = g._kikker, p = svgPunt(ev);
+  sleep = {k:k, dx:p.x - k.x, dy:p.y - k.y, x0:p.x, y0:p.y, bewogen:false};
+  vinger = ev.pointerId;
+  g.classList.add("sleep");
+  $("kikkers").appendChild(g);                    // bovenop de andere kikkers
+  try{ $("vijver").setPointerCapture(ev.pointerId); }catch(e){}
+  ev.preventDefault();
+}
+function beweeg(ev){
+  if (!sleep || ev.pointerId !== vinger) return;
+  var p = svgPunt(ev), k = sleep.k;
+  if (Math.abs(p.x - sleep.x0) + Math.abs(p.y - sleep.y0) > 6) sleep.bewogen = true;
+  // de kikker volgt je vinger, maar blijft in de tekening
+  zetPlek(k, Math.max(22, Math.min(BREED - 22, p.x - sleep.dx)), Math.max(24, Math.min(HOOG - 20, p.y - sleep.dy)));
+  var d = sleep.bewogen ? doelVan(k, p) : null;
+  $("blad0").classList.toggle("doel", d === LINKS);
+  $("blad1").classList.toggle("doel", d === RECHTS);
+  $("oever").classList.toggle("doel", d === OEVER);
+}
+function laatLos(ev){
+  if (!sleep || ev.pointerId !== vinger) return;
+  var k = sleep.k, naar = null;
+  if (ev.type === "pointerup") naar = sleep.bewogen ? doelVan(k, svgPunt(ev)) : tikDoel(k);
+  k.el.classList.remove("sleep");
+  wisDoel();
+  sleep = null; vinger = null;
+  if (!bezig){ schik(k.plaats); return; }
+  if (naar !== null) verplaats(k, naar);
+  else { schik(k.plaats); controleer(null); }     // terug naar zijn plek; klopte het al, dan telt het alsnog
+}
+
+function toets(ev){
+  if (!bezig || sleep || ev.ctrlKey || ev.metaKey || ev.altKey) return;
+  var r = ev.key === "ArrowLeft" ? LINKS : ev.key === "ArrowRight" ? RECHTS : -1;
+  if (r < 0) return;
+  ev.preventDefault();
+  clearTimeout(pauzeTimer);
+  var k = null, naar;
+  if (eerlijk()){ k = achteraan() || laatste(plaatsen[1 - r]); naar = r; }
+  else if (r === RECHTS){ k = achteraan(); naar = RECHTS; }
+  else { k = laatste(plaatsen[RECHTS]); naar = OEVER; }
+  if (k) verplaats(k, naar); else controleer(null);
+}
+
+/* ---------- ronde ---------- */
+function startRonde(){
+  vragen = maakRonde(); nr = 0; leliesRonde = 0; reeks = 0; uitslagen = [];
+  $("uitslag").hidden = true;
+  $("knoppen").hidden = false;
+  $("terugblik").innerHTML = "";
+  tekenTeller(false);
+  toonVraag();
+}
+function klaar(){
+  bezig = false; vraag = null;
+  clearTimeout(pauzeTimer); clearTimeout(duikTimer); clearTimeout(bovenTimer);
+  stopBalk(); $("balk").classList.add("klaar");
+  $("knoppen").hidden = true;
+  $("hint").textContent = "";
+
+  var sterren = 1;
+  if (leliesRonde >= 7) sterren = 2;
+  if (leliesRonde >= RONDE) sterren = 3;
+  var oud = data.records[data.niveau];
+  data.records[data.niveau] = {
+    sterren: Math.max(oud ? oud.sterren : 0, sterren),
+    lelies: Math.max(oud ? oud.lelies || 0 : 0, leliesRonde)
+  };
+  bewaar();
+  tekenRecords();
+
+  var st = "", bord = "";
+  for (var k=1;k<=3;k++){
+    st += k <= sterren ? "★" : "<i>★</i>";
+    bord += '<tspan fill="' + (k <= sterren ? "#F2B632" : "rgba(58,36,18,.25)") + '">★</tspan>';
+  }
+  // het bordje toont de sterren; op de bladen de lelies van deze ronde (een knopje als het niet op tijd was)
+  $("bordgetal").setAttribute("class", "bordgetal sterren");
+  $("bordgetal").innerHTML = bord;
+  $("kikkers").innerHTML = "";
+  var s = "", p = plekken(5);
+  uitslagen.forEach(function(u, i){
+    var b = i < 5 ? 0 : 1, q = p[i % 5], x = BLAD_X[b] + q[0], y = BLAD_Y + q[1];
+    s += '<g transform="translate(' + x + " " + y + ')"><g class="bloei" style="transform-box:fill-box;transform-origin:center;animation-delay:' + (i*0.12).toFixed(2) + 's">';
+    s += u.lelie ? '<g transform="scale(1.45)">' + lelieTekening(u.kleur) + "</g>"
+                 : '<circle r="9" fill="#7FBF5E" stroke="#2E7A3E" stroke-width="1.5"/><path d="M0 -9 V0" stroke="#2E7A3E" stroke-width="1.5"/>';
+    s += "</g></g>";
+  });
+  $("terugblik").innerHTML = s;
+  $("vijver").setAttribute("aria-label", "vijver met " + leliesRonde + " nieuwe waterlelies");
+
+  var t = '<h3>Klaar! <span class="sterren">' + st + "</span></h3>";
+  t += "<p><b>" + leliesRonde + "</b> nieuwe waterlelies in de vijver.</p>";
+  if (sterren === 1) t += "<p>Twee sterren haal je met 7 lelies, drie sterren met alle " + RONDE + ".</p>";
+  else if (sterren === 2) t += "<p>Twee sterren! Laat alle " + RONDE + " lelies bloeien voor drie sterren.</p>";
+  else t += "<p>Alle lelies bloeien, drie sterren. Kwaak!</p>";
+  t += '<button class="hoofd" id="nogeens">Nog een keer</button>';
+  if (sterren >= 2 && NIVEAUS[data.niveau+1]) t += '<button id="verder">Verder: ' + NIVEAUS[data.niveau+1].titel + " →</button>";
+  var u = $("uitslag"); u.innerHTML = t; u.hidden = false;
+  $("nogeens").onclick = startRonde;
+  if ($("verder")) $("verder").onclick = function(){ data.niveau++; bewaar(); tekenNiveaus(); startRonde(); };
+}
+
+function tekenNiveaus(){
+  var box = $("niveaus"); box.innerHTML = "";
+  NIVEAUS.forEach(function(n, i){
+    var b = document.createElement("button");
+    b.textContent = n.titel;
+    if (i === data.niveau) b.className = "aan";
+    b.onclick = function(){ data.niveau = i; bewaar(); tekenNiveaus(); startRonde(); };
+    box.appendChild(b);
+  });
+}
+function tekenRecords(){
+  $("records").innerHTML = NIVEAUS.map(function(n, i){
+    var r = data.records[i], st = "";
+    for (var k=1;k<=3;k++) st += (r && r.sterren >= k) ? "★" : "<i>★</i>";
+    return '<div class="record"><b>' + n.titel + '</b><span class="sterren">' + st + "</span><br>"
+      + (r ? "beste: " + (r.lelies || 0) + " " + lelie(0) : "nog niet gespeeld") + "</div>";
+  }).join("");
+}
+
+/* ---------- start ---------- */
+laad();
+kiesIndeling();
+if (ZIJ){ if (ZIJ.addEventListener) ZIJ.addEventListener("change", kiesIndeling); else if (ZIJ.addListener) ZIJ.addListener(kiesIndeling); }
+$("balklelie").innerHTML = lelie(0);
+$("tellerlelie").innerHTML = lelie(0);
+tekenBladeren();
+tekenNiveaus();
+tekenRecords();
+tekenLelies(false);
+$("opnieuw").onclick = startRonde;
+var vijver = $("vijver");
+vijver.addEventListener("pointerdown", pakVast);
+vijver.addEventListener("pointermove", beweeg);
+vijver.addEventListener("pointerup", laatLos);
+vijver.addEventListener("pointercancel", laatLos);
+vijver.addEventListener("lostpointercapture", function(ev){ if (sleep && ev.pointerId === vinger) laatLos({type:"pointercancel", pointerId:ev.pointerId}); });
+// Safari op iPad/iPhone negeert touch-action soms op een <svg>: dan scrolt of zoomt de pagina
+// mee en breekt het slepen af. Blokkeer dat zelf zolang er gesleept wordt of een kikker wordt aangeraakt.
+function geenScroll(ev){
+  var opKikker = ev.target && ev.target.closest && ev.target.closest(".kikker");
+  if (sleep || (bezig && opKikker)) ev.preventDefault();
+}
+vijver.addEventListener("touchstart", geenScroll, {passive:false});
+vijver.addEventListener("touchmove", geenScroll, {passive:false});
+document.addEventListener("keydown", toets);
+startRonde();
+})();
+</script>
+</html>
