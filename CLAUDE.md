@@ -9,7 +9,7 @@ Kleine oefenspelletjes voor kinderen (basisschoolleeftijd), live op https://ik-o
 | `index.html` | Startpagina: een kaart per spel, beloftes, link naar GitHub-issues |
 | `typen/` | De Letterhof — blind leren typen |
 | `tafels/` | De Sterrenwacht — tafels oefenen |
-| `provincies/` | De Berenkaart — provincies oefenen |
+| `provincies/` | De Berenkaart — provincies en hun hoofdsteden oefenen |
 | `rekenen/` | De Rekentrein — plussen en minnen tot 20/50/100/1000 |
 | `klok/` | De Klokkentoren — klokkijken, van hele uren tot digitaal |
 | `geld/` | De Winkel — betalen en wisselgeld, tot €10/€20/€100 en met centen |
@@ -63,7 +63,10 @@ Kleine oefenspelletjes voor kinderen (basisschoolleeftijd), live op https://ik-o
 - Layout: bij `(max-height:901px) and (min-width:600px)` wordt de tekening 500×330 (`kiesIndeling()`, via `matchMedia`, ook bij draaien/verkleinen): de oever is dan een staande strook rechts van de vijver (bordje boven, de 5 kikkers onder elkaar met stap 50), en de tijdbalk staat staand daarnaast (lof weer rechts daarvan). Anders 380×420 met de oever en een liggende balk eronder. Het script zet `--vul` op de vulling, de CSS kiest breedte of hoogte. Grijpvlak 50×50, zodat de staande rij niet overlapt.
 - Waterlelie als het in één keer goed is binnen 12 s (+1 s per te verplaatsen kikker boven 4); blijft in de vijver (nieuwste 5 + teller). ★★ 7, ★★★ 10. Einde ronde: sterren op het bordje, de lelies van de ronde op de bladen.
 
-## De Berenkaart (layout)
+## De Berenkaart
+
+- Twee keuzes: **wat** (Provincies | Hoofdsteden, `data.onderwerp`) en **hoe** (Op de kaart | Kies de naam, `data.modus`). Intern draait alles op provincienaam; `noem()` geeft wat het kind ziet (provincie of hoofdstad). Eén gedeelde berenplank.
+- Hoofdsteden: een stip per stad (`STEDEN`, omgerekend uit RD-coördinaten en gecontroleerd met `isPointInFill`: elke stip ligt in zijn provincie). Op de kaart: tik de stip aan (grijpvlak r=24; Groningen–Assen liggen 54 uit elkaar). Kies de naam: de stip knippert en de provincie licht op. Het naamlabel wijst dan naar de stip. Amsterdam en Rotterdam staan bewust niet op de kaart.
 
 - De kaart is zo groot als in de hoogte past (X=590). Op een liggend scherm tot 1000px hoog en vanaf 700px breed: kaart links, de rest rechts, zonder plakken en zonder `haalInBeeld`-scroll. De lege marges van de kaart zijn voor de namen met lijntjes: niet wegknippen.
 - De Letterhof en De Sterrenwacht hebben geen niveauknoppen: de lestitel blijft staan. Alles past ook op 1366×650; alleen de kop schaalt mee.

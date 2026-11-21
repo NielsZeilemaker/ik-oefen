@@ -4,14 +4,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="/favicon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-<title>De Berenkaart — provincies oefenen</title>
-<meta name="description" content="Leer de provincies van Nederland met De Berenkaart: zoek ze op de kaart of noem ze bij naam en verdien beertjes. Gratis, zonder cookies, tracking of reclame.">
+<title>De Berenkaart — provincies en hoofdsteden oefenen</title>
+<meta name="description" content="Leer de provincies van Nederland en hun hoofdsteden met De Berenkaart: zoek ze op de kaart of noem ze bij naam en verdien beertjes. Gratis, zonder cookies, tracking of reclame.">
 <link rel="canonical" href="https://ik-oefen.nl/provincies/">
 <meta property="og:type" content="website">
 <meta property="og:locale" content="nl_NL">
 <meta property="og:site_name" content="Ik oefen">
-<meta property="og:title" content="De Berenkaart — provincies oefenen">
-<meta property="og:description" content="Leer de provincies van Nederland met De Berenkaart: zoek ze op de kaart of noem ze bij naam en verdien beertjes. Gratis, zonder cookies, tracking of reclame.">
+<meta property="og:title" content="De Berenkaart — provincies en hoofdsteden oefenen">
+<meta property="og:description" content="Leer de provincies van Nederland en hun hoofdsteden met De Berenkaart: zoek ze op de kaart of noem ze bij naam en verdien beertjes. Gratis, zonder cookies, tracking of reclame.">
 <meta property="og:url" content="https://ik-oefen.nl/provincies/">
 <link rel="stylesheet" href="../fonts/fredoka.css">
 <style>
@@ -61,14 +61,27 @@
   @media (max-width:560px){ #kaart{width:100%} }   /* telefoon: kaart vult de breedte, vraag en namen plakken boven en onder */
   .prov path{fill:var(--land);stroke:var(--tekst);stroke-width:1.6;stroke-linejoin:round;fill-rule:evenodd;transition:fill .25s}
   .prov{cursor:pointer;outline:none;-webkit-tap-highlight-color:transparent}
-  @media (hover:hover){#kaart:not(.welke) .prov:hover path{fill:#F4E8CC}}
-  #kaart.welke .prov{cursor:default}
+  @media (hover:hover){#kaart:not(.welke):not(.steden) .prov:hover path{fill:#F4E8CC}}
+  #kaart.welke .prov,#kaart.steden .prov{cursor:default}
+  .prov.licht path,.prov.licht:hover path{fill:#FFF0C9}
+  /* hoofdsteden: een stip per stad, met een groter onzichtbaar grijpvlak */
+  #stippen{display:none}
+  #kaart.steden #stippen{display:inline}
+  .stip{cursor:pointer;outline:none;-webkit-tap-highlight-color:transparent}
+  .stip .raak{fill:transparent}
+  .stip .punt{fill:#fff;stroke:var(--tekst);stroke-width:2.5;transition:fill .25s}
+  @media (hover:hover){#kaart:not(.welke) .stip:hover .punt{fill:#F4E8CC}}
+  #kaart.welke .stip,.stip.af{cursor:default}
+  .stip.af .punt{fill:var(--tekst)}
+  .stip.mis .punt{fill:var(--fout)}
+  .stip.wijs .punt{fill:var(--honing);stroke-width:4}
+  #kaart.steden .label circle{display:none}
   .prov.af{cursor:default}
   .prov.af path,.prov.af:hover path{fill:var(--kleur)}
   .prov.mis path,.prov.mis:hover path{fill:var(--fout)}
   .prov.wijs path,.prov.wijs:hover path{fill:var(--honing)}
   @media (prefers-reduced-motion:no-preference){
-    .prov.wijs path{animation:knipper .8s ease-in-out infinite}
+    .prov.wijs path,.stip.wijs .punt{animation:knipper .8s ease-in-out infinite}
     #berenrij .beer.nieuw{animation:pop .45s}
     #vraag.fout{animation:wiebel .2s}
   }
@@ -76,7 +89,8 @@
   @keyframes pop{0%{transform:scale(.3)}60%{transform:scale(1.25)}100%{transform:scale(1)}}
   @keyframes wiebel{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 
-  .modus{display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+  .modi{display:flex;justify-content:center;column-gap:18px;row-gap:6px;flex-wrap:wrap;margin-bottom:8px}
+  .modus{display:flex;justify-content:center;gap:6px;flex-wrap:wrap}
   .modus button{background:transparent;color:var(--tekst);border:1px solid var(--lijn);font-size:14px;padding:6px 12px}
   .modus button:hover{background:#F4E8CC}
   .modus button[aria-pressed="true"]{background:var(--tekst);color:#fff;border-color:var(--tekst)}
@@ -139,7 +153,7 @@
       grid-template-rows:auto auto auto auto auto 1fr;
       grid-template-areas:"kaart modus" "kaart vraag" "kaart namen" "kaart beren" "kaart uitslag" "kaart knoppen"}
     #kaart{grid-area:kaart;width:clamp(300px, min((100svh - 150px) * 1.4, 100vw - 400px), 960px);margin:0}
-    .modus{grid-area:modus} #berenrij{grid-area:beren;width:100%} #uitslag{grid-area:uitslag}
+    .modi{grid-area:modus} #berenrij{grid-area:beren;width:100%} #uitslag{grid-area:uitslag}
     .knoppen{grid-area:knoppen}
     .vraagbalk{grid-area:vraag;position:static}
     #vraag{font-size:clamp(24px,2.6vw,34px);min-height:2.4em}   /* ruimte voor twee regels: niets verspringt */
@@ -153,22 +167,28 @@
       <a class="terug" href="../" aria-label="Terug naar Ik oefen" title="Terug naar Ik oefen"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
       <div class="koptekst">
         <h1>De Berenkaart</h1>
-        <p class="ondertitel">Zoek de provincies op de kaart, of noem ze bij naam, en verdien beertjes.</p>
+        <p class="ondertitel">Zoek de provincies en hun hoofdsteden op de kaart, of noem ze bij naam, en verdien beertjes.</p>
       </div>
     </div>
   </header>
 
   <div class="vel">
-    <div class="modus" role="group" aria-label="Kies hoe je oefent">
-      <button type="button" data-modus="waar">Waar ligt…? Klik op de kaart</button>
-      <button type="button" data-modus="welke">Welke is dit? Kies de naam</button>
+    <div class="modi">
+      <div class="modus" role="group" aria-label="Kies wat je oefent">
+        <button type="button" data-onderwerp="provincies">Provincies</button>
+        <button type="button" data-onderwerp="steden">Hoofdsteden</button>
+      </div>
+      <div class="modus" role="group" aria-label="Kies hoe je oefent">
+        <button type="button" data-modus="waar">Op de kaart</button>
+        <button type="button" data-modus="welke">Kies de naam</button>
+      </div>
     </div>
     <div class="vraagbalk">
       <div id="voortgang"></div>
       <p id="vraag" aria-live="polite"></p>
       <p id="hint"></p>
     </div>
-    <svg id="kaart" role="img" aria-label="Kaart van Nederland met de 12 provincies"></svg>
+    <svg id="kaart" role="img" aria-label="Kaart van Nederland met de 12 provincies en hun hoofdsteden"></svg>
     <div id="namen" hidden></div>
     <div id="berenrij" aria-label="Beertjes in deze ronde"></div>
     <div id="uitslag" hidden></div>
@@ -180,7 +200,7 @@
   <div id="plank"></div>
   <p id="plankmeer"></p>
 
-  <footer>Voortgang wordt op dit apparaat bewaard. Fout? Dan knippert het goede antwoord, klik je dat aan en komt de vraag later nog een keer terug. De provincies krijgen elke ronde andere kleuren. Kaartgrenzen: CBS/PDOK via cartomap.</footer>
+  <footer>Voortgang wordt op dit apparaat bewaard. Oefen de provincies of hun hoofdsteden: zoek ze op de kaart of kies de naam. Bij de hoofdsteden knippert de stip en licht de provincie op. Fout? Dan knippert het goede antwoord, klik je dat aan en komt de vraag later nog een keer terug. De provincies krijgen elke ronde andere kleuren. Kaartgrenzen: CBS/PDOK via cartomap.</footer>
 </div>
 
 <script>
@@ -202,6 +222,9 @@ var PROVINCIES=[{"naam":"Drenthe","kleur":"#E8B4D0","d":"M729.7,212.4 727.9,211.
 {"naam":"Zeeland","kleur":"#7FB04F","d":"M213.7,575.3 201.9,579.8 200.6,579.1 191.6,583.7 192.2,589.4 193.8,592.8 190.0,597.4 192.6,600.5 191.6,602.9 197.2,611.3 203.5,615.1 214.9,613.9 213.1,604.1 220.0,601.9 221.9,603.8 224.1,600.0 231.5,603.8 234.0,603.4 239.3,606.7 248.4,608.4 254.3,611.5 253.4,613.9 253.5,621.6 258.0,622.8 263.7,622.3 268.0,619.4 267.7,625.0 278.3,621.1 282.2,616.8 285.2,614.9 289.7,613.9 292.8,614.6 308.7,602.6 318.9,589.4 314.7,583.2 309.7,583.4 304.9,586.3 300.9,586.3 292.1,585.1 286.9,576.7 280.6,575.3 279.0,577.2 279.6,580.3 277.7,584.9 272.2,586.3 264.7,592.3 255.9,591.8 253.3,589.2 243.5,589.0 238.4,583.9 231.5,582.7 223.2,579.8 217.8,575.8ZM261.2,491.5 260.6,491.0 256.9,495.4 249.6,494.9 241.6,497.5 238.5,500.2 237.1,503.3 238.7,510.2 243.5,513.8 242.2,518.9 239.9,519.6 237.7,523.4 237.4,529.0 230.5,531.6 225.3,530.4 218.5,531.4 201.6,542.9 200.9,546.2 204.9,550.6 210.2,554.4 214.7,561.8 221.8,567.6 231.3,566.6 234.1,563.3 239.0,566.4 243.2,570.7 245.3,574.3 248.3,573.4 253.4,577.0 256.8,580.6 263.4,579.1 266.0,577.7 269.7,578.2 273.4,568.8 272.7,566.4 280.8,562.1 282.4,564.0 289.1,569.3 291.8,569.8 293.4,573.6 300.0,576.5 307.4,578.2 313.4,575.3 318.4,578.2 320.0,583.0 325.2,582.7 323.9,581.0 323.1,573.1 324.9,571.0 316.5,551.8 319.0,542.6 317.8,537.6 312.5,530.4 312.5,526.8 315.9,522.2 319.3,520.8 313.9,519.6 309.1,516.0 307.5,509.3 307.2,509.0 300.3,510.2 297.8,512.9 290.8,508.6 286.5,508.1 285.3,504.2 281.8,500.6 280.5,497.0 271.6,497.5 267.8,494.4 262.2,496.1 258.7,495.6ZM256.0,505.7 258.5,509.0 263.4,510.2 266.2,512.9 268.3,518.6 268.3,521.0 271.6,522.0 265.0,529.9 260.0,527.5 254.7,527.8 251.2,529.7 246.8,529.7 242.4,530.9 237.7,528.7 238.4,523.7 242.2,520.6 243.8,512.6 248.3,511.0ZM298.6,512.9 300.3,511.2 306.4,510.2 307.8,512.4 306.6,515.8 302.1,516.0 299.1,518.6 299.0,521.0 303.0,525.8 306.9,526.1 306.5,528.2 300.3,528.2 299.3,526.6 295.3,525.8 287.8,529.7 282.8,530.6 281.9,533.5 285.2,534.7 291.5,540.2 295.6,547.0 308.4,547.4 310.2,549.4 310.3,552.5 315.8,554.9 317.1,561.6 317.1,567.6 311.1,566.4 306.9,569.0 303.9,569.5 298.0,565.9 292.5,557.3 290.6,552.2 284.3,547.9 278.0,545.5 275.6,547.0 273.6,542.4 264.9,543.4 265.6,539.8 269.1,538.6 268.6,535.7 265.0,529.9 271.8,522.0 275.5,520.8 279.6,525.6 285.3,524.9 291.6,521.5 294.7,521.3 298.6,517.7ZM241.3,548.9 237.7,545.8 235.7,541.0 231.9,538.6 229.6,535.0 231.5,531.8 233.5,536.4 238.5,539.5 243.8,546.7Z","cx":268,"cy":540,"lx":161,"ly":702,"a":"middle"},
 {"naam":"Zuid-Holland","kleur":"#9CCBEC","d":"M330.2,493.7 323.1,492.0 323.0,493.7 330.0,498.2 333.9,498.5 336.4,496.1ZM277.8,486.2 274.7,483.4 270.3,487.9ZM386.8,377.3 383.0,377.5 377.4,381.1 373.0,381.4 366.2,380.4 368.0,368.4 370.9,365.8 374.3,357.6 368.0,357.1 367.3,358.8 357.0,354.2 350.2,368.9 339.5,388.1 333.1,397.0 328.9,402.0 322.8,408.2 317.5,415.2 312.5,420.5 304.6,430.6 298.1,436.6 291.2,434.4 290.5,436.3 284.9,435.6 281.9,436.6 279.1,440.9 279.0,444.0 281.9,452.6 284.1,453.4 290.2,451.2 292.1,452.6 288.7,460.3 294.3,469.2 289.6,475.2 284.3,469.2 276.6,471.4 271.1,474.5 268.6,474.7 263.7,477.6 263.1,480.5 264.6,485.3 263.7,487.9 260.6,491.0 261.2,491.5 263.1,491.0 265.2,485.5 269.0,484.6 269.1,482.4 274.9,481.4 276.9,480.2 282.7,480.5 287.4,486.0 286.8,491.5 287.7,494.6 293.0,502.1 294.6,503.0 300.6,503.0 307.1,505.7 307.2,509.0 307.5,509.3 312.1,509.0 316.7,511.2 318.6,514.3 325.6,516.0 334.2,513.4 336.8,511.9 338.4,508.6 342.4,506.4 343.7,505.2 343.0,502.3 344.0,499.7 348.9,501.1 353.1,501.4 362.4,504.7 370.9,502.1 375.3,499.4 378.0,500.9 379.0,500.4 379.2,500.4 383.7,499.2 392.7,491.5 395.5,485.3 398.1,482.6 401.7,481.0 408.7,481.2 415.2,476.4 419.5,474.5 427.0,475.2 429.6,475.9 431.5,475.9 433.3,475.9 435.4,476.4 436.1,471.1 432.9,470.6 431.4,470.4 431.2,467.8 435.4,466.8 434.6,464.4 434.9,461.5 431.4,460.8 430.7,456.5 425.1,453.1 422.6,450.0 421.1,445.0 418.7,446.9 413.4,447.8 410.9,440.6 407.3,436.3 404.6,433.0 410.4,431.5 408.9,428.6 402.6,429.6 406.4,421.0 412.1,417.8 405.9,415.0 405.8,407.3 400.8,403.7 403.9,399.4 406.8,398.2 410.2,400.1 413.0,399.6 412.9,395.5 415.6,394.1 410.2,390.0 408.4,389.8 404.0,384.5 401.8,380.4 401.2,378.5 398.9,378.2 394.3,381.4 392.4,383.3 392.1,383.3 390.9,381.8 390.8,381.1 390.8,377.3 388.0,376.8ZM292.8,471.8 295.2,470.6 298.1,474.0 303.7,476.2 307.4,475.7 311.1,479.8 315.5,481.0 318.1,483.8 320.9,489.1 335.8,494.6 343.9,499.4 340.8,504.5 332.8,504.2 328.3,500.9 323.0,498.5 320.0,494.2 311.9,487.0 303.0,483.6 298.1,480.0 290.8,476.4Z","cx":354,"cy":446,"lx":161,"ly":473,"a":"end"}];
 
+// hoofdstad per provincie, met de plek op de kaart (omgerekend uit RD-coördinaten; elke stip ligt in zijn provincie)
+var STEDEN = {"Groningen":["Groningen",662.8,140.0], "Friesland":["Leeuwarden",553.6,145.4], "Drenthe":["Assen",661.7,193.8], "Overijssel":["Zwolle",597.3,312.0], "Flevoland":["Lelystad",504.8,312.0], "Gelderland":["Arnhem",570.4,436.7], "Utrecht":["Utrecht",453.2,410.9], "Noord-Holland":["Haarlem",384.4,341.1], "Zuid-Holland":["Den Haag",335.0,413.1], "Zeeland":["Middelburg",227.5,548.5], "Noord-Brabant":["'s-Hertogenbosch",482.2,506.6], "Limburg":["Maastricht",540.3,708.7]};
+
 /* ---------- opslag ---------- */
 var BEWAAR = "berenkaart-v1";
 var data = {beren:0, goud:0};
@@ -219,6 +242,7 @@ async function laad(){
   data.beren = data.beren || 0;
   data.goud = data.goud || 0;
   if (data.modus !== "welke") data.modus = "waar";
+  if (data.onderwerp !== "steden") data.onderwerp = "provincies";
 }
 async function bewaar(){
   var s = JSON.stringify(data);
@@ -278,11 +302,12 @@ function kiesKleuren(){
 
 /* ---------- kaart tekenen ---------- */
 var NS = "http://www.w3.org/2000/svg";
-var groep = {}, label = {}, labeltekst = {}, knop = {};
+var groep = {}, label = {}, labeltekst = {}, labellijn = {}, labelpunt = {}, knop = {}, stip = {};
 var SMAL = window.matchMedia("(max-width:560px)");
 var MARGE = 178;
 var VERSCHUIF = {"Noord-Holland":[-8,-42], "Flevoland":[16,6]};  // alleen op smalle schermen
 
+function zetAttr(el, attrs){ Object.keys(attrs).forEach(function(k){ el.setAttribute(k, attrs[k]); }); }
 function maak(naam, attrs, ouder){
   var el = document.createElementNS(NS, naam);
   Object.keys(attrs).forEach(function(k){ el.setAttribute(k, attrs[k]); });
@@ -297,30 +322,39 @@ function tekenKaart(){
     g.addEventListener("click", function(){ klik(p.naam); });
     groep[p.naam] = g;
   });
+  var stippen = maak("g", {id:"stippen"}, svg);
+  PROVINCIES.forEach(function(p){
+    var st = STEDEN[p.naam], g = maak("g", {"class":"stip"}, stippen);
+    maak("circle", {"class":"raak", cx:st[1], cy:st[2], r:24}, g);   // Groningen–Assen liggen 54 uit elkaar: overlapt niet
+    maak("circle", {"class":"punt", cx:st[1], cy:st[2], r:6.5}, g);
+    g.addEventListener("click", function(){ klikStad(p.naam); });
+    stip[p.naam] = g;
+  });
   PROVINCIES.forEach(function(p){
     var g = maak("g", {"class":"label"}, svg);
-    var x1 = p.lx, y1 = p.ly - 8;
-    if (p.a === "start") x1 -= 6;
-    else if (p.a === "end") x1 += 6;
-    else y1 = p.ly > p.cy ? p.ly - 26 : p.ly + 8;
-    maak("line", {x1:x1, y1:y1, x2:p.cx, y2:p.cy}, g);
-    maak("circle", {cx:p.cx, cy:p.cy, r:3}, g);
-    var t = maak("text", {}, g);
-    t.textContent = p.naam;
-    labeltekst[p.naam] = t;
+    labellijn[p.naam] = maak("line", {}, g);
+    labelpunt[p.naam] = maak("circle", {cx:p.cx, cy:p.cy, r:3}, g);
+    labeltekst[p.naam] = maak("text", {}, g);
     label[p.naam] = g;
   });
+  SMAL.addEventListener("change", pasSchermAan);
+}
+function steden(){ return data.onderwerp === "steden"; }
+// wat het kind ziet en kiest: de provincie zelf of haar hoofdstad (intern blijft alles op provincienaam)
+function noem(naam){ return steden() ? STEDEN[naam][0] : naam; }
+// het lijntje gaat naar het midden van de provincie, of naar de stip van de stad
+function doelVan(p){ return steden() ? [STEDEN[p.naam][1], STEDEN[p.naam][2]] : [p.cx, p.cy]; }
+function maakNamen(){
   var namen = document.getElementById("namen");
-  PROVINCIES.map(naamVan).sort().forEach(function(n){
+  namen.innerHTML = ""; knop = {};
+  PROVINCIES.map(naamVan).sort(function(a, b){ return noem(a).localeCompare(noem(b), "nl"); }).forEach(function(n){
     var b = document.createElement("button");
     b.type = "button";
-    b.textContent = n;
+    b.textContent = noem(n);
     b.addEventListener("click", function(){ kies(n); b.blur(); });
     namen.appendChild(b);
     knop[n] = b;
   });
-  SMAL.addEventListener("change", pasSchermAan);
-  pasSchermAan();
 }
 // breed: namen ernaast met lijntjes zoals op het toetsblad; smal: kaart vult de breedte, namen in de provincie
 function pasSchermAan(){
@@ -328,11 +362,17 @@ function pasSchermAan(){
   svg.classList.toggle("smal", smal);
   svg.setAttribute("viewBox", smal ? MARGE+" 44 "+(BREED-2*MARGE)+" "+(HOOG-44) : "-60 0 "+(BREED+120)+" "+HOOG);
   PROVINCIES.forEach(function(p){
-    var t = labeltekst[p.naam];
-    var v = VERSCHUIF[p.naam] || [0,0];
-    t.setAttribute("x", smal ? p.cx + v[0] : p.lx);
-    t.setAttribute("y", smal ? p.cy + 7 + v[1] : p.ly);
+    var t = labeltekst[p.naam], d = doelVan(p);
+    var v = steden() ? [0, -21] : (VERSCHUIF[p.naam] || [0,0]);   // smal: stadsnaam boven de stip
+    t.textContent = noem(p.naam);
+    t.setAttribute("x", smal ? d[0] + v[0] : p.lx);
+    t.setAttribute("y", smal ? d[1] + 7 + v[1] : p.ly);
     t.setAttribute("text-anchor", smal ? "middle" : p.a);
+    var x1 = p.lx, y1 = p.ly - 8;
+    if (p.a === "start") x1 -= 6;
+    else if (p.a === "end") x1 += 6;
+    else y1 = p.ly > d[1] ? p.ly - 26 : p.ly + 8;
+    zetAttr(labellijn[p.naam], {x1:x1, y1:y1, x2:d[0], y2:d[1]});
   });
 }
 
@@ -349,23 +389,29 @@ function schud(a){
 }
 function zetHint(h){ document.getElementById("hint").innerHTML = h || ""; }
 function zetKlas(naam, klas, aan){ groep[naam].classList.toggle(klas, aan); }
+// bij de hoofdsteden is de stip het antwoord, bij de provincies het vlak
+function markeer(naam, klas, aan){ (steden() ? stip[naam] : groep[naam]).classList.toggle(klas, aan); }
 function naamVan(v){ return v.naam; }
 
 function start(){
   wachtrij = schud(PROVINCIES.map(function(p){ return {naam:p.naam}; }));
   gevonden = 0; verdiend = 0; aanwijzen = false; bezig = false; fouten = {};
   clearTimeout(misTimer); clearTimeout(knopTimer);
+  maakNamen();
+  pasSchermAan();
   PROVINCIES.forEach(function(p){
     groep[p.naam].setAttribute("class", "prov");
+    stip[p.naam].setAttribute("class", "stip");
     label[p.naam].setAttribute("class", "label");
-    knop[p.naam].className = "";
   });
   kiesKleuren();
-  var welke = data.modus === "welke";
-  document.getElementById("kaart").classList.toggle("welke", welke);
+  var welke = data.modus === "welke", kaart = document.getElementById("kaart");
+  kaart.classList.toggle("welke", welke);
+  kaart.classList.toggle("steden", steden());
   document.getElementById("namen").hidden = !welke;
   document.querySelectorAll(".modus button").forEach(function(b){
-    b.setAttribute("aria-pressed", String(b.dataset.modus === data.modus));
+    var aan = b.dataset.modus ? b.dataset.modus === data.modus : b.dataset.onderwerp === data.onderwerp;
+    b.setAttribute("aria-pressed", String(aan));
   });
   var rij = document.getElementById("berenrij"), h = "";
   for (var i=0;i<TOTAAL;i++) h += beer(LEEG);
@@ -376,15 +422,16 @@ function start(){
 function volgende(){
   bezig = false; aanwijzen = false;
   var v = wachtrij[0];
-  document.getElementById("voortgang").textContent = "provincie "+Math.min(gevonden+1, TOTAAL)+" van "+TOTAAL;
+  document.getElementById("voortgang").textContent = (steden() ? "hoofdstad " : "provincie ")+Math.min(gevonden+1, TOTAAL)+" van "+TOTAAL;
   var q = document.getElementById("vraag");
   q.className = "";
   if (data.modus === "welke"){
-    q.innerHTML = "Welke provincie <b>knippert</b>?";
-    zetKlas(v.naam, "wijs", true);
+    q.innerHTML = steden() ? "Welke hoofdstad <b>knippert</b>?" : "Welke provincie <b>knippert</b>?";
+    markeer(v.naam, "wijs", true);
+    if (steden()) zetKlas(v.naam, "licht", true);   // de provincie licht op, de stip knippert
     haalInBeeld(v.naam);
   } else {
-    q.innerHTML = "Waar ligt <b>"+v.naam+"</b>?";
+    q.innerHTML = "Waar ligt <b>"+noem(v.naam)+"</b>?";
   }
   zetHint(v.herkansing ? '<span class="herkansing">herkansing</span>' : "");
 }
@@ -410,13 +457,16 @@ function geefBeer(){
   bewaar();
   tekenPlank();
 }
-function klik(naam){
+function klik(naam){ if (!steden()) opKaart(naam); }
+function klikStad(naam){ if (steden()) opKaart(naam); }
+// modus "waar": klik de provincie (of de stip van de hoofdstad) aan
+function opKaart(naam){
   var v = wachtrij[0];
-  if (!v || bezig || data.modus !== "waar" || groep[naam].classList.contains("af")) return;
+  if (!v || bezig || data.modus !== "waar" || (steden() ? stip[naam] : groep[naam]).classList.contains("af")) return;
 
   if (aanwijzen){
     if (naam !== v.naam) return;
-    zetKlas(naam, "wijs", false);
+    markeer(naam, "wijs", false);
     wachtrij.shift();
     volgende();
     return;
@@ -425,6 +475,7 @@ function klik(naam){
   if (naam === v.naam){
     bezig = true;
     zetKlas(naam, "af", true);
+    if (steden()) stip[naam].classList.add("af");
     label[naam].classList.add("aan");
     gevonden++;
     if (!v.herkansing) geefBeer();
@@ -440,14 +491,14 @@ function klik(naam){
   fouten[v.naam] = (fouten[v.naam]||0)+1;
   wachtrij.splice(Math.min(4, wachtrij.length), 0, {naam:v.naam, herkansing:true});
   aanwijzen = true;
-  document.querySelectorAll(".prov.mis").forEach(function(g){ g.classList.remove("mis"); });
-  zetKlas(naam, "mis", true);
+  document.querySelectorAll(".prov.mis,.stip.mis").forEach(function(g){ g.classList.remove("mis"); });
+  markeer(naam, "mis", true);
   clearTimeout(misTimer);
-  misTimer = setTimeout(function(){ zetKlas(naam, "mis", false); }, 1100);
-  zetKlas(v.naam, "wijs", true);
+  misTimer = setTimeout(function(){ markeer(naam, "mis", false); }, 1100);
+  markeer(v.naam, "wijs", true);
   var q = document.getElementById("vraag");
   q.className = ""; void q.offsetWidth; q.className = "fout";
-  zetHint("Dat is <b>"+naam+"</b>. Kijk, hier knippert "+v.naam+": klik er maar op.");
+  zetHint("Dat is <b>"+noem(naam)+"</b>. Kijk, hier knippert "+noem(v.naam)+": klik er maar op.");
 }
 // modus "welke": de provincie knippert, kies de goede naam
 function kies(naam){
@@ -457,7 +508,8 @@ function kies(naam){
   if (aanwijzen){
     if (naam !== v.naam) return;
     knop[naam].className = "";
-    zetKlas(v.naam, "wijs", false);
+    markeer(v.naam, "wijs", false);
+    zetKlas(v.naam, "licht", false);
     wachtrij.shift();
     volgende();
     return;
@@ -465,8 +517,10 @@ function kies(naam){
 
   if (naam === v.naam){
     bezig = true;
-    zetKlas(naam, "wijs", false);
+    markeer(naam, "wijs", false);
+    zetKlas(naam, "licht", false);
     zetKlas(naam, "af", true);
+    if (steden()) stip[naam].classList.add("af");
     label[naam].classList.add("aan");
     knop[naam].className = "goed";
     gevonden++;
@@ -484,10 +538,10 @@ function kies(naam){
   fouten[v.naam] = (fouten[v.naam]||0)+1;
   wachtrij.splice(Math.min(4, wachtrij.length), 0, {naam:v.naam, herkansing:true});
   aanwijzen = true;
-  document.querySelectorAll(".prov.mis").forEach(function(g){ g.classList.remove("mis"); });
-  zetKlas(naam, "mis", true);
+  document.querySelectorAll(".prov.mis,.stip.mis").forEach(function(g){ g.classList.remove("mis"); });
+  markeer(naam, "mis", true);
   clearTimeout(misTimer);
-  misTimer = setTimeout(function(){ zetKlas(naam, "mis", false); }, 1400);
+  misTimer = setTimeout(function(){ markeer(naam, "mis", false); }, 1400);
   var fout = knop[naam];
   fout.className = "mis";
   clearTimeout(knopTimer);
@@ -495,20 +549,21 @@ function kies(naam){
   knop[v.naam].className = "wijs";
   var q = document.getElementById("vraag");
   q.className = ""; void q.offsetWidth; q.className = "fout";
-  zetHint("Nee, dit is <span class=\"juist\">"+v.naam+"</span>. "+naam+" is rood. Klik maar op "+v.naam+".");
+  zetHint("Nee, dit is <span class=\"juist\">"+noem(v.naam)+"</span>. "+noem(naam)+" is rood. Klik maar op "+noem(v.naam)+".");
 }
 
 function klaar(){
   var perfect = verdiend === TOTAAL;
   if (perfect){ data.goud++; bewaar(); tekenPlank(); }
   document.getElementById("voortgang").textContent = "klaar";
-  document.getElementById("vraag").innerHTML = perfect ? "Alles in één keer goed!" : (data.modus === "welke" ? "Alle provincies benoemd!" : "Alle provincies gevonden!");
+  var wat = steden() ? "Alle hoofdsteden " : "Alle provincies ";
+  document.getElementById("vraag").innerHTML = perfect ? "Alles in één keer goed!" : wat + (data.modus === "welke" ? "benoemd!" : "gevonden!");
   zetHint("");
   var lastig = Object.keys(fouten).sort(function(a,b){ return fouten[b]-fouten[a]; });
   var t = perfect ? beer(GOUD, "goudbeer") : "";
   t += "<h2>"+verdiend+" van de "+TOTAAL+" beertjes</h2>";
   if (perfect) t += "<p>Je krijgt een gouden beer op je plank. Knap!</p>";
-  else t += "<p>Deze waren lastig: "+lastig.map(function(k){ return '<span class="lastig">'+k+"</span>"; }).join(" ")+". Doe nog een ronde en verdien de gouden beer.</p>";
+  else t += "<p>Deze waren lastig: "+lastig.map(function(k){ return '<span class="lastig">'+noem(k)+"</span>"; }).join(" ")+". Doe nog een ronde en verdien de gouden beer.</p>";
   var u = document.getElementById("uitslag");
   u.innerHTML = t;
   u.hidden = false;
@@ -529,7 +584,7 @@ function tekenPlank(){
 
 document.querySelectorAll(".modus button").forEach(function(b){
   b.addEventListener("click", function(){
-    data.modus = b.dataset.modus;
+    if (b.dataset.modus) data.modus = b.dataset.modus; else data.onderwerp = b.dataset.onderwerp;
     bewaar();
     start();
     b.blur();
