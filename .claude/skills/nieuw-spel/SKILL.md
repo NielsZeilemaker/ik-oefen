@@ -18,7 +18,7 @@ Argument: de slug van een open idee (`## [ ] <slug> — …`) in `WENSLIJST.md`.
 Raak alleen deze bestanden aan:
 
 - `<slug>/index.html`: het spel, één bestand met inline CSS en JS in een IIFE, alles in het Nederlands, Fredoka via `../fonts/fredoka.css`, favicon, meta's en canonical `https://ik-oefen.nl/<slug>/`. Eigen kleuren op `:root`, eigen SVG-tekeningen, geen externe verzoeken, geen geluid.
-- `index.html` (startpagina): een kaart in dezelfde stijl als de andere, met eigen kleuren en een inline SVG-tekeningetje, achteraan in de lijst. Voeg het onderwerp toe aan `description` en `og:description`.
+- `index.html` (startpagina): een kaart in dezelfde stijl als de andere, met eigen kleuren en een inline SVG-tekeningetje, achteraan in de lijst, met de groepen uit het idee (`data-groep` en `.groep`, zie `CLAUDE.md`). Voeg het onderwerp toe aan `description` en `og:description`.
 - `sitemap.xml`: de URL.
 - `CLAUDE.md`: een rij in de structuurtabel en een korte sectie met de spelregels van dit spel (zoals bij de andere spellen).
 - `WENSLIJST.md`: zet het idee op `## [x] <slug> — …` en voeg `- Gebouwd: /dev/<slug>/` toe.

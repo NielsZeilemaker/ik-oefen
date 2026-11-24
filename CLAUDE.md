@@ -45,7 +45,7 @@ Kleine oefenspelletjes voor kinderen (basisschoolleeftijd), live op https://ik-o
 ## Nieuw spel toevoegen
 
 1. Nieuwe map met `index.html` volgens bovenstaande opbouw.
-2. Kaart op de startpagina (`index.html`) met eigen kleuren en inline SVG-tekeningetje.
+2. Kaart op de startpagina (`index.html`) met eigen kleuren en inline SVG-tekeningetje, en de groepen: `data-groep="3-6"` op de `<a class="spel">` en `<span class="groep"> · groep 3–6</span>` in `.wat` (de groepkiezer bovenaan zet passende spellen voorop en maakt de rest lichter, onthouden in `localStorage` `ikoefen-groep`).
 3. URL toevoegen aan `sitemap.xml`.
 4. Het onderwerp toevoegen aan de opsomming in `description` én `og:description` van de startpagina ("rekenen, splitsen, tafels, …").
 
