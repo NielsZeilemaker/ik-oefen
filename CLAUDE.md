@@ -17,7 +17,10 @@ Kleine oefenspelletjes voor kinderen (basisschoolleeftijd), live op https://ik-o
 | `splitsen/` | Het Kippenhok — splitsen tot 10: hoeveel eieren liggen onder de kip? |
 | `verdelen/` | De Kikkervijver — aanvullen tot N: hoeveel kikkers moeten er nog op het blad? |
 | `fonts/` | Zelf gehoste Fredoka (`fredoka.css` + woff2 + `OFL-fredoka.txt`) |
-| `robots.txt`, `sitemap.xml` | Vindbaarheid |
+| `robots.txt`, `sitemap.xml` | Vindbaarheid (`/dev/` staat in robots.txt op Disallow) |
+| `WENSLIJST.md` | Spelideeën (alleen op de dev-branch), bijgehouden door de pijplijn |
+| `.github/workflows/`, `.claude/skills/` | De pijplijn: publiceren, ideeën zoeken, dagelijks een spel bouwen |
+| `hulpmiddelen/` | Scripts die niet op de site komen (`publiceer.py`, `klokstem.py`) |
 | `favicon.svg`, `apple-touch-icon.png` | Icoon van de site |
 
 ## Harde regels
@@ -146,6 +149,13 @@ python3 -m http.server 8765 --bind 127.0.0.1 &
 ```
 
 Kijk op 390px en ~900px breed. Om een toestand te testen (bijv. de hulp), maak een kopie in de scratchpad en pas daar timers of de begintoestand aan; nooit in het echte bestand laten staan.
+
+## Pijplijn (main, dev en de workflows)
+
+- **Publiceren** (`publiceer.yml`, GitHub Pages via Actions): bij elke push naar `main` of `dev` zet `hulpmiddelen/publiceer.py` main op https://ik-oefen.nl/ en dev op https://ik-oefen.nl/dev/. In `/dev/` krijgt elke pagina `noindex`, `[dev]` voor de titel en `localStorage`-sleutels met `dev:` ervoor (de voortgang op de echte site blijft heel). `CLAUDE.md`, `WENSLIJST.md`, `.github`, `.claude` en `hulpmiddelen` komen niet op de site. Links met `/` vooraan (favicon) wijzen in /dev/ naar main: gebruik in een spel verder alleen relatieve links.
+- **Spelideeën** (`spelideeen.yml`, maandag, skill `spelideeen`): zoekt op internet naar leerstof en spelvormen voor groep 3–8 en zet 5–8 nieuwe ideeën in `WENSLIJST.md` op dev. Mag alleen lezen en schrijven (geen Bash), alleen dat bestand mag veranderen.
+- **Dagelijks een spel** (`dagelijks-spel.yml`, 03:00 UTC, skill `nieuw-spel`): haalt main in dev, kiest een willekeurig `## [ ]`-idee (of de slug die je bij handmatig starten opgeeft), laat Claude het bouwen en testen, en zet het idee op `[x]` of `[!]` (mislukt, met reden). Claude draait zonder schrijfrechten; een aparte job controleert dat alleen `<slug>/`, `index.html`, `sitemap.xml`, `CLAUDE.md` en `WENSLIJST.md` veranderden, pusht naar dev en start Publiceren.
+- Naar de echte site gaat een spel alleen met de hand: `dev` in `main` mergen (of één commit cherry-picken). Geheim nodig: `CLAUDE_CODE_OAUTH_TOKEN` (van `claude setup-token`).
 
 ## Werkwijze
 

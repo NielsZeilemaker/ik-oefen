@@ -1,0 +1,50 @@
+name: Publiceer
+
+# main → https://ik-oefen.nl/, dev → https://ik-oefen.nl/dev/
+on:
+  push:
+    branches: [main, dev]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  bouw:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          path: main
+          persist-credentials: false
+      - name: dev ophalen (als die bestaat)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if git -C main ls-remote --exit-code --heads "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}" dev >/dev/null; then
+            git clone --depth 1 --branch dev "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}" dev
+            echo "DEV=dev" >> "$GITHUB_ENV"
+          else
+            echo "DEV=-" >> "$GITHUB_ENV"
+          fi
+      - run: python3 main/hulpmiddelen/publiceer.py main "$DEV" _site
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  publiceer:
+    needs: bouw
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.uitrol.outputs.page_url }}
+    steps:
+      - id: uitrol
+        uses: actions/deploy-pages@v4

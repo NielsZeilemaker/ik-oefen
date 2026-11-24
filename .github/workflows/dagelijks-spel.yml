@@ -1,0 +1,169 @@
+name: Dagelijks een nieuw spel
+
+# Elke nacht: kies een willekeurig open idee uit WENSLIJST.md, laat Claude het bouwen
+# en zet het op dev (https://ik-oefen.nl/dev/). Naar main gaat het alleen met de hand.
+on:
+  schedule:
+    - cron: "0 3 * * *"
+  workflow_dispatch:
+    inputs:
+      idee:
+        description: "Slug uit WENSLIJST.md (leeg = willekeurig)"
+        required: false
+
+concurrency:
+  group: dev-schrijven
+  cancel-in-progress: false
+
+jobs:
+  bouw:
+    # Claude draait zonder schrijfrechten op de repo; het resultaat gaat als git-bundel naar de push-job.
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    permissions:
+      contents: read
+    outputs:
+      slug: ${{ steps.kies.outputs.slug }}
+      bundel: ${{ steps.klaar.outputs.bundel }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: dev
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: main erin halen
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git merge -q --no-edit origin/main
+
+      - name: Idee kiezen
+        id: kies
+        env:
+          GEKOZEN: ${{ inputs.idee }}
+        run: |
+          if [ -n "$GEKOZEN" ]; then
+            slug="$GEKOZEN"
+          else
+            slug=$(grep -E '^## \[ \] [a-z0-9-]+ ' WENSLIJST.md 2>/dev/null | shuf -n 1 | awk '{print $4}')
+          fi
+          if [ -z "$slug" ]; then echo "Geen open idee in WENSLIJST.md." | tee -a "$GITHUB_STEP_SUMMARY"; exit 0; fi
+          printf '%s' "$slug" | grep -qE '^[a-z0-9-]+$' || { echo "Ongeldige slug: $slug"; exit 1; }
+          grep -qE "^## \[ \] $slug " WENSLIJST.md || { echo "Idee $slug staat niet open in WENSLIJST.md"; exit 1; }
+          [ ! -e "$slug" ] || { echo "Map $slug/ bestaat al"; exit 1; }
+          echo "slug=$slug" >> "$GITHUB_OUTPUT"
+          echo "Gekozen: \`$slug\`" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Playwright om te testen
+        if: steps.kies.outputs.slug != ''
+        run: |
+          pip install --quiet playwright
+          python3 -m playwright install --with-deps chromium
+
+      - name: Claude bouwt het spel
+        id: claude
+        if: steps.kies.outputs.slug != ''
+        continue-on-error: true
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          prompt: "/nieuw-spel ${{ steps.kies.outputs.slug }}"
+          claude_args: >-
+            --model claude-opus-5-5
+            --max-turns 250
+            --permission-mode acceptEdits
+            --allowedTools "Read,Edit,Write,Glob,Grep,Skill,Bash(python3:*),Bash(timeout:*),Bash(ls:*),Bash(mkdir:*),Bash(cp:*),Bash(git status:*),Bash(git diff:*)"
+            --disallowedTools "WebSearch,WebFetch,Bash(git push:*),Bash(git commit:*),Bash(git add:*),Bash(curl:*),Bash(wget:*)"
+            --json-schema '{"type":"object","properties":{"gelukt":{"type":"boolean"},"naam":{"type":"string"},"bericht":{"type":"string"},"reden":{"type":"string"}},"required":["gelukt","bericht"]}'
+
+      - name: Controleren en vastleggen
+        id: klaar
+        if: steps.kies.outputs.slug != ''
+        env:
+          UITVOER: ${{ steps.claude.outputs.structured_output }}
+          SLUG: ${{ steps.kies.outputs.slug }}
+          UITKOMST: ${{ steps.claude.outcome }}
+        run: |
+          # Claude zelf kapot (token, limiet, time-out): niets vastleggen, het idee blijft open.
+          [ "$UITKOMST" = "success" ] || { echo "De Claude-stap faalde ($UITKOMST)."; exit 1; }
+          python3 - <<'EOF'
+          import json, os
+          try:
+              u = json.loads(os.environ.get("UITVOER") or "{}")
+          except ValueError:
+              u = {}
+          gelukt = u.get("gelukt") is True
+          slug = os.environ["SLUG"]
+          with open(os.environ["RUNNER_TEMP"] + "/uitslag", "w") as f:
+              f.write("ja" if gelukt else "nee")
+          with open(os.environ["RUNNER_TEMP"] + "/bericht", "w") as f:
+              f.write((u.get("bericht") or "").strip() if gelukt else "Wenslijst: %s lukte niet" % slug)
+          with open(os.environ["RUNNER_TEMP"] + "/reden", "w") as f:
+              f.write((u.get("reden") or "geen reden gegeven").replace("\n", " ")[:300])
+          EOF
+          if [ "$(cat "$RUNNER_TEMP/uitslag")" != "ja" ]; then
+            # Mislukt: gooi alles weg en zet het idee op [!], zodat het niet steeds opnieuw gekozen wordt.
+            git reset -q --hard && git clean -qfd
+            python3 - "$SLUG" "$(cat "$RUNNER_TEMP/reden")" <<'EOF'
+          import sys
+          slug, reden = sys.argv[1], sys.argv[2]
+          regels = open("WENSLIJST.md", encoding="utf-8").read().split("\n")
+          for i, r in enumerate(regels):
+              if r.startswith("## [ ] %s " % slug):
+                  regels[i] = "## [!]" + r[len("## [ ]"):]
+                  regels.insert(i + 1, "- Mislukt: " + reden)
+                  break
+          open("WENSLIJST.md", "w", encoding="utf-8").write("\n".join(regels))
+          EOF
+          fi
+          git add -A
+          if git diff --cached --quiet; then echo "Niets te committen."; exit 0; fi
+          [ -n "$(cat "$RUNNER_TEMP/bericht")" ] || echo "Nieuw spel: $SLUG" > "$RUNNER_TEMP/bericht"
+          git commit -q -F "$RUNNER_TEMP/bericht" -m "Gebouwd door de dagelijkse workflow." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
+          git bundle create "$RUNNER_TEMP/werk.bundle" origin/dev..HEAD
+          echo "bundel=ja" >> "$GITHUB_OUTPUT"
+          { echo; cat "$RUNNER_TEMP/bericht"; echo; echo "Resultaat: $(cat "$RUNNER_TEMP/uitslag")"; } >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        if: steps.klaar.outputs.bundel == 'ja'
+        with:
+          name: werk
+          path: ${{ runner.temp }}/werk.bundle
+          retention-days: 7
+
+  push:
+    # Geen Claude in deze job: alleen controleren en pushen.
+    needs: bouw
+    if: needs.bouw.outputs.bundel == 'ja'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: dev
+          fetch-depth: 0
+      - uses: actions/download-artifact@v4
+        with:
+          name: werk
+          path: ${{ runner.temp }}
+      - name: Controleren en pushen naar dev
+        env:
+          SLUG: ${{ needs.bouw.outputs.slug }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch -q "$RUNNER_TEMP/werk.bundle" HEAD:werk
+          git merge -q --no-edit origin/main
+          # Ten opzichte van dev + main mag alleen het nieuwe spel, de startpagina, sitemap, CLAUDE.md en de wenslijst veranderen.
+          verkeerd=$(git diff --name-only HEAD werk | grep -vE "^($SLUG/|index\.html$|sitemap\.xml$|CLAUDE\.md$|WENSLIJST\.md$)" || true)
+          if [ -n "$verkeerd" ]; then echo "Weigert, wijzigingen buiten het spel:"; echo "$verkeerd"; exit 1; fi
+          git push origin werk:dev
+      - name: Publiceer starten
+        # Een push met GITHUB_TOKEN start zelf geen andere workflows.
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh workflow run publiceer.yml --ref main
