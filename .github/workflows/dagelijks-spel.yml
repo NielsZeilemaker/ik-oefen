@@ -1,10 +1,13 @@
 name: Dagelijks een nieuw spel
 
-# Elke nacht: kies een willekeurig open idee uit WENSLIJST.md, laat Claude het bouwen
+# Elke nacht om 00:00 Nederlandse tijd: kies een willekeurig open idee uit WENSLIJST.md, laat Claude het bouwen
 # en zet het op dev (https://ik-oefen.nl/dev/). Naar main gaat het alleen met de hand.
 on:
   schedule:
-    - cron: "0 3 * * *"
+    # Cron is in UTC: 22:00 UTC = middernacht in de zomer, 23:00 UTC = middernacht in de winter.
+    # De stap "Middernacht?" laat alleen de juiste van de twee doorgaan.
+    - cron: "0 22 * * *"
+    - cron: "0 23 * * *"
   workflow_dispatch:
     inputs:
       idee:
@@ -26,13 +29,26 @@ jobs:
       slug: ${{ steps.kies.outputs.slug }}
       bundel: ${{ steps.klaar.outputs.bundel }}
     steps:
+      - name: Middernacht?
+        id: tijd
+        env:
+          CRON: ${{ github.event.schedule }}
+        run: |
+          # Zomertijd (+0200) hoort bij 22:00 UTC, wintertijd (+0100) bij 23:00 UTC.
+          verschil=$(TZ=Europe/Amsterdam date +%z)
+          if [ "$CRON" = "0 22 * * *" ] && [ "$verschil" != "+0200" ]; then echo "door=nee" >> "$GITHUB_OUTPUT"; exit 0; fi
+          if [ "$CRON" = "0 23 * * *" ] && [ "$verschil" != "+0100" ]; then echo "door=nee" >> "$GITHUB_OUTPUT"; exit 0; fi
+          echo "door=ja" >> "$GITHUB_OUTPUT"
+
       - uses: actions/checkout@v4
+        if: steps.tijd.outputs.door == 'ja'
         with:
           ref: dev
           fetch-depth: 0
           persist-credentials: false
 
       - name: main erin halen
+        if: steps.tijd.outputs.door == 'ja'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -40,6 +56,7 @@ jobs:
 
       - name: Idee kiezen
         id: kies
+        if: steps.tijd.outputs.door == 'ja'
         env:
           GEKOZEN: ${{ inputs.idee }}
         run: |
@@ -121,10 +138,11 @@ jobs:
           git add -A
           if git diff --cached --quiet; then echo "Niets te committen."; exit 0; fi
           [ -n "$(cat "$RUNNER_TEMP/bericht")" ] || echo "Nieuw spel: $SLUG" > "$RUNNER_TEMP/bericht"
-          git commit -q -F "$RUNNER_TEMP/bericht" -m "Gebouwd door de dagelijkse workflow." -m "Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
+          printf '\n\nGebouwd door de dagelijkse workflow.\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>\n' >> "$RUNNER_TEMP/bericht"
+          git commit -q -F "$RUNNER_TEMP/bericht"
           git bundle create "$RUNNER_TEMP/werk.bundle" origin/dev..HEAD
           echo "bundel=ja" >> "$GITHUB_OUTPUT"
-          { echo; cat "$RUNNER_TEMP/bericht"; echo; echo "Resultaat: $(cat "$RUNNER_TEMP/uitslag")"; } >> "$GITHUB_STEP_SUMMARY"
+          { echo; head -n 1 "$RUNNER_TEMP/bericht"; echo; echo "Resultaat: $(cat "$RUNNER_TEMP/uitslag")"; } >> "$GITHUB_STEP_SUMMARY"
 
       - uses: actions/upload-artifact@v4
         if: steps.klaar.outputs.bundel == 'ja'
