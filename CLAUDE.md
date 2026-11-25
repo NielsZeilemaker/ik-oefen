@@ -16,6 +16,7 @@ Kleine oefenspelletjes voor kinderen (basisschoolleeftijd), live op https://ik-o
 | `spelling/` | Het Ballonnenfeest — spelling: ei/ij, au/ou, d/t, g/ch |
 | `splitsen/` | Het Kippenhok — splitsen tot 10: hoeveel eieren liggen onder de kip? |
 | `verdelen/` | De Kikkervijver — aanvullen tot N: hoeveel kikkers moeten er nog op het blad? |
+| `zinsdelen/` | De Haven — zinsdelen: persoonsvorm, onderwerp, knippen, gezegde, lijdend voorwerp |
 | `fonts/` | Zelf gehoste Fredoka (`fredoka.css` + woff2 + `OFL-fredoka.txt`) |
 | `robots.txt`, `sitemap.xml` | Vindbaarheid (`/dev/` staat in robots.txt op Disallow) |
 | `WENSLIJST.md` | Spelideeën (alleen op de dev-branch), bijgehouden door de pijplijn |
@@ -114,6 +115,15 @@ Kleine oefenspelletjes voor kinderen (basisschoolleeftijd), live op https://ik-o
 - Geen geluid of voorlezen: voegt weinig toe.
 - Beloning: een **ballon** die opstijgt in de lucht (eigen SVG, blijvend, zweeft zachtjes), op tijd (10 s) en in één keer goed. 12 woorden per ronde; ★ uitgespeeld, ★★ 9 ballonnen, ★★★ alle 12. Einde ronde: sterren en alle woorden van de ronde als kaartjes (met ballon als verdiend).
 - Layout: het speelveld is klein en blijft altijd onder elkaar; op hoge schermen (≥600px breed) groeien plaatje, woord en knoppen mee via `--extra = clamp(0px, 100svh - 860px, 300px)`, met vaste min-heights tegen verspringen.
+
+## De Haven (zinsdelen)
+
+- Een zin ligt op de kade als rij containers (één woord per container); een zinsdeel = containers die aan elkaar zitten, in één kleur. Het bordje aan de kraan zegt wat je zoekt: pv, ow, wg (alle werkwoorden: pv + de `w`-delen, ook een scheidbaar deel) of lv, met de volle naam klein eronder; bij Knippen "knip".
+- Zinnen in `ZINNEN` als `"o De kat|p heeft|l een muis|w gevangen"` (o/p/w/l/b). Alleen korte zinnen zonder bijzin, meewerkend voorwerp, voorzetselvoorwerp of naamwoordelijk gezegde, zodat elk antwoord eenduidig is.
+- Niveaus: Persoonsvorm (losse woorden, geen zinsdelen) → Onderwerp → Knippen (tik tussen de woorden waar een nieuw zinsdeel begint) → Gezegde (~4 op 5 een zin met meer werkwoorden) → Lijdend voorwerp. Bij Onderwerp, Gezegde en Lijdend voorwerp 9 van het niveau + 3 herhaling, de eerste altijd van het niveau.
+- Geen Klaar-knop: een goed zinsdeel gaat omhoog (de kraan pakt het), een goede knip wordt een oranje streep; zijn ze allemaal gevonden, dan telt het. Fout: wiebelen, de goede zinsdelen/knipplekken lichten groen op en het kind tikt ze aan. Toetsen: ← → kiezen, Enter tikt aan.
+- Beloning: een **vrachtschip** (geladen met een container per zinsdeel) vaart uit en blijft aan de horizon liggen (nieuwste 14 + totaal), op tijd (pv 10 s, ow/lv 12 s, wg 14 s, knip 16 s) en in één keer goed. 12 zinnen; ★★ 9 schepen, ★★★ alle 12. Einde ronde: sterren op het bordje en elke zin als regel met het antwoord vet (bij knippen strepen).
+- De haven is één SVG (600×170, `overflow:visible` zodat de kade doorloopt), hoogte `min(breedte, clamp(96px, 100svh - 480px, 240px))`; lucht en water zijn de achtergrond van `.haven` (horizon op 58,8%).
 
 ## Lessen uit de spellen (ontwerp)
 
