@@ -30,12 +30,13 @@ Spelideeën voor Ik oefen. De skill `spelideeen` vult aan, de dagelijkse workflo
 - Beloning: een **krantje** dat op de stapel bij de uitgang komt (titel met de naam van het niveau), blijvend.
 - Bronnen: https://maken.wikiwijs.nl/27782/Leerlijn_werkwoordspelling · https://info.snappet.org/wp-content/uploads/2024/05/Opzoekboekje-Werkwoordspelling-groep-7_8.pdf
 
-## [ ] zinsdelen — De Haven (groep 7–8, taal)
+## [x] zinsdelen — De Haven (groep 7–8, taal)
 - Leerdoel: redekundig ontleden: zinnen in zinsdelen knippen, en persoonsvorm, onderwerp, gezegde en lijdend voorwerp aanwijzen.
 - Spel: Een zin ligt als rij containers op de kade (één woord per container). Bij "Knippen" tikt het kind tussen de woorden om ze in zinsdelen te verdelen (de kraan pakt woorden die bij elkaar horen samen op). Daarna vraagt het bordje van de kraan om één zinsdeel, bijv. "pv"; het kind tikt de juiste container(groep) aan en de kraan zet hem op het schip. Fout: de goede container licht groen op en het kind tikt hem aan. Korte, eenduidige zinnen (geen bijzinnen).
 - Niveaus: Persoonsvorm → Onderwerp → Knippen (zin in zinsdelen verdelen) → Gezegde (werkwoordelijk gezegde: alle werkwoorden) → Lijdend voorwerp.
 - Beloning: een **vrachtschip** dat volgeladen de haven uitvaart en aan de horizon in de rij van schepen blijft liggen, blijvend.
 - Bronnen: https://www.slo.nl/publish/pages/19757/lijdend_voorwerp_woordgroepen_gr_7-8.pdf · https://maken.wikiwijs.nl/35813/leerlijn_zinsontleding
+- Gebouwd: /dev/zinsdelen/
 
 ## [ ] procenten — Het Laboratorium (groep 7–8, rekenen)
 - Leerdoel: procenten als deel van 100: een percentage schatten en tonen als vulling, de bekende verbanden (50% = 1/2, 25% = 1/4, 10% = 1/10, 75%), en een percentage van een aantal berekenen (25% van 40).

@@ -1,0 +1,702 @@
+<!doctype html>
+<html lang="nl">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<title>De Haven — zinsdelen: persoonsvorm, onderwerp, gezegde en lijdend voorwerp</title>
+<meta name="description" content="Oefen zinsontleden in De Haven: knip zinnen in zinsdelen en zoek de persoonsvorm, het onderwerp, het werkwoordelijk gezegde en het lijdend voorwerp. Elke goede zin laat een vrachtschip uitvaren. Gratis, zonder cookies, tracking of reclame.">
+<link rel="canonical" href="https://ik-oefen.nl/zinsdelen/">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="nl_NL">
+<meta property="og:site_name" content="Ik oefen">
+<meta property="og:title" content="De Haven — zinsdelen oefenen">
+<meta property="og:description" content="Oefen zinsontleden in De Haven: knip zinnen in zinsdelen en zoek de persoonsvorm, het onderwerp, het werkwoordelijk gezegde en het lijdend voorwerp. Elke goede zin laat een vrachtschip uitvaren. Gratis, zonder cookies, tracking of reclame.">
+<meta property="og:url" content="https://ik-oefen.nl/zinsdelen/">
+<link rel="stylesheet" href="../fonts/fredoka.css">
+<style>
+  :root{
+    --papier:#EEF3F6;
+    --kaart:#FFFEFB;
+    --kaart2:#E2EAF0;
+    --tekst:#1E2E3D;
+    --zacht:rgba(30,46,61,.62);
+    --lijn:rgba(30,46,61,.16);
+    --kade:#B7BEC6;
+    --kade2:#9AA3AD;
+    --goed:#2F9E5B;
+    --rood:#D9484F;
+    --geel:#F2B632;
+    --oranje:#E8892B;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:linear-gradient(#D6E6F0, var(--papier) 40%, #F2EFE8);
+    background-attachment:fixed;
+    color:var(--tekst);
+    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:16px;line-height:1.5;padding:20px 16px 48px;min-height:100vh;
+  }
+  .wrap{max-width:860px;margin:0 auto}
+  header{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:baseline;justify-content:space-between;margin-bottom:22px}
+  .kop{display:grid;grid-template-columns:auto 1fr;column-gap:14px;align-items:start}
+  .kop .terug{margin-top:calc(clamp(28px,6vw,40px) * .75 - 20px)}   /* midden op de regel van de titel */
+  @media (max-height:901px) and (min-width:600px){
+    header{margin-bottom:14px}
+    .koptekst{display:flex;flex-wrap:wrap;align-items:center;column-gap:18px}
+    .koptekst .ondertitel{flex:1 1 260px;max-width:440px;margin:0}
+  }
+  .terug{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;color:var(--tekst);border:1px solid var(--lijn);background:var(--kaart);text-decoration:none;transition:background .15s,border-color .15s}
+  .terug:hover{background:var(--kaart2);border-color:var(--tekst)}
+  h1{font-family:Fredoka,ui-rounded,system-ui,sans-serif;font-weight:600;font-size:clamp(28px,6vw,40px);margin:0}
+  .ondertitel{margin:2px 0 0;font-size:14px;color:var(--zacht)}
+
+  .kaart{background:var(--kaart);border:1px solid var(--lijn);border-radius:16px;padding:18px 18px 20px;box-shadow:0 2px 0 rgba(30,46,61,.06)}
+  .leskop{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-bottom:8px}
+  .leskop .rechts{display:flex;align-items:center;gap:14px;margin-left:auto;font-size:13px;color:var(--zacht);white-space:nowrap}
+  .teller{font-family:Fredoka,ui-rounded,sans-serif;font-size:18px;font-weight:600;color:var(--tekst)}
+  .teller.bump{animation:pop .45s}
+  #tellerschip svg{width:26px;height:14px;vertical-align:-1px}
+
+  .niveaus{display:contents}   /* knoppen doen mee in de rij van .leskop */
+  .niveaus button{font:inherit;font-size:14px;cursor:pointer;border:1px solid var(--lijn);background:var(--kaart2);color:var(--tekst);border-radius:20px;padding:5px 14px;white-space:nowrap}
+  .niveaus button.aan{background:var(--tekst);color:#fff;border-color:var(--tekst)}
+
+  /* de haven: lucht, horizon met de vloot, kraan met bordje, schip aan de kade */
+  .haven{position:relative;border-radius:12px;overflow:hidden;width:100%;aspect-ratio:600/170;
+    max-height:clamp(96px, 100svh - 480px, 240px);
+    background:linear-gradient(#BFDDF0, #E9F4FA 58.8%, #4D8FBF 58.8%, #2F6C9C)}
+  .haven svg{display:block;width:100%;height:100%;overflow:visible}   /* kade en water lopen door buiten de tekening */
+  #schip.vaart{animation:uitvaren 1.1s ease-in forwards}
+  #schip.komt{animation:aankomen .7s ease-out}
+  #lading rect{animation:laden .35s ease-out both}
+  #vloot .nieuw{animation:verschijn .6s ease-out}
+  .bordtekst{font-family:Fredoka,ui-rounded,sans-serif;font-weight:600}
+  @keyframes uitvaren{0%{transform:none;opacity:1}100%{transform:translate(260px,-34px) scale(.35);opacity:0}}
+  @keyframes aankomen{0%{transform:translateX(240px);opacity:0}100%{transform:none;opacity:1}}
+  @keyframes laden{0%{transform:translateY(-40px);opacity:0}100%{transform:none;opacity:1}}
+  @keyframes verschijn{0%{opacity:0}100%{opacity:1}}
+
+  /* de kade met de zin: elk woord een container, een zinsdeel = containers die aan elkaar zitten */
+  .kade{--extra:0px;position:relative;margin-top:10px;padding:14px 10px 18px;border-radius:12px;min-height:calc(152px + var(--extra) * .3);
+    display:flex;flex-wrap:wrap;align-content:center;justify-content:center;gap:12px 14px;
+    background:linear-gradient(transparent calc(100% - 10px), var(--kade2) calc(100% - 10px)), repeating-linear-gradient(90deg, #C6CCD3 0 58px, #BCC3CA 58px 60px)}
+  .kade.knip{gap:12px 0}
+  .groep{display:inline-flex;gap:3px;padding:3px;margin:0;border:0;border-radius:6px;background:transparent;cursor:pointer;font:inherit;color:inherit;
+    touch-action:manipulation;transition:transform .25s ease,box-shadow .2s}
+  .groep:disabled{cursor:default}
+  .container{display:inline-block;font-family:Fredoka,ui-rounded,sans-serif;font-weight:600;color:#fff;
+    font-size:calc(clamp(17px, 4.8vw, 23px) + var(--extra) * .03);line-height:1;padding:.45em .55em .5em;border-radius:3px;
+    background-color:var(--k,#5E7183);
+    background-image:repeating-linear-gradient(90deg, rgba(0,0,0,.10) 0 2px, transparent 2px 8px),linear-gradient(rgba(255,255,255,.18), transparent 40%, rgba(0,0,0,.14));
+    box-shadow:inset 0 0 0 2px rgba(0,0,0,.14),0 3px 0 rgba(0,0,0,.18);text-shadow:0 1px 0 rgba(0,0,0,.25);white-space:nowrap}
+  .groep:hover:not(:disabled) .container{filter:brightness(1.08)}
+  .groep.op{transform:translateY(-10px);box-shadow:0 0 0 3px var(--goed)}
+  .groep.juist{box-shadow:0 0 0 4px var(--goed);animation:gloei 1s ease-in-out infinite}
+  .groep.mis{animation:wiebel .25s 2}
+  .groep.mis .container{background-color:#9AA3AD}
+  /* knippen: een smal knipvak tussen elk paar woorden */
+  .gat{width:26px;align-self:stretch;min-height:40px;border:0;padding:0;margin:0;background:transparent;cursor:pointer;position:relative;touch-action:manipulation}
+  .gat::after{content:"";position:absolute;left:12px;top:4px;bottom:4px;border-left:2px dotted rgba(30,46,61,.35)}
+  .gat:hover::after{border-left-color:var(--tekst)}
+  .gat.geknipt{width:30px;cursor:default}
+  .gat.geknipt::after{border-left:4px solid var(--oranje);left:13px;top:0;bottom:0;border-radius:2px}
+  .gat.juist::after{border-left:4px dashed var(--goed);left:11px}
+  .gat.juist{animation:gloei2 1s ease-in-out infinite}
+  .gat.mis{animation:wiebel .25s 2}
+  .gat.mis::after{border-left:3px solid var(--rood)}
+  .kade.knip .groep{padding:3px 0}
+  .kade.klaar{animation:pop2 .4s}
+
+  /* terugblik aan het eind */
+  .kade.terugblik{display:block;align-content:normal;text-align:left;background:var(--kaart2);padding:10px 12px}
+  .terugblik .regel{display:flex;align-items:center;gap:8px;padding:3px 0;font-size:15px;line-height:1.35;animation:erin .3s ease-out both}
+  .terugblik .regel .wat{flex:none;width:2.4em;font-family:Fredoka,ui-rounded,sans-serif;font-weight:600;font-size:13px;color:var(--zacht)}
+  .terugblik .regel .zin{flex:1}
+  .terugblik .regel b{color:var(--goed);font-weight:700}
+  .terugblik .regel .streep{color:var(--oranje);font-weight:700;padding:0 2px}
+  .terugblik .regel svg{flex:none;width:26px;height:14px}
+
+  #hint{text-align:center;min-height:1.8em;font-family:Fredoka,ui-rounded,sans-serif;font-weight:600;font-size:18px;margin:8px 0 0}
+
+  /* tijdbalk: op tijd en in één keer goed = een schip */
+  #balk{display:flex;align-items:center;gap:10px;max-width:340px;margin:0 auto;height:30px}
+  #balk svg{width:30px;height:16px;flex:none;transition:filter .3s,opacity .3s}
+  #balk .spoor{flex:1;height:12px;border-radius:6px;background:var(--kaart2);overflow:hidden;box-shadow:inset 0 1px 2px rgba(0,0,0,.12)}
+  #balk .spoor i{display:block;height:100%;width:100%;border-radius:6px;background:linear-gradient(90deg,#2F7FC1,#8CC4EA)}
+  #balk.weg svg{filter:grayscale(1);opacity:.4}
+  #balk.klaar{visibility:hidden}
+  #balk.verdiend svg{animation:pop .5s}
+
+  @media (max-width:599px){
+    .kade{min-height:192px}   /* smal: ruimte voor drie regels containers, zodat er niets verspringt */
+  }
+  @media (min-width:600px){
+    .kade{--extra:clamp(0px, 100svh - 860px, 300px)}
+  }
+  @media (prefers-reduced-motion:reduce){ #schip.vaart,#schip.komt,#lading rect,#vloot .nieuw,.groep.mis,.gat.mis,.groep.juist,.gat.juist,.kade.klaar,.terugblik .regel,#balk.verdiend svg,.teller.bump{animation:none} }
+  @keyframes wiebel{25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+  @keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.4) rotate(-10deg)}100%{transform:scale(1)}}
+  @keyframes pop2{0%{transform:scale(1)}40%{transform:scale(1.03)}100%{transform:scale(1)}}
+  @keyframes gloei{50%{box-shadow:0 0 0 7px rgba(47,158,91,.45)}}
+  @keyframes gloei2{50%{opacity:.45}}
+  @keyframes erin{0%{transform:translateY(10px);opacity:0}100%{transform:none;opacity:1}}
+
+  .knoppen[hidden]{display:none}
+  .knoppen{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:12px}
+  .knoppen button{font:inherit;font-size:14px;cursor:pointer;border:1px solid var(--tekst);background:var(--tekst);color:#fff;border-radius:8px;padding:7px 14px}
+  :focus-visible{outline:3px solid #5B8DEF;outline-offset:2px}
+
+  #uitslag{margin-top:16px;border-top:1px solid var(--lijn);padding-top:14px}
+  #uitslag h3{font-family:Fredoka,ui-rounded,sans-serif;font-weight:500;font-size:20px;margin:0 0 8px}
+  #uitslag p{margin:0 0 10px;font-size:15px}
+  #uitslag .sterren{color:var(--geel);font-size:26px;letter-spacing:3px}
+  #uitslag .sterren i{font-style:normal;color:var(--lijn)}
+  #uitslag button{font:inherit;font-size:15px;cursor:pointer;border-radius:8px;padding:7px 14px;margin:4px 8px 0 0;border:1px solid var(--tekst);background:var(--kaart);color:var(--tekst)}
+  #uitslag button.hoofd{background:var(--tekst);color:#fff}
+
+  h2.recordkop{font-family:Fredoka,ui-rounded,sans-serif;font-weight:500;font-size:20px;margin:30px 0 8px}
+  #records{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+  .record{background:var(--kaart);border:1px solid var(--lijn);border-radius:12px;padding:10px 12px;font-size:14px}
+  .record b{display:block;font-family:Fredoka,ui-rounded,sans-serif;font-size:17px;font-weight:600}
+  .record .sterren{color:var(--geel);font-size:18px;letter-spacing:2px}
+  .record .sterren i{font-style:normal;color:var(--lijn)}
+  .record svg{width:22px;height:12px;vertical-align:-1px}
+
+  footer{margin-top:28px;font-size:13px;color:var(--zacht)}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="kop">
+      <a class="terug" href="../" aria-label="Terug naar alle spellen">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+      </a>
+      <div class="koptekst">
+        <h1>De Haven</h1>
+        <p class="ondertitel">Zoek het goede zinsdeel. Elke zin die in één keer goed is, laat een vrachtschip uitvaren.</p>
+      </div>
+    </div>
+  </header>
+
+  <div class="kaart">
+    <div class="leskop">
+      <div class="niveaus" id="niveaus"></div>
+      <div class="rechts">
+        <span class="teller" id="teller" title="schepen deze ronde"><span id="tellerschip"></span> <b id="schepen">0</b></span>
+        <span id="voortgang">zin 1 van 12</span>
+      </div>
+    </div>
+
+    <div class="haven">
+      <svg viewBox="0 0 600 170" aria-hidden="true">
+        <!-- golfjes -->
+        <g stroke="rgba(255,255,255,.35)" stroke-width="2" fill="none" stroke-linecap="round">
+          <path d="M210 120 q8 -4 16 0 M300 146 q8 -4 16 0 M250 160 q8 -4 16 0 M520 164 q8 -4 16 0 M340 118 q8 -4 16 0"/>
+        </g>
+        <!-- de vloot aan de horizon -->
+        <g id="vloot"></g>
+        <text id="vlootaantal" x="594" y="98" text-anchor="end" class="bordtekst" font-size="14" fill="#1E2E3D"></text>
+        <!-- kade -->
+        <rect x="-600" y="126" width="800" height="60" fill="#9AA3AD"/>
+        <rect x="-600" y="122" width="800" height="7" fill="#C9CED4"/>
+        <path d="M-600 140 H200 M-600 155 H200" stroke="rgba(0,0,0,.08)" stroke-width="1.5"/>
+        <rect x="178" y="112" width="10" height="12" rx="3" fill="#3B4652"/>
+        <!-- kraan -->
+        <g>
+          <path d="M44 122 L56 30 L68 30 L80 122" fill="none" stroke="#E8A12B" stroke-width="5" stroke-linejoin="round"/>
+          <path d="M48 96 L76 70 M52 66 L72 46 M76 96 L50 72 M72 62 L54 46" stroke="#E8A12B" stroke-width="2.5"/>
+          <rect x="36" y="118" width="52" height="6" rx="2" fill="#5A6470"/>
+          <rect x="16" y="20" width="300" height="9" rx="2" fill="#E8A12B"/>
+          <path d="M20 29 L36 20 L52 29 L68 20 L84 29 L100 20 L116 29 L132 20 L148 29 L164 20 L180 29 L196 20 L212 29 L228 20 L244 29 L260 20 L276 29 L292 20 L308 29" fill="none" stroke="#C47F14" stroke-width="1.5"/>
+          <rect x="6" y="14" width="22" height="20" rx="2" fill="#5A6470"/>
+          <rect x="52" y="30" width="26" height="18" rx="3" fill="#F4F1EA" stroke="#C47F14" stroke-width="2"/>
+          <rect x="56" y="34" width="18" height="7" rx="1.5" fill="#9FCBE6"/>
+          <rect x="252" y="25" width="16" height="8" rx="2" fill="#5A6470"/>
+          <path d="M260 33 V44" stroke="#3B4652" stroke-width="2"/>
+          <!-- bordje aan de haak -->
+          <rect x="158" y="42" width="204" height="78" rx="10" fill="#FFF6DA" stroke="#C47F14" stroke-width="3"/>
+          <text id="bordgroot" x="260" y="86" text-anchor="middle" class="bordtekst" font-size="42" fill="#1E2E3D"></text>
+          <text id="bordklein" x="260" y="110" text-anchor="middle" class="bordtekst" font-size="17" fill="#5A6470"></text>
+        </g>
+        <!-- vrachtschip aan de kade -->
+        <g id="schip" style="transform-origin:480px 140px">
+          <g id="lading"></g>
+          <rect x="378" y="96" width="34" height="32" rx="3" fill="#F4F1EA"/>
+          <rect x="384" y="88" width="20" height="10" rx="2" fill="#F4F1EA"/>
+          <rect x="382" y="103" width="8" height="7" rx="1.5" fill="#6FA9D2"/><rect x="396" y="103" width="8" height="7" rx="1.5" fill="#6FA9D2"/>
+          <rect x="392" y="78" width="6" height="11" fill="#D9484F"/>
+          <path d="M366 126 H592 L572 156 H378 Z" fill="#24425E"/>
+          <path d="M368 130 H590" stroke="#D9484F" stroke-width="4"/>
+          <path d="M376 148 H576" stroke="rgba(255,255,255,.2)" stroke-width="2"/>
+        </g>
+      </svg>
+    </div>
+
+    <div class="kade" id="kade" aria-live="polite"></div>
+
+    <p id="hint"></p>
+    <div id="balk"><span id="balkschip"></span><div class="spoor" title="Op tijd en in één keer goed = een schip"><i id="vulling"></i></div></div>
+
+    <div class="knoppen" id="knoppen"><button id="opnieuw">Begin opnieuw</button></div>
+    <div id="uitslag" hidden></div>
+  </div>
+
+  <h2 class="recordkop">Jouw records</h2>
+  <div id="records"></div>
+
+  <footer>Voortgang wordt op dit apparaat bewaard. Het bordje van de kraan zegt welk zinsdeel je zoekt: pv (persoonsvorm), ow (onderwerp), wg (werkwoordelijk gezegde: alle werkwoorden) of lv (lijdend voorwerp). Tik het aan. Bij het werkwoordelijk gezegde tik je alle werkwoorden aan. Bij knippen tik je tussen de woorden waar een nieuw zinsdeel begint. Met een toetsenbord: pijltjes ← → en Enter. Op tijd en in één keer goed? Dan vaart er een schip uit.</footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+var BEWAAR = "haven-v1";
+var RONDE = 12;
+
+// Zinnen, verdeeld in zinsdelen. Rol: o = onderwerp, p = persoonsvorm, w = ander werkwoord (hoort bij het gezegde),
+// l = lijdend voorwerp, b = ander zinsdeel (bijwoordelijke bepaling). Korte zinnen, geen bijzinnen,
+// geen meewerkend voorwerp en geen naamwoordelijk gezegde, zodat elk antwoord eenduidig is.
+var ZINNEN = [
+  "o Sanne|p fietst|b naar school",
+  "o De hond|p blaft|b heel hard",
+  "o Mijn broer|p eet|l een appel",
+  "o Opa|p leest|l de krant",
+  "b Morgen|p gaat|o Daan|b naar het zwembad",
+  "o De kat|p heeft|l een muis|w gevangen",
+  "o Wij|p hebben|l een hut|w gebouwd",
+  "o De juf|p leest|l een spannend boek|w voor",
+  "b In de zomer|p zwemmen|o wij|b in de zee",
+  "o Lisa|p wil|l een ijsje|w kopen",
+  "o De bakker|p bakt|l vers brood",
+  "o Het vliegtuig|p landt|b op tijd",
+  "o Tom|p kan|b heel snel|w rennen",
+  "b Gisteren|p heeft|o mijn moeder|l een taart|w gebakken",
+  "o De boer|p melkt|l de koeien|b elke ochtend",
+  "o Mijn zus|p speelt|l een liedje|b op de piano",
+  "b Na school|p maken|o wij|l ons huiswerk",
+  "o De vogels|p zingen|b in de boom",
+  "o Papa|p wast|l de auto",
+  "o Het meisje|p is|b naar huis|w gelopen",
+  "o De kinderen|p zullen|l een lied|w zingen",
+  "o Ik|p moet|l mijn kamer|w opruimen",
+  "o Ruben|p belt|l zijn oma|w op",
+  "b Op zaterdag|p bezoeken|o we|l de dierentuin",
+  "o De piraat|p zoekt|l de schat",
+  "o Noor|p heeft|l haar sleutels|w verloren",
+  "o De trein|p vertrekt|b om acht uur",
+  "o Wij|p gaan|b morgen|w kamperen",
+  "o Mijn vriend|p heeft|l een nieuwe fiets|w gekregen",
+  "b Vandaag|p schijnt|o de zon",
+  "o De leeuw|p jaagt|b in de nacht",
+  "o Emma|p tekent|l een paard",
+  "o De voetballers|p hebben|b gisteren|w gewonnen",
+  "o De kok|p snijdt|l de uien",
+  "b Elke dag|p drinkt|o oma|l een kopje thee",
+  "o Jij|p mag|l de deur|w dichtdoen",
+  "o De postbode|p brengt|l een pakje",
+  "o Mijn ouders|p hebben|l een huis|w gekocht",
+  "o De visser|p vangt|l een grote vis",
+  "b Straks|p komt|o de bus",
+  "o Sem|p ruimt|l de tafel|w af",
+  "o De baby|p slaapt|b in de wieg",
+  "b In het bos|p hebben|o wij|l een egel|w gezien",
+  "o Jesse|p gooit|l de bal|b over het hek",
+  "o De schilder|p verft|l het hek",
+  "o De zeilers|p varen|b over het meer",
+  "o Fatima|p schrijft|l een lang verhaal",
+  "b Op het plein|p spelen|o de kinderen|l een spelletje",
+  "o De kapitein|p heeft|l het schip|b naar de haven|w gestuurd",
+  "b Vanavond|p kijken|o we|l een film",
+  "o Mijn neef|p gaat|l een kaartje|w kopen",
+  "o De bus|p stopt|b bij de kerk"
+];
+// Vraagsoorten: wat staat er op het bordje, en welke rollen horen bij het antwoord
+var SOORTEN = {
+  pv:   {groot:"pv",   klein:"persoonsvorm",           rollen:"p",  wacht:10000},
+  ow:   {groot:"ow",   klein:"onderwerp",              rollen:"o",  wacht:12000},
+  knip: {groot:"knip", klein:"in zinsdelen",           rollen:"",   wacht:16000},
+  wg:   {groot:"wg",   klein:"werkwoordelijk gezegde", rollen:"pw", wacht:14000},
+  lv:   {groot:"lv",   klein:"lijdend voorwerp",       rollen:"l",  wacht:12000}
+};
+var NIVEAUS = [
+  {titel:"Persoonsvorm",     soort:"pv"},
+  {titel:"Onderwerp",        soort:"ow"},
+  {titel:"Knippen",          soort:"knip"},
+  {titel:"Gezegde",          soort:"wg"},
+  {titel:"Lijdend voorwerp", soort:"lv"}
+];
+var VOLGORDE = ["pv","ow","knip","wg","lv"];
+var KLEUREN = ["#D9534F","#2F7FC1","#3A9D5D","#E8892B","#7B5BB6","#C2477F","#2A9C9C","#B8862B"];
+var KNIPKLEUR = "#5E7183";
+
+var data = {records:{}, niveau:0, vloot:[]};
+function laad(){
+  try{ var s = localStorage.getItem(BEWAAR); if (s) data = JSON.parse(s); }catch(e){}
+  if (!data || typeof data !== "object") data = {};
+  if (!data.records || typeof data.records !== "object") data.records = {};
+  if (!Array.isArray(data.vloot)) data.vloot = [];
+  if (typeof data.niveau !== "number" || !NIVEAUS[data.niveau]) data.niveau = 0;
+}
+function bewaar(){ try{ localStorage.setItem(BEWAAR, JSON.stringify(data)); }catch(e){} }
+
+function tussen(a, b){ return a + Math.floor(Math.random()*(b-a+1)); }
+function schud(a){ for (var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)), t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+function $(id){ return document.getElementById(id); }
+function alle(sel){ return Array.prototype.slice.call(document.querySelectorAll(sel)); }
+
+function leesZin(regel, nr){
+  var delen = regel.split("|").map(function(d){ return {rol:d.charAt(0), woorden:d.slice(2).split(" ")}; });
+  return {nr:nr, delen:delen};
+}
+var ALLE = ZINNEN.map(leesZin);
+function heeft(zin, rol){ return zin.delen.some(function(d){ return d.rol === rol; }); }
+
+// Een vrachtschipje als SVG (voor de teller, de balk, de records en de vloot)
+function schipje(k){
+  var a = KLEUREN[k % KLEUREN.length], b = KLEUREN[(k + 3) % KLEUREN.length];
+  return '<svg viewBox="0 0 30 16" aria-hidden="true">'
+    + '<rect x="4" y="3" width="5" height="6" fill="#F4F1EA"/>'
+    + '<rect x="10" y="4" width="7" height="5" fill="' + a + '"/><rect x="18" y="4" width="7" height="5" fill="' + b + '"/>'
+    + '<path d="M1 9 H29 L26 15 H4 Z" fill="#24425E"/></svg>';
+}
+
+/* ---------- een ronde maken ---------- */
+// Past een zin bij een vraagsoort?
+function past(zin, soort){
+  if (soort === "lv") return heeft(zin, "l");
+  if (soort === "knip") return zin.delen.length >= 3;
+  return true;
+}
+function maakRonde(){
+  var n = NIVEAUS[data.niveau], soorten = [];
+  var vorige = VOLGORDE.slice(0, VOLGORDE.indexOf(n.soort));
+  var herhaal = (vorige.length && n.soort !== "knip") ? 3 : 0;
+  for (var i=0;i<RONDE-herhaal;i++) soorten.push(n.soort);
+  for (var h=0;h<herhaal;h++) soorten.push(vorige[tussen(0, vorige.length-1)]);
+  schud(soorten);
+  // de eerste vraag gaat over het nieuwe van dit niveau
+  var j = soorten.indexOf(n.soort), t = soorten[0]; soorten[0] = soorten[j]; soorten[j] = t;
+
+  var gebruikt = {}, vragen = [];
+  // bij het gezegde: meestal een zin met meer werkwoorden (anders is het gewoon de pv)
+  var metW = schud(ALLE.filter(function(z){ return heeft(z, "w"); }));
+  var wgTeller = 0;
+  soorten.forEach(function(s){
+    var pool;
+    if (s === "wg" && wgTeller++ % 5 !== 4) pool = metW;
+    else pool = schud(ALLE.filter(function(z){ return past(z, s); }));
+    var zin = null;
+    for (var k=0;k<pool.length;k++) if (!gebruikt[pool[k].nr]){ zin = pool[k]; break; }
+    if (!zin) zin = schud(ALLE.filter(function(z){ return past(z, s) && !gebruikt[z.nr]; }))[0];
+    gebruikt[zin.nr] = 1;
+    vragen.push({soort:s, zin:zin});
+  });
+  return vragen;
+}
+
+/* ---------- toestand ---------- */
+var vragen = [], nr = 0, vraag = null, bezig = false, fout = false;
+var schepen = 0, balkTimer = null, volgTimer = null, start = 0, uitslagen = [];
+var eenheden = [], nodig = 0, gepakt = 0;   // bij aanwijzen
+var knippen = [], nogTeKnippen = 0;          // bij knippen
+
+function startBalk(wacht){
+  var b = $("balk"), v = $("vulling");
+  b.classList.remove("weg", "klaar", "verdiend");
+  v.style.transition = "none"; v.style.width = "100%";
+  void v.offsetWidth;
+  v.style.transition = "width " + wacht + "ms linear"; v.style.width = "0%";
+  clearTimeout(balkTimer);
+  balkTimer = setTimeout(function(){ $("balk").classList.add("weg"); }, wacht);
+}
+function stopBalk(){
+  clearTimeout(balkTimer);
+  var v = $("vulling"); v.style.width = getComputedStyle(v).width; v.style.transition = "none";
+}
+function tekenTeller(bump){
+  $("schepen").textContent = schepen;
+  if (bump){ var t = $("teller"); t.classList.remove("bump"); void t.offsetWidth; t.classList.add("bump"); }
+}
+function tekenBord(groot, klein){
+  $("bordgroot").textContent = groot;
+  $("bordklein").textContent = klein;
+}
+
+// De vloot aan de horizon: de nieuwste schepen die passen, met het totaal ernaast
+var VLOOT_MAX = 14;
+function tekenVloot(nieuw){
+  var t = data.vloot.slice(-VLOOT_MAX), s = "";
+  t.forEach(function(k, i){
+    var x = 196 + i * 26, a = KLEUREN[k % KLEUREN.length], b = KLEUREN[(k + 3) % KLEUREN.length];
+    s += '<g transform="translate(' + x + ' 86)"' + (nieuw && i === t.length-1 ? ' class="nieuw"' : "") + ">"
+      + '<rect x="3" y="2" width="4" height="5" fill="#F4F1EA"/><rect x="8" y="3" width="6" height="4" fill="' + a + '"/><rect x="14.5" y="3" width="6" height="4" fill="' + b + '"/>'
+      + '<path d="M0 7 H24 L21.5 12 H3 Z" fill="#24425E"/></g>';
+  });
+  $("vloot").innerHTML = s;
+  $("vlootaantal").textContent = data.vloot.length > VLOOT_MAX ? data.vloot.length : "";
+}
+// Lading op het schip: een container per zinsdeel, in de kleuren van de zin
+function laadSchip(kleuren){
+  var s = "";
+  kleuren.forEach(function(c, i){
+    var rij = i < 5 ? 0 : 1, kol = i % 5;
+    s += '<rect x="' + (418 + kol * 31) + '" y="' + (108 - rij * 18) + '" width="29" height="17" rx="1.5" fill="' + c
+      + '" stroke="rgba(0,0,0,.25)" stroke-width="1" style="animation-delay:' + (i * 0.08).toFixed(2) + 's"/>';
+  });
+  $("lading").innerHTML = s;
+}
+function nieuwSchip(){
+  var sch = $("schip");
+  $("lading").innerHTML = "";
+  sch.classList.remove("vaart", "komt"); void sch.getBoundingClientRect(); sch.classList.add("komt");
+}
+
+function woordTekst(zin, i, w){
+  // hoofdletter staat al in de zin; achter het laatste woord een punt
+  var laatste = i === zin.delen.length - 1 && w === zin.delen[i].woorden.length - 1;
+  return zin.delen[i].woorden[w] + (laatste ? "." : "");
+}
+function container(tekst, kleur){
+  return '<span class="container" style="--k:' + kleur + '">' + tekst + "</span>";
+}
+
+/* ---------- één vraag ---------- */
+function toonVraag(){
+  vraag = vragen[nr];
+  bezig = true; fout = false; start = Date.now();
+  $("hint").textContent = "";
+  $("voortgang").textContent = "zin " + (nr+1) + " van " + RONDE;
+  var s = SOORTEN[vraag.soort];
+  tekenBord(s.groot, s.klein);
+  if (vraag.soort === "knip") tekenKnippen(); else tekenAanwijzen();
+  startBalk(s.wacht);
+}
+
+// Aanwijzen: de zin staat al in zinsdelen (bij de persoonsvorm als losse woorden)
+function tekenAanwijzen(){
+  var zin = vraag.zin, rollen = SOORTEN[vraag.soort].rollen;
+  var losseWoorden = NIVEAUS[data.niveau].soort === "pv";
+  var kleuren = schud(KLEUREN.slice());
+  eenheden = []; gepakt = 0; nodig = 0;
+  zin.delen.forEach(function(d, i){
+    var doel = rollen.indexOf(d.rol) >= 0;
+    if (losseWoorden){
+      d.woorden.forEach(function(w, j){ eenheden.push({teksten:[woordTekst(zin, i, j)], doel:doel && d.rol === "p"}); });
+    } else eenheden.push({teksten:d.woorden.map(function(w, j){ return woordTekst(zin, i, j); }), doel:doel});
+  });
+  eenheden.forEach(function(e, i){ e.kleur = kleuren[i % kleuren.length]; if (e.doel) nodig++; });
+  var k = $("kade"); k.className = "kade"; k.innerHTML = "";
+  eenheden.forEach(function(e, i){
+    var b = document.createElement("button");
+    b.className = "groep"; b.type = "button";
+    b.setAttribute("aria-label", e.teksten.join(" "));
+    b.innerHTML = e.teksten.map(function(t){ return container(t, e.kleur); }).join("");
+    b.onclick = function(){ wijsAan(i, b); };
+    e.knop = b;
+    k.appendChild(b);
+  });
+}
+function wijsAan(i, knop){
+  if (!bezig) return;
+  var e = eenheden[i];
+  if (e.gepakt) return;
+  if (e.doel){
+    e.gepakt = true; gepakt++;
+    knop.classList.remove("juist"); knop.classList.add("op");
+    if (gepakt >= nodig) goed();
+    return;
+  }
+  // fout: de container wiebelt, de goede lichten groen op en het kind tikt ze aan
+  fout = true;
+  stopBalk(); $("balk").classList.add("weg");
+  knop.classList.remove("mis"); void knop.offsetWidth; knop.classList.add("mis");
+  setTimeout(function(){ knop.classList.remove("mis"); }, 520);
+  eenheden.forEach(function(x){ if (x.doel && !x.gepakt) x.knop.classList.add("juist"); });
+}
+
+// Knippen: losse woorden met een knipvak ertussen
+function tekenKnippen(){
+  var zin = vraag.zin, woorden = [];
+  zin.delen.forEach(function(d, i){ d.woorden.forEach(function(w, j){ woorden.push({tekst:woordTekst(zin, i, j), deel:i}); }); });
+  knippen = []; nogTeKnippen = zin.delen.length - 1;
+  var k = $("kade"); k.className = "kade knip"; k.innerHTML = "";
+  woorden.forEach(function(w, i){
+    var g = document.createElement("span");
+    g.className = "groep";
+    g.innerHTML = container(w.tekst, KNIPKLEUR);
+    k.appendChild(g);
+    if (i < woorden.length - 1){
+      var grens = woorden[i+1].deel !== w.deel;
+      var b = document.createElement("button");
+      b.className = "gat"; b.type = "button";
+      b.setAttribute("aria-label", "knip tussen " + w.tekst + " en " + woorden[i+1].tekst);
+      var x = {knop:b, grens:grens, geknipt:false};
+      b.onclick = function(){ knip(x); };
+      knippen.push(x);
+      k.appendChild(b);
+    }
+  });
+}
+function knip(x){
+  if (!bezig || x.geknipt) return;
+  if (x.grens){
+    x.geknipt = true; nogTeKnippen--;
+    x.knop.classList.remove("juist"); x.knop.classList.add("geknipt");
+    if (nogTeKnippen <= 0) goed();
+    return;
+  }
+  fout = true;
+  stopBalk(); $("balk").classList.add("weg");
+  x.knop.classList.remove("mis"); void x.knop.offsetWidth; x.knop.classList.add("mis");
+  setTimeout(function(){ x.knop.classList.remove("mis"); }, 520);   // anders lijkt het een knip
+  knippen.forEach(function(y){ if (y.grens && !y.geknipt) y.knop.classList.add("juist"); });
+}
+
+function goed(){
+  bezig = false;
+  stopBalk();
+  var verdiend = !fout && Date.now() - start <= SOORTEN[vraag.soort].wacht;
+  uitslagen.push({vraag:vraag, schip:verdiend});
+  var kleuren = schud(KLEUREN.slice()).slice(0, vraag.zin.delen.length);
+  if (vraag.soort === "knip"){
+    // de zinsdelen krijgen elk hun eigen kleur
+    var k = $("kade"); k.className = "kade";
+    k.innerHTML = vraag.zin.delen.map(function(d, i){
+      return '<span class="groep">' + d.woorden.map(function(w, j){ return container(woordTekst(vraag.zin, i, j), kleuren[i]); }).join("") + "</span>";
+    }).join("");
+  } else {
+    alle("#kade .groep").forEach(function(b){ b.disabled = true; });
+  }
+  void $("kade").offsetWidth; $("kade").classList.add("klaar");
+  if (verdiend){
+    schepen++;
+    data.vloot.push(tussen(0, KLEUREN.length-1));
+    if (data.vloot.length > 1000) data.vloot = data.vloot.slice(-1000);
+    bewaar();
+    laadSchip(kleuren);
+    setTimeout(function(){ $("schip").classList.remove("komt"); $("schip").classList.add("vaart"); }, 450);
+    setTimeout(function(){ tekenVloot(true); }, 1300);
+    var b = $("balk"); b.classList.remove("verdiend"); void b.offsetWidth; b.classList.add("verdiend");
+  }
+  tekenTeller(verdiend);
+  $("hint").textContent = verdiend ? ["Goed zo!", "Super!", "Top!", "Knap!"][tussen(0,3)] : "Goed zo!";
+  clearTimeout(volgTimer);
+  volgTimer = setTimeout(function(){ if (verdiend) nieuwSchip(); volgende(); }, verdiend ? 1700 : 1300);
+}
+function volgende(){
+  nr++;
+  if (nr >= RONDE) klaar(); else toonVraag();
+}
+
+/* ---------- ronde ---------- */
+function startRonde(){
+  clearTimeout(volgTimer);
+  vragen = maakRonde(); nr = 0; schepen = 0; uitslagen = [];
+  $("uitslag").hidden = true;
+  $("knoppen").hidden = false;
+  $("schip").classList.remove("vaart");
+  $("lading").innerHTML = "";
+  tekenTeller(false);
+  toonVraag();
+}
+function zinMet(u){
+  // de zin als tekst, met het antwoord vet (of bij knippen met strepen tussen de zinsdelen)
+  var zin = u.vraag.zin, rollen = SOORTEN[u.vraag.soort].rollen;
+  return zin.delen.map(function(d, i){
+    var t = d.woorden.map(function(w, j){ return woordTekst(zin, i, j); }).join(" ");
+    return rollen.indexOf(d.rol) >= 0 ? "<b>" + t + "</b>" : t;
+  }).join(u.vraag.soort === "knip" ? ' <span class="streep">|</span> ' : " ");
+}
+function klaar(){
+  bezig = false; vraag = null;
+  stopBalk(); $("balk").classList.add("klaar");
+  $("knoppen").hidden = true;
+  $("hint").textContent = "";
+
+  var sterren = 1;
+  if (schepen >= 9) sterren = 2;
+  if (schepen >= RONDE) sterren = 3;
+  var oud = data.records[data.niveau];
+  data.records[data.niveau] = {
+    sterren: Math.max(oud ? oud.sterren : 0, sterren),
+    schepen: Math.max(oud ? oud.schepen : 0, schepen)
+  };
+  bewaar();
+  tekenRecords();
+
+  // sterren op het bordje van de kraan
+  var st = "", bord = "";
+  for (var k=1;k<=3;k++){
+    st += k <= sterren ? "★" : "<i>★</i>";
+    bord += '<tspan fill="' + (k <= sterren ? "#F2B632" : "#D5D0C4") + '">★</tspan>';
+  }
+  $("bordgroot").innerHTML = bord;
+  $("bordklein").textContent = schepen + (schepen === 1 ? " schip" : " schepen");
+
+  // terugblik: alle zinnen van deze ronde, met een schip als het op tijd en in één keer goed was
+  var kd = $("kade");
+  kd.className = "kade terugblik";
+  kd.innerHTML = uitslagen.map(function(u, i){
+    return '<div class="regel" style="animation-delay:' + (i * 0.06).toFixed(2) + 's"><span class="wat">' + SOORTEN[u.vraag.soort].groot
+      + '</span><span class="zin">' + zinMet(u) + "</span>" + (u.schip ? schipje(i) : "") + "</div>";
+  }).join("");
+
+  var t = '<h3>Klaar! <span class="sterren">' + st + "</span></h3>";
+  t += "<p><b>" + schepen + "</b> " + (schepen === 1 ? "schip is" : "schepen zijn") + " uitgevaren.</p>";
+  if (sterren === 1) t += "<p>Twee sterren haal je met 9 schepen, drie sterren met alle " + RONDE + ".</p>";
+  else if (sterren === 2) t += "<p>Twee sterren! Laat alle " + RONDE + " schepen uitvaren voor drie sterren.</p>";
+  else t += "<p>Alle zinnen goed, drie sterren. Wat een drukke haven!</p>";
+  t += '<button class="hoofd" id="nogeens">Nog een keer</button>';
+  if (sterren >= 2 && NIVEAUS[data.niveau+1]) t += '<button id="verder">Verder: ' + NIVEAUS[data.niveau+1].titel + " →</button>";
+  var u = $("uitslag"); u.innerHTML = t; u.hidden = false;
+  $("nogeens").onclick = startRonde;
+  if ($("verder")) $("verder").onclick = function(){ data.niveau++; bewaar(); tekenNiveaus(); startRonde(); };
+}
+
+function tekenNiveaus(){
+  var box = $("niveaus"); box.innerHTML = "";
+  NIVEAUS.forEach(function(n, i){
+    var b = document.createElement("button");
+    b.textContent = n.titel;
+    if (i === data.niveau) b.className = "aan";
+    b.onclick = function(){ data.niveau = i; bewaar(); tekenNiveaus(); startRonde(); };
+    box.appendChild(b);
+  });
+}
+function tekenRecords(){
+  $("records").innerHTML = NIVEAUS.map(function(n, i){
+    var r = data.records[i], st = "";
+    for (var k=1;k<=3;k++) st += (r && r.sterren >= k) ? "★" : "<i>★</i>";
+    return '<div class="record"><b>' + n.titel + '</b><span class="sterren">' + st + "</span><br>"
+      + (r ? "beste: " + r.schepen + " " + schipje(i) : "nog niet gespeeld") + "</div>";
+  }).join("");
+}
+
+/* ---------- toetsenbord: pijltjes kiezen een zinsdeel of knipvak, Enter tikt het aan ---------- */
+document.addEventListener("keydown", function(e){
+  if (!bezig || e.ctrlKey || e.metaKey || e.altKey) return;
+  if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+  var knoppen = alle("#kade button:not(:disabled)");
+  if (!knoppen.length) return;
+  e.preventDefault();
+  var nu = knoppen.indexOf(document.activeElement);
+  if (nu < 0) nu = e.key === "ArrowRight" ? 0 : knoppen.length - 1;
+  else nu = (nu + (e.key === "ArrowRight" ? 1 : -1) + knoppen.length) % knoppen.length;
+  knoppen[nu].focus();
+});
+
+/* ---------- start ---------- */
+laad();
+$("balkschip").innerHTML = schipje(0);
+$("tellerschip").innerHTML = schipje(1);
+tekenNiveaus();
+tekenRecords();
+tekenVloot(false);
+$("opnieuw").onclick = startRonde;
+startRonde();
+})();
+</script>
+</html>
