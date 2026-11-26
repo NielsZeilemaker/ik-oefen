@@ -17,6 +17,7 @@ Kleine oefenspelletjes voor kinderen (basisschoolleeftijd), live op https://ik-o
 | `splitsen/` | Het Kippenhok — splitsen tot 10: hoeveel eieren liggen onder de kip? |
 | `verdelen/` | De Kikkervijver — aanvullen tot N: hoeveel kikkers moeten er nog op het blad? |
 | `zinsdelen/` | De Haven — zinsdelen: persoonsvorm, onderwerp, knippen, gezegde, lijdend voorwerp |
+| `kommagetallen/` | Het Atletiekveld — kommagetallen op de meetlat: halven, tienden, honderdsten, aflezen, afronden |
 | `fonts/` | Zelf gehoste Fredoka (`fredoka.css` + woff2 + `OFL-fredoka.txt`) |
 | `robots.txt`, `sitemap.xml` | Vindbaarheid (`/dev/` staat in robots.txt op Disallow) |
 | `WENSLIJST.md` | Spelideeën (alleen op de dev-branch), bijgehouden door de pijplijn |
@@ -124,6 +125,16 @@ Kleine oefenspelletjes voor kinderen (basisschoolleeftijd), live op https://ik-o
 - Geen Klaar-knop: een goed zinsdeel gaat omhoog (de kraan pakt het), een goede knip wordt een oranje streep; zijn ze allemaal gevonden, dan telt het. Fout: wiebelen, de goede zinsdelen/knipplekken lichten groen op en het kind tikt ze aan. Toetsen: ← → kiezen, Enter tikt aan.
 - Beloning: een **vrachtschip** (geladen met een container per zinsdeel) vaart uit en blijft aan de horizon liggen (nieuwste 14 + totaal), op tijd (pv 10 s, ow/lv 12 s, wg 14 s, knip 16 s) en in één keer goed. 12 zinnen; ★★ 9 schepen, ★★★ alle 12. Einde ronde: sterren op het bordje en elke zin als regel met het antwoord vet (bij knippen strepen).
 - De haven is één SVG (600×170, `overflow:visible` zodat de kade doorloopt), hoogte `min(breedte, clamp(96px, 100svh - 480px, 240px))`; lucht en water zijn de achtergrond van `.haven` (horizon op 58,8%).
+
+## Het Atletiekveld (kommagetallen)
+
+- Alle getallen intern in honderdsten (430 = 4,3); `komma()` toont zo kort mogelijk (4 / 4,3 / 4,37). Eén SVG (600×280): scorebord met de sprong en prijzenbord met lintjes bovenaan, daaronder aanloop, zandbak en meetlat (x 50–570).
+- Niveaus: Halven (lat van 4 m, streepjes per 0,5, antwoord x,5) → Tienden (lat van 2 m) → Honderdsten (dunne overzichtslat met een geel vergroot stukje van 0,2, de loep, naar de grote lat in honderdsten; vaak ook 4,0x) → Aflezen (de afdruk en de vlag staan er al, kies uit drie: tiende/honderdste ernaast en 4,03 ↔ 4,3) → Afronden (op hele meters: lat van 3 m, dunne tiendestreepjes, de vlag kan alleen op hele meters; op tienden: vergroot stukje van 0,5, de vlag kan alleen op tienden; nooit precies op de helft). Vanaf niveau 2: 9 van het niveau + 3 herhaling, de eerste altijd van het niveau.
+- Sleep de vlag of tik op de lat (ook in de zandbak, behalve bij een vergroot stukje); bij loslaten glijdt hij naar het dichtstbijzijnde streepje en telt het meteen. Loslaten op de beginplek telt niet. Toetsen: ← → schuiven, Enter telt; 1–3 bij kiezen.
+- Fout: de vlag wiebelt, de goede plek licht groen op en het kind zet de vlag daar. Bij kiezen: de goede knop licht groen op. Goed: de springer springt vanaf de balk en landt met een afdruk in het zand.
+- De opdracht bij Afronden ("Rond af op hele meters / tienden") en de lof staan in de vaste ruimte onder het veld (waar bij Aflezen de knoppen staan), omdat kleine tekst in de SVG op een telefoon onleesbaar wordt.
+- Beloning: een **lintje met rozet** (kleur per niveau) aan het prijzenbord, op tijd (8/10/12/10/12 s) en in één keer goed; nieuwste 12 + totaal. ★★ 9, ★★★ 12. Einde ronde: sterren op het scorebord en elke sprong als kaartje op het veld ("4,46 ≈ 4" bij afronden).
+- Breedte van het veld: `clamp(300px, (100svh - 320px) * 600/280, 100%)`, zodat alles op 1366×650 zonder scrollen past.
 
 ## Lessen uit de spellen (ontwerp)
 
