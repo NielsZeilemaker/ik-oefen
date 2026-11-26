@@ -1,0 +1,772 @@
+<!doctype html>
+<html lang="nl">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<title>Het Atletiekveld — kommagetallen op de getallenlijn en afronden</title>
+<meta name="description" content="Oefen kommagetallen op Het Atletiekveld: zet de vlag op de meetlat bij 4,3 of 4,37 meter, lees een sprong af en rond af op hele meters of tienden. Elke goede sprong levert een lintje op. Gratis, zonder cookies, tracking of reclame.">
+<link rel="canonical" href="https://ik-oefen.nl/kommagetallen/">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="nl_NL">
+<meta property="og:site_name" content="Ik oefen">
+<meta property="og:title" content="Het Atletiekveld — kommagetallen oefenen">
+<meta property="og:description" content="Oefen kommagetallen op Het Atletiekveld: zet de vlag op de meetlat bij 4,3 of 4,37 meter, lees een sprong af en rond af op hele meters of tienden. Elke goede sprong levert een lintje op. Gratis, zonder cookies, tracking of reclame.">
+<meta property="og:url" content="https://ik-oefen.nl/kommagetallen/">
+<link rel="stylesheet" href="../fonts/fredoka.css">
+<style>
+  :root{
+    --papier:#F1F5EC;
+    --kaart:#FFFEFA;
+    --kaart2:#E6EEDD;
+    --tekst:#23301F;
+    --zacht:rgba(35,48,31,.62);
+    --lijn:rgba(35,48,31,.16);
+    --gras:#7DB85A;
+    --baan:#C9553D;
+    --zand:#EED9A0;
+    --goed:#2F9E5B;
+    --rood:#D9484F;
+    --geel:#F2B632;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:linear-gradient(#DDEBD3, var(--papier) 40%, #F4F1E6);
+    background-attachment:fixed;
+    color:var(--tekst);
+    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:16px;line-height:1.5;padding:20px 16px 48px;min-height:100vh;
+  }
+  .wrap{max-width:860px;margin:0 auto}
+  header{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:baseline;justify-content:space-between;margin-bottom:22px}
+  .kop{display:grid;grid-template-columns:auto 1fr;column-gap:14px;align-items:start}
+  .kop .terug{margin-top:calc(clamp(28px,6vw,40px) * .75 - 20px)}   /* midden op de regel van de titel */
+  @media (max-height:901px) and (min-width:600px){
+    header{margin-bottom:14px}
+    .koptekst{display:flex;flex-wrap:wrap;align-items:center;column-gap:18px}
+    .koptekst .ondertitel{flex:1 1 260px;max-width:440px;margin:0}
+  }
+  .terug{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;color:var(--tekst);border:1px solid var(--lijn);background:var(--kaart);text-decoration:none;transition:background .15s,border-color .15s}
+  .terug:hover{background:var(--kaart2);border-color:var(--tekst)}
+  h1{font-family:Fredoka,ui-rounded,system-ui,sans-serif;font-weight:600;font-size:clamp(28px,6vw,40px);margin:0}
+  .ondertitel{margin:2px 0 0;font-size:14px;color:var(--zacht)}
+
+  .kaart{background:var(--kaart);border:1px solid var(--lijn);border-radius:16px;padding:18px 18px 20px;box-shadow:0 2px 0 rgba(35,48,31,.06)}
+  .leskop{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-bottom:8px}
+  .leskop .rechts{display:flex;align-items:center;gap:14px;margin-left:auto;font-size:13px;color:var(--zacht);white-space:nowrap}
+  .teller{font-family:Fredoka,ui-rounded,sans-serif;font-size:18px;font-weight:600;color:var(--tekst)}
+  .teller.bump{animation:pop .45s}
+  .teller svg{width:16px;height:22px;vertical-align:-5px}
+
+  .niveaus{display:contents}   /* knoppen doen mee in de rij van .leskop */
+  .niveaus button{font:inherit;font-size:14px;cursor:pointer;border:1px solid var(--lijn);background:var(--kaart2);color:var(--tekst);border-radius:20px;padding:5px 14px;white-space:nowrap}
+  .niveaus button.aan{background:var(--tekst);color:#fff;border-color:var(--tekst)}
+
+  /* het veld: scorebord, prijzenbord, zandbak en meetlat in één tekening */
+  .veld{position:relative;margin:0 auto;border-radius:12px;overflow:hidden;background:var(--gras);
+    width:clamp(300px, (100svh - 320px) * 600 / 280, 100%);aspect-ratio:600/280}
+  .veld svg{display:block;width:100%;height:100%;touch-action:none;user-select:none;-webkit-user-select:none}
+  .bordtekst{font-family:Fredoka,ui-rounded,sans-serif;font-weight:600}
+  #grijp{cursor:grab}
+  .veld.slepen #grijp{cursor:grabbing}
+  #vlag{transition:transform .25s ease-out}
+  #vlag.vast{transition:none}
+  #vlagbeeld{transform-origin:0 200px}
+  #vlag.wenk #wimpel{animation:wenk 1.1s ease-in-out infinite}
+  #vlag.mis #vlagbeeld{animation:wiebel2 .25s 2}
+  #vlag.goed #wimpel{fill:var(--goed)}
+  #doel circle{animation:gloei 1s ease-in-out infinite}
+  #sporen .nieuw{animation:verschijn .4s ease-out}
+  #prijzen .nieuw{animation:popin .6s ease-out}
+  #bordgroot.goed{fill:#8FE3A8}
+  #eind g{animation:erin .3s ease-out both}
+  @keyframes wenk{50%{opacity:.35}}
+  @keyframes wiebel2{25%{transform:rotate(-12deg)}75%{transform:rotate(12deg)}}
+  @keyframes gloei{50%{opacity:.3}}
+  @keyframes verschijn{0%{opacity:0}100%{opacity:1}}
+  @keyframes popin{0%{opacity:0;transform:translateY(-12px)}60%{opacity:1;transform:translateY(3px)}100%{transform:none}}
+
+  /* keuzeknoppen bij aflezen; de ruimte is er altijd, zodat er niets verspringt */
+  #antwoord{min-height:60px;display:flex;justify-content:center;align-items:center;gap:10px;margin:10px 0 8px}
+  #antwoord button{font-family:Fredoka,ui-rounded,sans-serif;font-weight:600;font-size:clamp(20px, 5.4vw, 24px);flex:0 1 150px;min-width:0;height:56px;padding:0 6px;white-space:nowrap;border-radius:12px;cursor:pointer;
+    color:var(--tekst);background:#fff;border:1px solid var(--lijn);border-bottom:4px solid rgba(0,0,0,.2);touch-action:manipulation}
+  #antwoord .opdracht,#antwoord .lof{font-family:Fredoka,ui-rounded,sans-serif;font-weight:600;font-size:22px;text-align:center}
+  #antwoord .opdracht{background:#23282F;color:#FFD34D;border-radius:10px;padding:6px 16px}
+  #antwoord .lof{color:var(--goed);animation:pop2 .4s}
+  @keyframes pop2{0%{transform:scale(.8)}50%{transform:scale(1.08)}100%{transform:scale(1)}}
+  #antwoord button:hover:not(:disabled){background:#F7F3E3}
+  #antwoord button:disabled{cursor:default;opacity:.45}
+  #antwoord button.goed{background:var(--goed);color:#fff;border-color:var(--goed);opacity:1}
+  #antwoord button.juist{border:3px solid var(--goed);opacity:1;animation:gloeiknop 1s ease-in-out infinite}
+  #antwoord button.fout{animation:wiebel .25s 2;background:#F3D3D4}
+  @keyframes gloeiknop{50%{box-shadow:0 0 0 6px rgba(47,158,91,.35)}}
+
+  /* tijdbalk: op tijd en in één keer goed = een lintje */
+  #balk{display:flex;align-items:center;gap:10px;max-width:340px;margin:0 auto;height:30px}
+  #balk svg{width:18px;height:26px;flex:none;transition:filter .3s,opacity .3s}
+  #balk .spoor{flex:1;height:12px;border-radius:6px;background:var(--kaart2);overflow:hidden;box-shadow:inset 0 1px 2px rgba(0,0,0,.12)}
+  #balk .spoor i{display:block;height:100%;width:100%;border-radius:6px;background:linear-gradient(90deg,#C9553D,#F2A65A)}
+  #balk.weg svg{filter:grayscale(1);opacity:.4}
+  #balk.klaar{visibility:hidden}
+  #balk.verdiend svg{animation:pop .5s}
+
+  @media (prefers-reduced-motion:reduce){ #vlag.wenk #wimpel,#vlag.mis #vlagbeeld,#doel circle,#sporen .nieuw,#prijzen .nieuw,#eind g,#antwoord button.juist,#antwoord button.fout,#antwoord .lof,#balk.verdiend svg,.teller.bump{animation:none} }
+  @keyframes wiebel{25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+  @keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.4) rotate(-10deg)}100%{transform:scale(1)}}
+  @keyframes erin{0%{opacity:0}100%{opacity:1}}
+
+  .knoppen[hidden]{display:none}
+  .knoppen{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:12px}
+  .knoppen button{font:inherit;font-size:14px;cursor:pointer;border:1px solid var(--tekst);background:var(--tekst);color:#fff;border-radius:8px;padding:7px 14px}
+  :focus-visible{outline:3px solid #5B8DEF;outline-offset:2px}
+
+  #uitslag{margin-top:16px;border-top:1px solid var(--lijn);padding-top:14px}
+  #uitslag h3{font-family:Fredoka,ui-rounded,sans-serif;font-weight:500;font-size:20px;margin:0 0 8px}
+  #uitslag p{margin:0 0 10px;font-size:15px}
+  #uitslag .sterren{color:var(--geel);font-size:26px;letter-spacing:3px}
+  #uitslag .sterren i{font-style:normal;color:var(--lijn)}
+  #uitslag button{font:inherit;font-size:15px;cursor:pointer;border-radius:8px;padding:7px 14px;margin:4px 8px 0 0;border:1px solid var(--tekst);background:var(--kaart);color:var(--tekst)}
+  #uitslag button.hoofd{background:var(--tekst);color:#fff}
+
+  h2.recordkop{font-family:Fredoka,ui-rounded,sans-serif;font-weight:500;font-size:20px;margin:30px 0 8px}
+  #records{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+  .record{background:var(--kaart);border:1px solid var(--lijn);border-radius:12px;padding:10px 12px;font-size:14px}
+  .record b{display:block;font-family:Fredoka,ui-rounded,sans-serif;font-size:17px;font-weight:600}
+  .record .sterren{color:var(--geel);font-size:18px;letter-spacing:2px}
+  .record .sterren i{font-style:normal;color:var(--lijn)}
+  .record svg{width:12px;height:17px;vertical-align:-3px}
+
+  footer{margin-top:28px;font-size:13px;color:var(--zacht)}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="kop">
+      <a class="terug" href="../" aria-label="Terug naar alle spellen">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+      </a>
+      <div class="koptekst">
+        <h1>Het Atletiekveld</h1>
+        <p class="ondertitel">Zet de vlag bij de sprong op de meetlat. Elke sprong die in één keer goed is, levert een lintje op.</p>
+      </div>
+    </div>
+  </header>
+
+  <div class="kaart">
+    <div class="leskop">
+      <div class="niveaus" id="niveaus"></div>
+      <div class="rechts">
+        <span class="teller" id="teller" title="lintjes deze ronde"><span id="tellerrozet"></span> <b id="lintjes">0</b></span>
+        <span id="voortgang">sprong 1 van 12</span>
+      </div>
+    </div>
+
+    <div class="veld" id="veld">
+      <svg id="tekening" viewBox="0 0 600 280" aria-hidden="true">
+        <!-- gras met maaistroken -->
+        <rect x="0" y="0" width="600" height="280" fill="#7DB85A"/>
+        <path d="M0 96 H600 M0 150 H600 M0 204 H600" stroke="rgba(255,255,255,.08)" stroke-width="26"/>
+        <!-- scorebord -->
+        <rect x="64" y="64" width="6" height="12" fill="#4A525C"/><rect x="150" y="64" width="6" height="12" fill="#4A525C"/>
+        <rect x="10" y="6" width="200" height="62" rx="8" fill="#23282F" stroke="#4A525C" stroke-width="3"/>
+        <text id="bordgroot" x="110" y="45" text-anchor="middle" class="bordtekst" font-size="36" fill="#FFD34D"></text>
+        <text id="bordklein" x="110" y="61" text-anchor="middle" class="bordtekst" font-size="15" fill="#C9D1DA"></text>
+        <!-- prijzenbord met een touwtje voor de lintjes -->
+        <rect x="222" y="6" width="368" height="62" rx="6" fill="#F6EBD3" stroke="#B98A4E" stroke-width="3"/>
+        <path d="M230 17 Q406 25 582 17" fill="none" stroke="#B98A4E" stroke-width="1.5"/>
+        <g id="prijzen"></g>
+        <text id="prijzenaantal" x="582" y="58" text-anchor="end" class="bordtekst" font-size="15" fill="#6B4A25"></text>
+
+        <g id="speelveld">
+          <!-- aanloop met afzetbalk -->
+          <rect id="aanloop" x="0" y="120" width="42" height="28" fill="#C9553D"/>
+          <path id="aanlooplijn" d="M0 134 H40" stroke="rgba(255,255,255,.5)" stroke-width="1.5" stroke-dasharray="6 5"/>
+          <rect id="balkje" x="36" y="120" width="6" height="28" fill="#fff"/>
+          <!-- zandbak -->
+          <rect id="zand" x="42" y="80" width="546" height="108" rx="10" fill="#EED9A0" stroke="#C9A86A" stroke-width="3"/>
+          <g id="sporen"></g>
+          <g id="overzicht"></g>
+          <g id="loep"></g>
+          <!-- meetlat -->
+          <g id="lat"></g>
+          <g id="doel"></g>
+          <g id="vlag">
+            <g id="vlagbeeld">
+              <path d="M0 198 V165" stroke="#3A3F45" stroke-width="3" stroke-linecap="round"/>
+              <path id="wimpel" d="M1 165 L32 173 L1 181 Z" fill="#E8463A"/>
+              <path d="M-7 205 L0 196 L7 205 Z" fill="#3A3F45"/>
+            </g>
+          </g>
+          <g id="springer" style="display:none">
+            <circle cx="0" cy="-26" r="6" fill="#6B3E26"/>
+            <path d="M0 -20 V-6 M0 -16 L-9 -22 M0 -16 L9 -10 M0 -6 L-8 4 M0 -6 L8 2" stroke="#2F7FC1" stroke-width="4" stroke-linecap="round" fill="none"/>
+          </g>
+          <rect id="grijp" x="0" y="76" width="600" height="204" fill="transparent"/>
+        </g>
+        <g id="eind" style="display:none"></g>
+      </svg>
+    </div>
+
+    <div id="antwoord"></div>
+    <div id="balk"><span id="balkrozet"></span><div class="spoor" title="Op tijd en in één keer goed = een lintje"><i id="vulling"></i></div></div>
+
+    <div class="knoppen" id="knoppen"><button id="opnieuw">Begin opnieuw</button></div>
+    <div id="uitslag" hidden></div>
+  </div>
+
+  <h2 class="recordkop">Jouw records</h2>
+  <div id="records"></div>
+
+  <footer>Voortgang wordt op dit apparaat bewaard. Het scorebord zegt hoe ver de sprong was: sleep de vlag naar die plek op de meetlat (of tik op de lat). Bij honderdsten zie je een stukje van de lat vergroot. Bij Aflezen kies je het goede getal, bij Afronden zet je de vlag op het hele getal of de tiende die het dichtst bij de sprong ligt. Met een toetsenbord: pijltjes ← → en Enter, of 1–3 bij het kiezen. Op tijd en in één keer goed? Dan krijg je een lintje.</footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+var BEWAAR = "atletiekveld-v1";
+var RONDE = 12;
+var LX = 50, LB = 520;            // de meetlat loopt in de tekening van x=50 tot x=570
+var LAT_Y = 198;                  // bovenkant van de meetlat
+
+// Vraagsoorten. Alle getallen rekenen we in honderdsten (430 = 4,3), dan rekent er niets scheef.
+var SOORTEN = {
+  halven:      {wacht:8000},
+  tienden:     {wacht:10000},
+  honderdsten: {wacht:12000},
+  aflezen:     {wacht:10000},
+  afronden:    {wacht:12000}
+};
+var NIVEAUS = [
+  {titel:"Halven",      soort:"halven"},
+  {titel:"Tienden",     soort:"tienden"},
+  {titel:"Honderdsten", soort:"honderdsten"},
+  {titel:"Aflezen",     soort:"aflezen"},
+  {titel:"Afronden",    soort:"afronden"}
+];
+var VOLGORDE = ["halven","tienden","honderdsten","aflezen","afronden"];
+var LINTKLEUR = ["#3A9D5D","#2F7FC1","#D9484F","#7B5BB6","#E8892B"];   // per niveau
+
+var data = {records:{}, niveau:0, prijzen:[]};
+function laad(){
+  try{ var s = localStorage.getItem(BEWAAR); if (s) data = JSON.parse(s); }catch(e){}
+  if (!data || typeof data !== "object") data = {};
+  if (!data.records || typeof data.records !== "object") data.records = {};
+  if (!Array.isArray(data.prijzen)) data.prijzen = [];
+  if (typeof data.niveau !== "number" || !NIVEAUS[data.niveau]) data.niveau = 0;
+}
+function bewaar(){ try{ localStorage.setItem(BEWAAR, JSON.stringify(data)); }catch(e){} }
+
+function tussen(a, b){ return a + Math.floor(Math.random()*(b-a+1)); }
+function schud(a){ for (var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)), t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+function $(id){ return document.getElementById(id); }
+
+// 430 → "4,3", 437 → "4,37", 400 → "4" (zo kort mogelijk)
+function komma(v){
+  var d = v % 10 ? 2 : (v % 100 ? 1 : 0);
+  return (v / 100).toFixed(d).replace(".", ",");
+}
+function kommaD(v, d){ return (v / 100).toFixed(d).replace(".", ","); }
+
+// Een lintje met rozet (SVG)
+function rozetVorm(k){
+  var c = LINTKLEUR[k % LINTKLEUR.length];
+  return '<path d="M-4 6 L-8 24 L-4 21 L-1 25 L0 8 Z" fill="' + c + '"/><path d="M4 6 L8 24 L4 21 L1 25 L0 8 Z" fill="' + c + '" opacity=".85"/>'
+    + '<circle r="10" fill="' + c + '" stroke="#fff" stroke-width="2.5" stroke-dasharray="2.6 2.6"/>'
+    + '<circle r="5" fill="#F7D35C" stroke="rgba(0,0,0,.15)" stroke-width="1"/>';
+}
+function rozet(k){
+  return '<svg viewBox="-12 -12 24 38" aria-hidden="true"><g>' + rozetVorm(k) + "</g></svg>";
+}
+
+/* ---------- vragen maken ---------- */
+// Een meetlat: van..tot, stap (waar de vlag kan staan), fijn (dunne streepjes zonder vlagplek),
+// groot (middellange streepjes), label (streepjes met een getal, met d decimalen).
+// Bij zoom is er ook een overzichtslat (ov) met het vergrote stukje erin.
+function maakVraag(soort, sub){
+  var S, T, a, n, v = {soort:soort};
+  if (soort === "halven"){
+    S = tussen(1, 6) * 100;
+    v.lat = {van:S, tot:S+400, stap:50, groot:50, label:100, d:0};
+    v.antwoord = S + 50 + 100 * tussen(0, 3);
+  } else if (soort === "tienden"){
+    S = tussen(1, 7) * 100;
+    v.lat = {van:S, tot:S+200, stap:10, groot:50, label:100, d:0};
+    do { a = tussen(1, 19); } while (a === 10 || ((a === 5 || a === 15) && Math.random() < .6));
+    v.antwoord = S + a * 10;
+  } else if (soort === "honderdsten"){
+    S = tussen(1, 7) * 100;
+    T = Math.random() < .25 ? S + 100 * tussen(0, 1) : S + 10 * tussen(0, 18);
+    v.lat = {van:T, tot:T+20, stap:1, groot:5, label:10, d:1, ov:{van:S, tot:S+200}};
+    do { a = tussen(1, 19); } while (a % 10 === 0);
+    if (T % 100 === 0 && Math.random() < .6) a = tussen(1, 9);   // vaak 4,0x: de valkuil 4,03 of 4,3
+    v.antwoord = T + a;
+  } else if (soort === "aflezen"){
+    sub = sub || (Math.random() < .5 ? "tienden" : "honderdsten");
+    if (sub === "honderdsten" && Math.random() < .4){
+      // het vergrote stukje begint op een heel getal: 4,07 of 4,7?
+      S = tussen(1, 7) * 100;
+      T = S + 100 * tussen(0, 1);
+      v.lat = {van:T, tot:T+20, stap:1, groot:5, label:10, d:1, ov:{van:S, tot:S+200}};
+      v.antwoord = T + tussen(1, 9);
+    } else {
+      var w = maakVraag(sub);
+      v.lat = w.lat; v.antwoord = w.antwoord;
+    }
+    v.keuzes = afleiders(v.antwoord, sub);
+  } else if (soort === "afronden"){
+    if ((sub || (Math.random() < .5 ? "hele" : "tienden")) === "hele"){
+      S = tussen(1, 6) * 100;
+      v.op = "hele";
+      v.lat = {van:S, tot:S+300, stap:100, fijn:10, groot:50, label:100, d:0};
+      do {
+        n = S + tussen(51, 249);
+        if (Math.random() < .4) n = Math.round(n / 10) * 10;      // soms met één cijfer achter de komma
+      } while (n % 100 === 50 || n % 100 === 0 || n <= S + 50 || n >= S + 250);
+      v.antwoord = Math.round(n / 100) * 100;
+    } else {
+      S = tussen(1, 7) * 100;
+      T = S + 10 * tussen(0, 15);
+      v.op = "tienden";
+      v.lat = {van:T, tot:T+50, stap:10, fijn:1, groot:5, label:10, d:1, ov:{van:S, tot:S+200}};
+      do { n = T + tussen(6, 44); } while (n % 10 === 0 || n % 10 === 5);
+      v.antwoord = Math.round(n / 10) * 10;
+    }
+    v.getal = n;
+  }
+  return v;
+}
+// Drie keuzes bij aflezen: het goede getal en echte vergissingen (een tiende ernaast, 4,03 tegen 4,3)
+function afleiders(a, sub){
+  var heel = Math.floor(a / 100) * 100, rest = a - heel, opties = [];
+  function erbij(x){ if (x > 0 && x !== a && opties.indexOf(x) < 0) opties.push(x); }
+  if (sub === "tienden"){
+    erbij(heel + rest / 10);                                  // 4,3 → 4,03
+    var buur = Math.random() < .5 ? a - 10 : a + 10;
+    if (buur % 100 === 0) buur = 2 * a - buur;               // geen heel getal als buur
+    erbij(buur);
+  } else {
+    if (rest < 10) erbij(heel + rest * 10);                   // 4,07 → 4,7
+    var b1 = Math.random() < .5 ? a - 1 : a + 1;
+    if (b1 % 10 === 0) b1 = 2 * a - b1;
+    var b2 = Math.random() < .5 ? a - 10 : a + 10;
+    if (b2 < heel || Math.floor(b2 / 100) !== Math.floor(a / 100)) b2 = 2 * a - b2;
+    if (Math.random() < .5){ erbij(b1); erbij(b2); } else { erbij(b2); erbij(b1); }
+  }
+  erbij(a + 100);
+  opties = opties.slice(0, 2);
+  opties.push(a);
+  return opties.sort(function(x, y){ return x - y; });
+}
+function maakRonde(){
+  var n = NIVEAUS[data.niveau], soorten = [];
+  var vorige = VOLGORDE.slice(0, VOLGORDE.indexOf(n.soort));
+  var herhaal = vorige.length ? 3 : 0;
+  for (var i=0;i<RONDE-herhaal;i++) soorten.push(n.soort);
+  for (var h=0;h<herhaal;h++) soorten.push(vorige[tussen(0, vorige.length-1)]);
+  schud(soorten);
+  var j = soorten.indexOf(n.soort), t = soorten[0]; soorten[0] = soorten[j]; soorten[j] = t;   // de eerste is nieuw
+  // aflezen en afronden: ongeveer half/half tienden en honderdsten (hele meters en tienden)
+  var subs = {aflezen:schud(["tienden","honderdsten","tienden","honderdsten","tienden","honderdsten","tienden","honderdsten","tienden","honderdsten","tienden","honderdsten"]),
+              afronden:schud(["hele","tienden","hele","tienden","hele","tienden","hele","tienden","hele","tienden","hele","tienden"])};
+  var gezien = {}, vragen = [];
+  soorten.forEach(function(s){
+    var sub = subs[s] ? subs[s].pop() : null, v, k = 0;
+    do { v = maakVraag(s, sub); k++; } while (gezien[sleutel(v)] && k < 30);
+    gezien[sleutel(v)] = 1;
+    vragen.push(v);
+  });
+  return vragen;
+}
+function sleutel(v){ return v.soort + (v.getal || v.antwoord); }
+
+/* ---------- toestand ---------- */
+var vragen = [], nr = 0, vraag = null, bezig = false, fout = false;
+var lintjes = 0, balkTimer = null, volgTimer = null, start = 0, uitslagen = [];
+var stand = 0, startStand = 0;     // waar de vlag staat (honderdsten)
+
+function startBalk(wacht){
+  var b = $("balk"), v = $("vulling");
+  b.classList.remove("weg", "klaar", "verdiend");
+  v.style.transition = "none"; v.style.width = "100%";
+  void v.offsetWidth;
+  v.style.transition = "width " + wacht + "ms linear"; v.style.width = "0%";
+  clearTimeout(balkTimer);
+  balkTimer = setTimeout(function(){ $("balk").classList.add("weg"); }, wacht);
+}
+function stopBalk(){
+  clearTimeout(balkTimer);
+  var v = $("vulling"); v.style.width = getComputedStyle(v).width; v.style.transition = "none";
+}
+function tekenTeller(bump){
+  $("lintjes").textContent = lintjes;
+  if (bump){ var t = $("teller"); t.classList.remove("bump"); void t.offsetWidth; t.classList.add("bump"); }
+}
+
+// Het prijzenbord: de nieuwste lintjes aan het touwtje, met het totaal ernaast
+var PRIJS_MAX = 12;
+function tekenPrijzen(nieuw){
+  var t = data.prijzen.slice(-PRIJS_MAX), s = "";
+  t.forEach(function(k, i){
+    var x = 244 + i * 26, y = 32 + Math.sin(i * 1.7) * 1.5;
+    s += '<g transform="translate(' + x + " " + y.toFixed(1) + ')"><g' + (nieuw && i === t.length-1 ? ' class="nieuw"' : "") + ">"
+      + '<path d="M0 -14 V-9" stroke="#8C6A3E" stroke-width="1.2"/>' + rozetVorm(k) + "</g></g>";
+  });
+  $("prijzen").innerHTML = s;
+  $("prijzenaantal").textContent = data.prijzen.length > PRIJS_MAX ? data.prijzen.length : "";
+}
+
+/* ---------- de tekening van de lat ---------- */
+function xOp(lat, w){ return LX + (w - lat.van) / (lat.tot - lat.van) * LB; }
+function xOv(lat, w){ return LX + (w - lat.ov.van) / (lat.ov.tot - lat.ov.van) * LB; }
+// x in de zandbak: bij een vergroot stukje telt de overzichtslat
+function xZand(lat, w){ return lat.ov ? xOv(lat, w) : xOp(lat, w); }
+
+function tekenLat(lat){
+  var s = '<rect x="40" y="' + LAT_Y + '" width="540" height="34" rx="4" fill="#FFF3D1" stroke="#B98A4E" stroke-width="2"/>';
+  var stapje = lat.fijn || lat.stap;
+  for (var w = lat.van; w <= lat.tot; w += stapje){
+    var x = xOp(lat, w).toFixed(1), h, kl = "#3A3F45", br = 2;
+    if (w % lat.label === 0) h = 24;
+    else if (w % lat.groot === 0) h = 16;
+    else if (w % lat.stap === 0) h = 11;
+    else { h = 8; kl = "rgba(58,63,69,.45)"; br = 1.2; }
+    s += '<path d="M' + x + " " + LAT_Y + " v" + h + '" stroke="' + kl + '" stroke-width="' + br + '"/>';
+    if (w % lat.label === 0) s += '<text x="' + x + '" y="' + (LAT_Y + 58) + '" text-anchor="middle" class="bordtekst" font-size="21" fill="#23301F">' + kommaD(w, lat.d) + "</text>";
+  }
+  $("lat").innerHTML = s;
+
+  // bij een vergroot stukje: een dunne overzichtslat en een loep naar de grote lat
+  var ov = "", lp = "";
+  if (lat.ov){
+    var y = 146;
+    ov += '<rect x="40" y="' + y + '" width="540" height="16" rx="3" fill="#FFF3D1" stroke="#B98A4E" stroke-width="1.5"/>';
+    ov += '<rect x="' + xOv(lat, lat.van).toFixed(1) + '" y="' + (y - 2) + '" width="' + (xOv(lat, lat.tot) - xOv(lat, lat.van)).toFixed(1) + '" height="20" rx="2" fill="rgba(242,182,50,.55)" stroke="#C47F14" stroke-width="2"/>';
+    for (var u = lat.ov.van; u <= lat.ov.tot; u += 10){
+      var ux = xOv(lat, u).toFixed(1);
+      ov += '<path d="M' + ux + " " + y + " v" + (u % 100 === 0 ? 12 : (u % 50 === 0 ? 8 : 5)) + '" stroke="#3A3F45" stroke-width="' + (u % 100 === 0 ? 2 : 1.2) + '"/>';
+      if (u % 100 === 0) ov += '<text x="' + ux + '" y="' + (y - 4) + '" text-anchor="middle" class="bordtekst" font-size="17" fill="#5A4420">' + komma(u) + "</text>";
+    }
+    lp = '<path d="M' + xOv(lat, lat.van).toFixed(1) + " " + (y + 18) + " L40 " + LAT_Y + " M" + xOv(lat, lat.tot).toFixed(1) + " " + (y + 18) + " L580 " + LAT_Y
+      + '" stroke="rgba(255,255,255,.75)" stroke-width="2" stroke-dasharray="5 4"/>'
+      + '<path d="M' + xOv(lat, lat.van).toFixed(1) + " " + (y + 18) + " L40 " + LAT_Y + " L580 " + LAT_Y + " L" + xOv(lat, lat.tot).toFixed(1) + " " + (y + 18) + ' Z" fill="rgba(255,255,255,.12)"/>';
+  }
+  $("overzicht").innerHTML = ov;
+  $("loep").innerHTML = lp;
+  // de zandbak is kleiner als de overzichtslat erbij staat
+  var zh = lat.ov ? 46 : 108;
+  $("zand").setAttribute("height", zh);
+  var midden = 80 + zh / 2;
+  $("aanloop").setAttribute("y", midden - 14);
+  $("balkje").setAttribute("y", midden - 14);
+  $("aanlooplijn").setAttribute("d", "M0 " + midden + " H36");
+  $("grijp").setAttribute("y", lat.ov ? 168 : 76);
+  $("grijp").setAttribute("height", lat.ov ? 112 : 204);
+}
+function zetVlag(w, glij){
+  var v = $("vlag");
+  v.classList.toggle("vast", !glij);
+  v.style.transform = "translate(" + xOp(vraag.lat, w).toFixed(1) + "px,0)";
+}
+function vlagOpX(x){
+  var v = $("vlag");
+  v.classList.add("vast");
+  v.style.transform = "translate(" + Math.max(LX, Math.min(LX + LB, x)).toFixed(1) + "px,0)";
+}
+// Een afdruk in het zand op plek w
+function afdruk(w, nieuw){
+  var lat = vraag.lat, x = xZand(lat, w), zh = lat.ov ? 46 : 108, y = 80 + zh / 2;
+  var s = '<g' + (nieuw ? ' class="nieuw"' : "") + '><ellipse cx="' + x.toFixed(1) + '" cy="' + y + '" rx="15" ry="' + (lat.ov ? 8 : 13) + '" fill="#D8BC78"/>'
+    + '<ellipse cx="' + (x - 4).toFixed(1) + '" cy="' + (y - 3) + '" rx="4" ry="2.4" fill="#B99A55"/>'
+    + '<ellipse cx="' + (x - 3).toFixed(1) + '" cy="' + (y + 4) + '" rx="4" ry="2.4" fill="#B99A55"/>'
+    + '<path d="M' + x.toFixed(1) + " " + (y + (lat.ov ? 8 : 13)) + " V" + (lat.ov ? 146 : LAT_Y) + '" stroke="rgba(255,255,255,.8)" stroke-width="1.5" stroke-dasharray="3 3"/></g>';
+  $("sporen").insertAdjacentHTML("beforeend", s);
+}
+function toonDoel(w){
+  var x = xOp(vraag.lat, w).toFixed(1);
+  $("doel").innerHTML = '<g><path d="M' + x + " " + LAT_Y + " v34" + '" stroke="#2F9E5B" stroke-width="5" stroke-linecap="round"/>'
+    + '<circle cx="' + x + '" cy="' + (LAT_Y + 17) + '" r="17" fill="none" stroke="#2F9E5B" stroke-width="4"/></g>';
+}
+// De springer springt vanaf de balk naar de afdruk
+var sprongAnim = null;
+function spring(w, klaar){
+  var lat = vraag.lat, doelX = xZand(lat, w), zh = lat.ov ? 46 : 108, y = 80 + zh / 2 + 6;
+  var sp = $("springer"), t0 = null, duur = 650;
+  if (window.matchMedia && matchMedia("(prefers-reduced-motion:reduce)").matches){ klaar(); return; }
+  sp.style.display = "";
+  cancelAnimationFrame(sprongAnim);
+  function stap(t){
+    if (t0 === null) t0 = t;
+    var p = Math.min(1, (t - t0) / duur);
+    var x = 30 + (doelX - 30) * p, h = (lat.ov ? 30 : 46) * 4 * p * (1 - p);
+    sp.setAttribute("transform", "translate(" + x.toFixed(1) + " " + (y - h).toFixed(1) + ")");
+    if (p < 1) sprongAnim = requestAnimationFrame(stap);
+    else { sp.style.display = "none"; klaar(); }
+  }
+  sprongAnim = requestAnimationFrame(stap);
+}
+
+/* ---------- één vraag ---------- */
+function plaatsen(){ return bezig && vraag && vraag.soort !== "aflezen"; }
+function toonVraag(){
+  vraag = vragen[nr];
+  bezig = true; fout = false; start = Date.now();
+  $("voortgang").textContent = "sprong " + (nr+1) + " van " + RONDE;
+  $("sporen").innerHTML = ""; $("doel").innerHTML = "";
+  $("springer").style.display = "none"; cancelAnimationFrame(sprongAnim);
+  $("bordgroot").classList.remove("goed");
+  tekenLat(vraag.lat);
+  var v = $("vlag");
+  v.classList.remove("goed", "mis");
+  var a = $("antwoord"); a.innerHTML = "";
+  if (vraag.soort === "aflezen"){
+    $("bordgroot").textContent = "? m";
+    $("bordklein").textContent = "";
+    v.classList.remove("wenk");
+    stand = vraag.antwoord; zetVlag(stand, false);
+    afdruk(vraag.antwoord, false);
+    vraag.keuzes.forEach(function(k, i){
+      var b = document.createElement("button");
+      b.type = "button"; b.textContent = komma(k) + " m";
+      b.setAttribute("data-k", k);
+      b.onclick = function(){ kies(b); };
+      a.appendChild(b);
+    });
+  } else {
+    if (vraag.soort === "afronden"){
+      $("bordgroot").textContent = komma(vraag.getal) + " m";
+      $("bordklein").textContent = "";
+      a.innerHTML = '<span class="opdracht">' + (vraag.op === "hele" ? "Rond af op hele meters" : "Rond af op tienden") + "</span>";
+    } else {
+      $("bordgroot").textContent = komma(vraag.antwoord) + " m";
+      $("bordklein").textContent = "";
+    }
+    startStand = stand = vraag.lat.van;
+    zetVlag(stand, false);
+    v.classList.add("wenk");
+  }
+  startBalk(SOORTEN[vraag.soort].wacht);
+}
+
+// De vlag staat stil: klopt het?
+function controleer(){
+  if (!plaatsen() || stand === startStand && !fout) return;   // niet verplaatst: nog geen antwoord
+  if (stand === vraag.antwoord){ goed(); return; }
+  if (stand === startStand) return;
+  // fout: de vlag wiebelt, de goede plek licht groen op en het kind sleept er opnieuw heen
+  if (!fout){ fout = true; stopBalk(); $("balk").classList.add("weg"); }
+  var v = $("vlag"); v.classList.remove("mis"); void v.getBoundingClientRect(); v.classList.add("mis");
+  setTimeout(function(){ v.classList.remove("mis"); }, 520);
+  toonDoel(vraag.antwoord);
+}
+
+function kies(knop){
+  if (!bezig || knop.disabled || vraag.soort !== "aflezen") return;
+  var k = +knop.getAttribute("data-k");
+  var knoppen = Array.prototype.slice.call($("antwoord").querySelectorAll("button"));
+  if (k === vraag.antwoord){
+    knop.classList.remove("juist"); knop.classList.add("goed");
+    knoppen.forEach(function(b){ if (b !== knop) b.disabled = true; });
+    goed();
+    return;
+  }
+  if (!fout){ fout = true; stopBalk(); $("balk").classList.add("weg"); }
+  knop.classList.remove("fout"); void knop.offsetWidth; knop.classList.add("fout"); knop.disabled = true;
+  knoppen.forEach(function(b){ if (+b.getAttribute("data-k") === vraag.antwoord) b.classList.add("juist"); else b.disabled = true; });
+}
+
+function goed(){
+  bezig = false;
+  stopBalk();
+  var verdiend = !fout && Date.now() - start <= SOORTEN[vraag.soort].wacht;
+  uitslagen.push({vraag:vraag, lint:verdiend});
+  $("doel").innerHTML = "";
+  var v = $("vlag"); v.classList.remove("wenk", "mis"); v.classList.add("goed");
+  $("bordgroot").classList.add("goed");
+  if (vraag.soort === "afronden") $("bordgroot").textContent = komma(vraag.getal) + " ≈ " + komma(vraag.antwoord);
+  else if (vraag.soort === "aflezen") $("bordgroot").textContent = komma(vraag.antwoord) + " m";
+  var deze = vraag;
+  if (vraag.soort !== "aflezen") spring(vraag.soort === "afronden" ? vraag.getal : vraag.antwoord, function(){ if (vraag === deze) afdruk(deze.soort === "afronden" ? deze.getal : deze.antwoord, true); });
+  if (verdiend){
+    lintjes++;
+    data.prijzen.push(data.niveau);
+    if (data.prijzen.length > 1000) data.prijzen = data.prijzen.slice(-1000);
+    bewaar();
+    setTimeout(function(){ tekenPrijzen(true); }, 650);
+    var b = $("balk"); b.classList.remove("verdiend"); void b.offsetWidth; b.classList.add("verdiend");
+  }
+  tekenTeller(verdiend);
+  var lof = verdiend ? ["Goed zo!", "Super!", "Top!", "Knap!", "Wat een sprong!"][tussen(0,4)] : "Goed zo!";
+  $("bordklein").textContent = lof;
+  if (vraag.soort !== "aflezen") $("antwoord").innerHTML = '<span class="lof">' + lof + "</span>";
+  clearTimeout(volgTimer);
+  volgTimer = setTimeout(volgende, verdiend ? 1600 : 1400);
+}
+function volgende(){
+  nr++;
+  if (nr >= RONDE) klaar(); else toonVraag();
+}
+
+/* ---------- slepen ---------- */
+var vinger = null;   // alleen de eerste vinger telt
+function svgX(ev){
+  var svg = $("tekening"), pt = svg.createSVGPoint();
+  pt.x = ev.clientX; pt.y = ev.clientY;
+  return pt.matrixTransform(svg.getScreenCTM().inverse()).x;
+}
+function waardeBij(x){
+  var lat = vraag.lat;
+  var w = lat.van + (x - LX) / LB * (lat.tot - lat.van);
+  w = Math.round((w - lat.van) / lat.stap) * lat.stap + lat.van;
+  return Math.max(lat.van, Math.min(lat.tot, w));
+}
+function pakVast(ev){
+  if (!plaatsen() || vinger !== null) return;
+  vinger = ev.pointerId;
+  $("veld").classList.add("slepen");
+  $("vlag").classList.remove("wenk");
+  try{ $("grijp").setPointerCapture(ev.pointerId); }catch(e){}
+  ev.preventDefault();
+  vlagOpX(svgX(ev));
+}
+function beweeg(ev){
+  if (ev.pointerId !== vinger || !plaatsen()) return;
+  vlagOpX(svgX(ev));
+}
+function laatLos(ev){
+  if (ev.pointerId !== vinger) return;
+  vinger = null;
+  $("veld").classList.remove("slepen");
+  if (!plaatsen()) return;
+  stand = waardeBij(svgX(ev));
+  zetVlag(stand, true);           // glijdt naar het dichtstbijzijnde streepje
+  controleer();
+}
+
+function toets(ev){
+  if (ev.ctrlKey || ev.metaKey || ev.altKey) return;
+  var opKnop = ev.target && ev.target.tagName === "BUTTON";
+  if (plaatsen()){
+    if (ev.key === "ArrowRight" || ev.key === "ArrowLeft"){
+      ev.preventDefault();
+      var lat = vraag.lat;
+      stand = Math.max(lat.van, Math.min(lat.tot, stand + (ev.key === "ArrowRight" ? lat.stap : -lat.stap)));
+      $("vlag").classList.remove("wenk");
+      zetVlag(stand, true);
+    } else if ((ev.key === "Enter" || ev.key === " ") && !opKnop){
+      ev.preventDefault();
+      controleer();
+    }
+    return;
+  }
+  if (bezig && /^[1-3]$/.test(ev.key)){
+    var b = $("antwoord").querySelectorAll("button")[+ev.key - 1];
+    if (b) kies(b);
+  }
+}
+
+/* ---------- ronde ---------- */
+function startRonde(){
+  clearTimeout(volgTimer);
+  vragen = maakRonde(); nr = 0; lintjes = 0; uitslagen = [];
+  $("uitslag").hidden = true;
+  $("knoppen").hidden = false;
+  $("speelveld").style.display = "";
+  $("eind").style.display = "none";
+  tekenTeller(false);
+  toonVraag();
+}
+function klaar(){
+  bezig = false; vraag = null;
+  stopBalk(); $("balk").classList.add("klaar");
+  $("knoppen").hidden = true;
+  $("antwoord").innerHTML = "";
+
+  var sterren = 1;
+  if (lintjes >= 9) sterren = 2;
+  if (lintjes >= RONDE) sterren = 3;
+  var oud = data.records[data.niveau];
+  data.records[data.niveau] = {
+    sterren: Math.max(oud ? oud.sterren : 0, sterren),
+    lintjes: Math.max(oud ? oud.lintjes : 0, lintjes)
+  };
+  bewaar();
+  tekenRecords();
+
+  // sterren op het scorebord
+  var st = "", bord = "";
+  for (var k=1;k<=3;k++){
+    st += k <= sterren ? "★" : "<i>★</i>";
+    bord += '<tspan fill="' + (k <= sterren ? "#F2B632" : "#59616B") + '">★</tspan>';
+  }
+  $("bordgroot").classList.remove("goed");
+  $("bordgroot").innerHTML = bord;
+  $("bordklein").textContent = lintjes + (lintjes === 1 ? " lintje" : " lintjes");
+
+  // terugblik: alle sprongen van deze ronde als kaartjes op het veld
+  $("speelveld").style.display = "none";
+  var s = "";
+  uitslagen.forEach(function(u, i){
+    var x = 16 + (i % 4) * 144, y = 82 + Math.floor(i / 4) * 64, q = u.vraag;
+    var tekst = q.soort === "afronden" ? komma(q.getal) + " ≈ " + komma(q.antwoord) : komma(q.antwoord) + " m";
+    s += '<g style="animation-delay:' + (i * 0.06).toFixed(2) + 's"><rect x="' + x + '" y="' + y + '" width="136" height="56" rx="8" fill="#FFFDF5" stroke="rgba(0,0,0,.12)"/>'
+      + '<text x="' + (x + (u.lint ? 54 : 68)) + '" y="' + (y + 36) + '" text-anchor="middle" class="bordtekst" font-size="' + (q.soort === "afronden" ? 19 : 23) + '" fill="#23301F">' + tekst + "</text>"
+      + (u.lint ? '<g transform="translate(' + (x + 118) + " " + (y + 20) + ') scale(.8)">' + rozetVorm(data.niveau) + "</g>" : "") + "</g>";
+  });
+  $("eind").innerHTML = s;
+  $("eind").style.display = "";
+
+  var t = '<h3>Klaar! <span class="sterren">' + st + "</span></h3>";
+  t += "<p>Je won <b>" + lintjes + "</b> " + (lintjes === 1 ? "lintje" : "lintjes") + ".</p>";
+  if (sterren === 1) t += "<p>Twee sterren haal je met 9 lintjes, drie sterren met alle " + RONDE + ".</p>";
+  else if (sterren === 2) t += "<p>Twee sterren! Win alle " + RONDE + " lintjes voor drie sterren.</p>";
+  else t += "<p>Alle sprongen goed, drie sterren. Kampioen!</p>";
+  t += '<button class="hoofd" id="nogeens">Nog een keer</button>';
+  if (sterren >= 2 && NIVEAUS[data.niveau+1]) t += '<button id="verder">Verder: ' + NIVEAUS[data.niveau+1].titel + " →</button>";
+  var u = $("uitslag"); u.innerHTML = t; u.hidden = false;
+  $("nogeens").onclick = startRonde;
+  if ($("verder")) $("verder").onclick = function(){ data.niveau++; bewaar(); tekenNiveaus(); startRonde(); };
+}
+
+function tekenNiveaus(){
+  var box = $("niveaus"); box.innerHTML = "";
+  NIVEAUS.forEach(function(n, i){
+    var b = document.createElement("button");
+    b.textContent = n.titel;
+    if (i === data.niveau) b.className = "aan";
+    b.onclick = function(){ data.niveau = i; bewaar(); tekenNiveaus(); startRonde(); };
+    box.appendChild(b);
+  });
+}
+function tekenRecords(){
+  $("records").innerHTML = NIVEAUS.map(function(n, i){
+    var r = data.records[i], st = "";
+    for (var k=1;k<=3;k++) st += (r && r.sterren >= k) ? "★" : "<i>★</i>";
+    return '<div class="record"><b>' + n.titel + '</b><span class="sterren">' + st + "</span><br>"
+      + (r ? "beste: " + r.lintjes + " " + rozet(i) : "nog niet gespeeld") + "</div>";
+  }).join("");
+}
+
+/* ---------- start ---------- */
+laad();
+$("balkrozet").innerHTML = rozet(0);
+$("tellerrozet").innerHTML = rozet(2);
+tekenNiveaus();
+tekenRecords();
+tekenPrijzen(false);
+$("opnieuw").onclick = startRonde;
+var grijp = $("grijp");
+grijp.addEventListener("pointerdown", pakVast);
+grijp.addEventListener("pointermove", beweeg);
+grijp.addEventListener("pointerup", laatLos);
+grijp.addEventListener("pointercancel", function(ev){ if (ev.pointerId === vinger){ vinger = null; $("veld").classList.remove("slepen"); if (vraag) zetVlag(stand, true); } });
+// Safari negeert touch-action soms op een <svg>: blokkeer scrollen zelf zolang de vlag gezet mag worden
+function geenScroll(ev){ if (plaatsen() || vinger !== null) ev.preventDefault(); }
+grijp.addEventListener("touchstart", geenScroll, {passive:false});
+grijp.addEventListener("touchmove", geenScroll, {passive:false});
+document.addEventListener("keydown", toets);
+startRonde();
+})();
+</script>
+</html>

@@ -9,7 +9,8 @@ Spelideeën voor Ik oefen. De skill `spelideeen` vult aan, de dagelijkse workflo
 - Beloning: een **taart in de vitrine** (eigen versiering per niveau), blijvend; nieuwste 12 zichtbaar, totaal ernaast. Op tijd en in één keer goed.
 - Bronnen: https://elbd.sites.uu.nl/wp-content/uploads/sites/108/2018/09/Kwaliteitskaart_Breuken__groep_6__7_en_8_02.pdf · https://www.slo.nl/publish/pages/6443/tussendoelen-domein-verhoudingen-alle-leerjaren-en-1s.pdf
 
-## [ ] kommagetallen — Het Atletiekveld (groep 6–7, rekenen)
+## [x] kommagetallen — Het Atletiekveld (groep 6–7, rekenen)
+- Gebouwd: /dev/kommagetallen/
 - Leerdoel: kommagetallen (tienden en honderdsten) plaatsen en aflezen op een getallenlijn, en afronden op hele getallen en tienden.
 - Spel: Een verspringbak met een meetlat ernaast (bijv. van 3 tot 5 meter, met streepjes per tiende). Het scorebord toont een sprong, bijv. "4,3": het kind sleept het vlaggetje langs de lat naar die plek; bij loslaten glijdt het naar het dichtstbijzijnde streepje en telt het meteen. Bij honderdsten zoomt de lat in op het stuk tussen twee tienden. Bij "Aflezen" ligt de voetafdruk er al en kiest het kind het goede getal uit drie knoppen. Fout: de goede plek licht groen op en het kind sleept er opnieuw heen.
 - Niveaus: Halven (x,5 op een lat in halve meters) → Tienden → Honderdsten (inzoomen) → Aflezen (keuze uit drie, afleiders: tiende ernaast, 4,03 vs 4,3) → Afronden (sprong 4,46 → op het hele getal of op een tiende: tik het goede streepje).
