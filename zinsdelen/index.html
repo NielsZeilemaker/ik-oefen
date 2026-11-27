@@ -328,7 +328,6 @@ var NIVEAUS = [
   {titel:"Gezegde",          soort:"wg"},
   {titel:"Lijdend voorwerp", soort:"lv"}
 ];
-var VOLGORDE = ["pv","ow","knip","wg","lv"];
 var KLEUREN = ["#D9534F","#2F7FC1","#3A9D5D","#E8892B","#7B5BB6","#C2477F","#2A9C9C","#B8862B"];
 var KNIPKLEUR = "#5E7183";
 
@@ -371,14 +370,9 @@ function past(zin, soort){
   return true;
 }
 function maakRonde(){
+  // geen herhaling van eerdere niveaus: elke vraag gaat over het gekozen niveau
   var n = NIVEAUS[data.niveau], soorten = [];
-  var vorige = VOLGORDE.slice(0, VOLGORDE.indexOf(n.soort));
-  var herhaal = (vorige.length && n.soort !== "knip") ? 3 : 0;
-  for (var i=0;i<RONDE-herhaal;i++) soorten.push(n.soort);
-  for (var h=0;h<herhaal;h++) soorten.push(vorige[tussen(0, vorige.length-1)]);
-  schud(soorten);
-  // de eerste vraag gaat over het nieuwe van dit niveau
-  var j = soorten.indexOf(n.soort), t = soorten[0]; soorten[0] = soorten[j]; soorten[j] = t;
+  for (var i=0;i<RONDE;i++) soorten.push(n.soort);
 
   var gebruikt = {}, vragen = [];
   // bij het gezegde: meestal een zin met meer werkwoorden (anders is het gewoon de pv)
