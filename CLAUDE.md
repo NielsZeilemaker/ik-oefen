@@ -18,6 +18,7 @@ Kleine oefenspelletjes voor kinderen (basisschoolleeftijd), live op https://ik-o
 | `verdelen/` | De Kikkervijver — aanvullen tot N: hoeveel kikkers moeten er nog op het blad? |
 | `zinsdelen/` | De Haven — zinsdelen: persoonsvorm, onderwerp, knippen, gezegde, lijdend voorwerp |
 | `kommagetallen/` | Het Atletiekveld — kommagetallen op de meetlat: halven, tienden, honderdsten, aflezen, afronden |
+| `maten/` | De Mijnlift — maten omrekenen met de trap: lengte, gewicht, inhoud, met komma |
 | `fonts/` | Zelf gehoste Fredoka (`fredoka.css` + woff2 + `OFL-fredoka.txt`) |
 | `robots.txt`, `sitemap.xml` | Vindbaarheid (`/dev/` staat in robots.txt op Disallow) |
 | `WENSLIJST.md` | Spelideeën (alleen op de dev-branch), bijgehouden door de pijplijn |
@@ -135,6 +136,16 @@ Kleine oefenspelletjes voor kinderen (basisschoolleeftijd), live op https://ik-o
 - De opdracht bij Afronden ("Rond af op hele meters / tienden") en de lof staan in de vaste ruimte onder het veld (waar bij Aflezen de knoppen staan), omdat kleine tekst in de SVG op een telefoon onleesbaar wordt.
 - Beloning: een **lintje met rozet** (kleur per niveau) aan het prijzenbord, op tijd (8/10/12/10/12 s) en in één keer goed; nieuwste 12 + totaal. ★★ 9, ★★★ 12. Einde ronde: sterren op het scorebord en elke sprong als kaartje op het veld ("4,46 ≈ 4" bij afronden).
 - Breedte van het veld: `clamp(300px, (100svh - 320px) * 600/280, 100%)`, zodat alles op 1366×650 zonder scrollen past.
+
+## De Mijnlift (maten)
+
+- Een mijnschacht met een verdieping per maat (de trap: km hm dam m dm cm mm, kg hg dag g, l dl cl ml); hm, dam en dag zijn lichtere tussenverdiepingen die nooit gevraagd worden. Getallen intern als heel getal in de kleinste maat (`N`), `toon(N, e)` geeft de kortste schrijfwijze.
+- Eerst de lift naar de gevraagde maat (▲▼ naast de mijn, op een verdieping tikken of ↑↓; het bordje van de doelverdieping licht geel op). Per verdieping verschijnt naast de schacht ×10 (omlaag) of :10 (omhoog). Pas als de lift stilstaat op de goede verdieping gaan de toetsen aan; de lift zit dan vast.
+- Typen op het schermtoetsenbord (5×3: 0–9, komma, ⌫, OK) of het toetsenbord (`,` en `.` zijn de komma). OK is nodig omdat de lengte van het antwoord niets mag verraden; "0,450" of "0350" telt ook goed (`netjes()`).
+- Fout: de lift gaat terug naar de begin-verdieping en zakt/stijgt langzaam, verdieping voor verdieping, terwijl het bordje op het karretje de verschuivende komma laat zien (3,5 m → 35 dm → 350 cm). Daarna staat het goede antwoord groen onder de som en typt het kind het over (telt vanzelf).
+- Niveaus: Meter en cm (alleen m/dm/cm, heel) → Hele trap (km t/m mm, heel, hooguit 3 verdiepingen) → Gewicht (kg/g, hg/g, kg/hg) → Inhoud (l/dl/cl/ml) → Met komma (de grote maat heeft 1 of 2 cijfers achter de komma: 2,75 km → m, 450 g → kg). Vanaf niveau 2: 9 van het niveau + 3 herhaling, de eerste altijd van het niveau; nooit twee keer hetzelfde paar maten achter elkaar.
+- Beloning: een **edelsteen** (kleur per niveau) in de kist rechtsonder in de mijn (nieuwste 24 + totaal), op tijd (10/12/10/12/14 s, inclusief de lift) en in één keer goed. ★★ 9, ★★★ 12. Einde ronde: sterren op een bord in de lege schacht, de som en toetsen verdwijnen en elke lading staat als kaartje naast (of onder) de mijn.
+- Layout: de mijn (SVG 400×440) is `clamp(230px, 100svh - 596px, 440px)` hoog met de liftknoppen ernaast; bij `(max-height:900px) and (min-width:700px)` staat de mijn links en som + toetsen rechts.
 
 ## Lessen uit de spellen (ontwerp)
 

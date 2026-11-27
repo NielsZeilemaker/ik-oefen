@@ -1,0 +1,749 @@
+<!doctype html>
+<html lang="nl">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<title>De Mijnlift — maten omrekenen: km, m, cm, kg, g, l, ml</title>
+<meta name="description" content="Oefen maten omrekenen in De Mijnlift: laat de lift langs de trap van km tot mm zakken en reken 3,5 m om naar cm, kg naar g of l naar ml. Elke goede lading levert een edelsteen op. Gratis, zonder cookies, tracking of reclame.">
+<link rel="canonical" href="https://ik-oefen.nl/maten/">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="nl_NL">
+<meta property="og:site_name" content="Ik oefen">
+<meta property="og:title" content="De Mijnlift — maten omrekenen">
+<meta property="og:description" content="Oefen maten omrekenen in De Mijnlift: laat de lift langs de trap van km tot mm zakken en reken 3,5 m om naar cm, kg naar g of l naar ml. Elke goede lading levert een edelsteen op. Gratis, zonder cookies, tracking of reclame.">
+<meta property="og:url" content="https://ik-oefen.nl/maten/">
+<link rel="stylesheet" href="../fonts/fredoka.css">
+<style>
+  :root{
+    --papier:#F3ECE3;
+    --kaart:#FFFDF9;
+    --kaart2:#EDE3D6;
+    --tekst:#33261C;
+    --zacht:rgba(51,38,28,.62);
+    --lijn:rgba(51,38,28,.16);
+    --rots:#7A5A44;
+    --hout:#D9A75F;
+    --goud:#FFD34D;
+    --goed:#2F9E5B;
+    --rood:#D9484F;
+    --geel:#F2B632;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:linear-gradient(#E7DCCD, var(--papier) 40%, #F6F1EA);
+    background-attachment:fixed;
+    color:var(--tekst);
+    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:16px;line-height:1.5;padding:20px 16px 48px;min-height:100vh;
+  }
+  .wrap{max-width:860px;margin:0 auto}
+  header{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:baseline;justify-content:space-between;margin-bottom:22px}
+  .kop{display:grid;grid-template-columns:auto 1fr;column-gap:14px;align-items:start}
+  .kop .terug{margin-top:calc(clamp(28px,6vw,40px) * .75 - 20px)}   /* midden op de regel van de titel */
+  @media (max-height:901px) and (min-width:600px){
+    header{margin-bottom:14px}
+    .koptekst{display:flex;flex-wrap:wrap;align-items:center;column-gap:18px}
+    .koptekst .ondertitel{flex:1 1 260px;max-width:440px;margin:0}
+  }
+  .terug{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;color:var(--tekst);border:1px solid var(--lijn);background:var(--kaart);text-decoration:none;transition:background .15s,border-color .15s}
+  .terug:hover{background:var(--kaart2);border-color:var(--tekst)}
+  h1{font-family:Fredoka,ui-rounded,system-ui,sans-serif;font-weight:600;font-size:clamp(28px,6vw,40px);margin:0}
+  .ondertitel{margin:2px 0 0;font-size:14px;color:var(--zacht)}
+
+  .kaart{background:var(--kaart);border:1px solid var(--lijn);border-radius:16px;padding:16px 16px 20px;box-shadow:0 2px 0 rgba(51,38,28,.06)}
+  .leskop{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-bottom:10px}
+  .leskop .rechts{display:flex;align-items:center;gap:14px;margin-left:auto;font-size:13px;color:var(--zacht);white-space:nowrap}
+  .teller{font-family:Fredoka,ui-rounded,sans-serif;font-size:18px;font-weight:600;color:var(--tekst)}
+  .teller.bump{animation:pop .45s}
+  .teller svg{width:18px;height:18px;vertical-align:-3px}
+
+  .niveaus{display:contents}   /* knoppen doen mee in de rij van .leskop */
+  .niveaus button{font:inherit;font-size:14px;cursor:pointer;border:1px solid var(--lijn);background:var(--kaart2);color:var(--tekst);border-radius:20px;padding:5px 14px;white-space:nowrap}
+  .niveaus button.aan{background:var(--tekst);color:#fff;border-color:var(--tekst)}
+
+  /* speelveld: de mijn met liftknoppen, daaronder (of ernaast) de som en de toetsen */
+  .speelveld{display:flex;flex-direction:column;align-items:center}
+  .mijnrij{display:flex;align-items:center;justify-content:center;gap:10px;max-width:100%}
+  .mijn{height:clamp(230px, 100svh - 596px, 440px);aspect-ratio:400/440;max-width:calc(100vw - 110px);border-radius:12px;overflow:hidden;flex:none}
+  .mijn svg{display:block;width:100%;height:100%;user-select:none;-webkit-user-select:none;touch-action:manipulation}
+  .bordtekst{font-family:Fredoka,ui-rounded,sans-serif;font-weight:600}
+  .vloer{cursor:pointer}
+  .vloer .plank{transition:fill .2s}
+  .vloer.doel .plank{fill:var(--goud);animation:gloei 1.1s ease-in-out infinite}
+  #lift{transition:transform .24s ease-in-out}
+  #lift.vast{transition:none}
+  #lift.langzaam{transition:transform .5s ease-in-out}
+  #ladingbord{transition:fill .2s}
+  #lift.goed #ladingbord{fill:#8FE3A8}
+  #lift.uitleg #ladingtekst{animation:knip .6s}
+  #pijlen g{animation:verschijn .25s ease-out}
+  #kist .nieuw{animation:popin .6s ease-out}
+  #eind g{animation:verschijn .3s ease-out both}
+  @keyframes gloei{50%{opacity:.55}}
+  @keyframes knip{0%{opacity:.2}100%{opacity:1}}
+  @keyframes verschijn{0%{opacity:0}100%{opacity:1}}
+  @keyframes popin{0%{opacity:0;transform:translateY(-14px) scale(.5)}60%{opacity:1;transform:translateY(2px) scale(1.15)}100%{transform:none}}
+
+  .liftknoppen{display:flex;flex-direction:column;gap:14px;flex:none}
+  .liftknoppen button{width:54px;height:54px;border-radius:50%;cursor:pointer;display:grid;place-items:center;padding:0;
+    background:var(--hout);color:var(--tekst);border:1px solid rgba(0,0,0,.15);border-bottom:4px solid rgba(0,0,0,.25);touch-action:manipulation}
+  .liftknoppen button svg{width:24px;height:24px}
+  .liftknoppen button:active:not(:disabled){transform:translateY(2px);border-bottom-width:2px}
+  .liftknoppen button:disabled{opacity:.35;cursor:default}
+  .liftknoppen.wenk button:not(:disabled){animation:wenk 1.2s ease-in-out infinite}
+  @keyframes wenk{50%{box-shadow:0 0 0 7px rgba(242,182,50,.45)}}
+
+  .bedien[hidden]{display:none}
+  .bedien{display:flex;flex-direction:column;align-items:center;width:100%;max-width:360px}
+  #som{font-family:Fredoka,ui-rounded,sans-serif;font-weight:600;font-size:clamp(24px,7vw,30px);min-height:52px;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:10px;white-space:nowrap}
+  #som .eenheid{color:#8A5A2B}
+  #som .vak{display:inline-block;min-width:3.6em;padding:0 8px;text-align:center;border-radius:10px;border:2px dashed var(--lijn);background:#fff;line-height:1.5}
+  #som .vak.leeg{color:rgba(51,38,28,.3)}
+  #som .vak.actief{border:2px solid var(--geel);box-shadow:0 0 0 4px rgba(242,182,50,.25)}
+  #som .vak.goed{border:2px solid var(--goed);background:#DDF5E5;color:#1D6B3C}
+  #som .vak.fout{animation:wiebel .25s 2;border-color:var(--rood);background:#F7DADB}
+  /* einde ronde: elke lading als kaartje naast (of onder) de mijn */
+  #terugblik{display:grid;grid-template-columns:1fr 1fr;gap:6px;width:100%;max-width:440px;margin-top:12px}
+  #terugblik[hidden]{display:none}
+  #terugblik div{font-family:Fredoka,ui-rounded,sans-serif;font-weight:600;font-size:16px;background:#FFF6E0;border:1px solid var(--lijn);border-radius:8px;
+    padding:5px 8px;display:flex;align-items:center;gap:6px;white-space:nowrap;animation:verschijn .3s ease-out both}
+  #terugblik svg{width:16px;height:16px;flex:none}
+  #terugblik .zonder{padding-left:30px}
+  #regel{min-height:30px;font-family:Fredoka,ui-rounded,sans-serif;font-weight:600;font-size:20px;text-align:center}
+  #regel .lof{color:var(--goed);display:inline-block;animation:pop2 .4s}
+  #regel .juist{display:inline-block;color:#fff;background:var(--goed);border-radius:8px;padding:0 10px}
+  @keyframes pop2{0%{transform:scale(.8)}50%{transform:scale(1.08)}100%{transform:scale(1)}}
+
+  /* tijdbalk: op tijd en in één keer goed = een edelsteen */
+  #balk{display:flex;align-items:center;gap:10px;width:100%;max-width:320px;height:30px}
+  #balk svg{width:22px;height:22px;flex:none;transition:filter .3s,opacity .3s}
+  #balk .spoor{flex:1;height:12px;border-radius:6px;background:var(--kaart2);overflow:hidden;box-shadow:inset 0 1px 2px rgba(0,0,0,.12)}
+  #balk .spoor i{display:block;height:100%;width:100%;border-radius:6px;background:linear-gradient(90deg,#8A5A2B,#F2B632)}
+  #balk.weg svg{filter:grayscale(1);opacity:.4}
+  #balk.klaar{visibility:hidden}
+  #balk.verdiend svg{animation:pop .5s}
+
+  /* schermtoetsenbord met komma; zo groot als in de hoogte past */
+  .werkvlak{display:flex;justify-content:center;width:100%;margin-top:8px}
+  #toetsen{--toets:clamp(44px, (100svh - 640px) / 3, 58px);
+    display:grid;grid-template-columns:repeat(5,1fr);gap:8px;width:min(calc(var(--toets) * 6.6),100%);transition:opacity .2s}
+  #toetsen.slaapt{opacity:.4}
+  #toetsen button{font-family:Fredoka,ui-rounded,sans-serif;font-size:24px;font-weight:500;height:var(--toets);border-radius:12px;
+    background:var(--kaart2);color:var(--tekst);border:1px solid var(--lijn);border-bottom:4px solid rgba(0,0,0,.2);
+    padding:0;cursor:pointer;touch-action:manipulation}
+  #toetsen button:hover{background:#E3D5C3}
+  #toetsen button:active{transform:translateY(2px);border-bottom-width:2px}
+  #toetsen .komma{font-size:30px;line-height:1}
+  #toetsen .ok{background:var(--geel);border-color:transparent;border-bottom-color:#B9861A;grid-column:span 3}
+
+  /* te laag om onder elkaar te passen? dan de mijn links en de som met toetsen rechts */
+  @media (max-height:900px) and (min-width:700px){
+    .speelveld{flex-direction:row;justify-content:center;align-items:center;gap:28px}
+    .mijn{height:clamp(260px, 100svh - 240px, 440px);max-width:none}
+    .bedien{width:330px}
+    #toetsen{--toets:clamp(44px, (100svh - 330px) / 3.6, 60px)}
+    #terugblik{width:420px;margin-top:0}
+  }
+
+  @media (prefers-reduced-motion:reduce){ .vloer.doel .plank,#lift.uitleg #ladingtekst,#pijlen g,#kist .nieuw,#eind g,#terugblik div,.liftknoppen.wenk button,#som .vak.fout,#regel .lof,#balk.verdiend svg,.teller.bump{animation:none} }
+  @keyframes wiebel{25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+  @keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.4) rotate(-10deg)}100%{transform:scale(1)}}
+
+  .knoppen[hidden]{display:none}
+  .knoppen{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:14px}
+  .knoppen button{font:inherit;font-size:14px;cursor:pointer;border:1px solid var(--tekst);background:var(--tekst);color:#fff;border-radius:8px;padding:7px 14px}
+  :focus-visible{outline:3px solid #5B8DEF;outline-offset:2px}
+
+  #uitslag{margin-top:16px;border-top:1px solid var(--lijn);padding-top:14px}
+  #uitslag h3{font-family:Fredoka,ui-rounded,sans-serif;font-weight:500;font-size:20px;margin:0 0 8px}
+  #uitslag p{margin:0 0 10px;font-size:15px}
+  #uitslag .sterren{color:var(--geel);font-size:26px;letter-spacing:3px}
+  #uitslag .sterren i{font-style:normal;color:var(--lijn)}
+  #uitslag button{font:inherit;font-size:15px;cursor:pointer;border-radius:8px;padding:7px 14px;margin:4px 8px 0 0;border:1px solid var(--tekst);background:var(--kaart);color:var(--tekst)}
+  #uitslag button.hoofd{background:var(--tekst);color:#fff}
+
+  h2.recordkop{font-family:Fredoka,ui-rounded,sans-serif;font-weight:500;font-size:20px;margin:30px 0 8px}
+  #records{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+  .record{background:var(--kaart);border:1px solid var(--lijn);border-radius:12px;padding:10px 12px;font-size:14px}
+  .record b{display:block;font-family:Fredoka,ui-rounded,sans-serif;font-size:17px;font-weight:600}
+  .record .sterren{color:var(--geel);font-size:18px;letter-spacing:2px}
+  .record .sterren i{font-style:normal;color:var(--lijn)}
+  .record svg{width:15px;height:15px;vertical-align:-3px}
+
+  footer{margin-top:28px;font-size:13px;color:var(--zacht)}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="kop">
+      <a class="terug" href="../" aria-label="Terug naar alle spellen">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+      </a>
+      <div class="koptekst">
+        <h1>De Mijnlift</h1>
+        <p class="ondertitel">Breng de lading naar de goede verdieping en reken de maat om. Win edelstenen!</p>
+      </div>
+    </div>
+  </header>
+
+  <div class="kaart">
+    <div class="leskop">
+      <div class="niveaus" id="niveaus"></div>
+      <div class="rechts">
+        <span class="teller" id="teller" title="edelstenen deze ronde"><span id="tellersteen"></span> <b id="stenen">0</b></span>
+        <span id="voortgang">lading 1 van 12</span>
+      </div>
+    </div>
+
+    <div class="speelveld">
+      <div class="mijnrij">
+        <div class="mijn">
+          <svg id="tekening" viewBox="0 0 400 440" aria-hidden="true">
+            <defs>
+              <linearGradient id="rotsverloop" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0" stop-color="#8C6A50"/><stop offset="1" stop-color="#5E4433"/>
+              </linearGradient>
+              <clipPath id="schachtclip"><rect x="140" y="10" width="120" height="430"/></clipPath>
+            </defs>
+            <!-- lucht, gras en rots -->
+            <rect x="0" y="0" width="400" height="48" fill="#BFE3F2"/>
+            <circle cx="350" cy="18" r="11" fill="#FFE07A"/>
+            <rect x="0" y="40" width="400" height="400" fill="url(#rotsverloop)"/>
+            <rect x="0" y="40" width="400" height="9" fill="#7DB85A"/>
+            <g fill="rgba(0,0,0,.12)">
+              <ellipse cx="30" cy="80" rx="9" ry="5"/><ellipse cx="120" cy="140" rx="6" ry="4"/><ellipse cx="60" cy="230" rx="10" ry="5"/>
+              <ellipse cx="300" cy="90" rx="8" ry="5"/><ellipse cx="370" cy="160" rx="10" ry="6"/><ellipse cx="290" cy="250" rx="7" ry="4"/>
+              <ellipse cx="25" cy="330" rx="8" ry="5"/><ellipse cx="350" cy="300" rx="6" ry="4"/><ellipse cx="110" cy="410" rx="9" ry="5"/>
+            </g>
+            <g fill="rgba(255,255,255,.08)">
+              <ellipse cx="80" cy="110" rx="7" ry="4"/><ellipse cx="330" cy="210" rx="9" ry="5"/><ellipse cx="20" cy="190" rx="6" ry="3"/><ellipse cx="380" cy="350" rx="7" ry="4"/>
+            </g>
+            <g id="speelveld">
+              <!-- de schacht met de liftbok erboven -->
+              <rect x="148" y="44" width="104" height="396" fill="#2B211B"/>
+              <path d="M150 44 V440 M250 44 V440" stroke="#4A3A2E" stroke-width="4"/>
+              <path d="M142 46 L188 6 M258 46 L212 6 M160 30 H240 M150 46 H250" stroke="#4A525C" stroke-width="5" stroke-linecap="round"/>
+              <circle cx="200" cy="10" r="9" fill="#C9D1DA" stroke="#4A525C" stroke-width="3"/>
+              <g id="verdiepingen"></g>
+              <g id="pijlen"></g>
+              <g id="liftvak" clip-path="url(#schachtclip)"><g id="lift" class="vast"></g></g>
+              <!-- de stenenkist -->
+              <g id="kistvak">
+                <path d="M308 404 h86 v30 a4 4 0 0 1 -4 4 h-78 a4 4 0 0 1 -4 -4 Z" fill="#8A5A2B" stroke="#5A3A1C" stroke-width="2.5"/>
+                <path d="M308 416 h86" stroke="#5A3A1C" stroke-width="2"/>
+                <rect x="345" y="411" width="12" height="12" rx="2" fill="#F2B632" stroke="#5A3A1C" stroke-width="1.5"/>
+                <path d="M306 404 L314 392 H388 L396 404 Z" fill="#6B4422" stroke="#5A3A1C" stroke-width="2"/>
+                <g id="kist"></g>
+                <text id="kistaantal" x="351" y="300" text-anchor="middle" class="bordtekst" font-size="20" fill="#FFE7A8"></text>
+              </g>
+            </g>
+            <g id="eind" style="display:none"></g>
+          </svg>
+        </div>
+        <div class="liftknoppen" id="liftknoppen">
+          <button type="button" id="op" aria-label="Lift omhoog"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5 L21 18 H3 Z" fill="currentColor"/></svg></button>
+          <button type="button" id="neer" aria-label="Lift omlaag"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19 L21 6 H3 Z" fill="currentColor"/></svg></button>
+        </div>
+      </div>
+
+      <div class="bedien" id="bedien">
+        <div id="som"></div>
+        <div id="regel"></div>
+        <div id="balk"><span id="balksteen"></span><div class="spoor" title="Op tijd en in één keer goed = een edelsteen"><i id="vulling"></i></div></div>
+        <div class="werkvlak"><div id="toetsen"></div></div>
+      </div>
+      <div id="terugblik" hidden></div>
+    </div>
+
+    <div class="knoppen" id="knoppen"><button id="opnieuw">Begin opnieuw</button></div>
+    <div id="uitslag" hidden></div>
+  </div>
+
+  <h2 class="recordkop">Jouw records</h2>
+  <div id="records"></div>
+
+  <footer>Voortgang wordt op dit apparaat bewaard. Elke verdieping van de mijn is een maat, van km bovenin tot mm onderin. Eén verdieping lager is keer 10, één hoger gedeeld door 10. Laat de lift naar de maat zakken of stijgen die gevraagd wordt (met ▲ ▼, door op een verdieping te tikken of met de pijltjes ↑ ↓) en typ dan het getal, met een komma als dat nodig is. Op tijd en in één keer goed? Dan komt er een edelsteen in de kist.</footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+var BEWAAR = "mijnlift-v1";
+var RONDE = 12;
+
+// De trap: elke verdieping is 10 keer zo klein als die erboven. e = macht van 10 ten opzichte van de kleinste maat.
+// "hulp" zijn verdiepingen die je passeert maar die zelf niet gevraagd worden.
+var TRAPPEN = {
+  lengte:  [{n:"km",e:6},{n:"hm",e:5,hulp:1},{n:"dam",e:4,hulp:1},{n:"m",e:3},{n:"dm",e:2},{n:"cm",e:1},{n:"mm",e:0}],
+  gewicht: [{n:"kg",e:3},{n:"hg",e:2},{n:"dag",e:1,hulp:1},{n:"g",e:0}],
+  inhoud:  [{n:"l",e:3},{n:"dl",e:2},{n:"cl",e:1},{n:"ml",e:0}]
+};
+var SOORTEN = {
+  mcm:     {wacht:10000, alleen:["m","dm","cm"], paren:["lengte m cm"]},
+  trap:    {wacht:12000, paren:["lengte km m","lengte m cm","lengte m dm","lengte dm cm","lengte cm mm","lengte m mm","lengte dm mm"]},
+  gewicht: {wacht:10000, paren:["gewicht kg g","gewicht kg g","gewicht hg g","gewicht kg hg"]},
+  inhoud:  {wacht:12000, paren:["inhoud l dl","inhoud l cl","inhoud l ml","inhoud dl cl","inhoud dl ml","inhoud cl ml"]},
+  komma:   {wacht:14000, komma:true, paren:["lengte km m","lengte m cm","lengte m mm","lengte cm mm","lengte m dm","gewicht kg g","gewicht kg g","inhoud l dl","inhoud l cl","inhoud l ml","inhoud dl ml"]}
+};
+var NIVEAUS = [
+  {titel:"Meter en cm", soort:"mcm"},
+  {titel:"Hele trap",   soort:"trap"},
+  {titel:"Gewicht",     soort:"gewicht"},
+  {titel:"Inhoud",      soort:"inhoud"},
+  {titel:"Met komma",   soort:"komma"}
+];
+var VOLGORDE = ["mcm","trap","gewicht","inhoud","komma"];
+var STEENKLEUR = [["#2FAE6B","#8FE8B4"],["#2F6FD0","#94BDF7"],["#D93B4A","#F7A1A9"],["#8A55C9","#CDAEF2"],["#E8A21E","#FFE08A"]];   // per niveau
+
+var data = {records:{}, niveau:0, stenen:[]};
+function laad(){
+  try{ var s = localStorage.getItem(BEWAAR); if (s) data = JSON.parse(s); }catch(e){}
+  if (!data || typeof data !== "object") data = {};
+  if (!data.records || typeof data.records !== "object") data.records = {};
+  if (!Array.isArray(data.stenen)) data.stenen = [];
+  if (typeof data.niveau !== "number" || !NIVEAUS[data.niveau]) data.niveau = 0;
+}
+function bewaar(){ try{ localStorage.setItem(BEWAAR, JSON.stringify(data)); }catch(e){} }
+
+function tussen(a, b){ return a + Math.floor(Math.random()*(b-a+1)); }
+function schud(a){ for (var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)), t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+function kies(a){ return a[Math.floor(Math.random()*a.length)]; }
+function $(id){ return document.getElementById(id); }
+function macht(e){ return Math.pow(10, e); }
+
+// N (in de kleinste maat, een heel getal) in een maat met macht e: 3500 mm, e=3 → "3,5"
+function toon(N, e){
+  var f = macht(e), heel = Math.floor(N / f), rest = N - heel * f;
+  if (!rest) return String(heel);
+  var r = String(rest);
+  while (r.length < e) r = "0" + r;
+  return heel + "," + r.replace(/0+$/, "");
+}
+// Wat het kind typte, zo kort mogelijk: "0350" → "350", ",50" → "0,5"
+function netjes(s){
+  var d = s.split(","), heel = d[0].replace(/^0+/, "") || "0", rest = (d[1] || "").replace(/0+$/, "");
+  return rest ? heel + "," + rest : heel;
+}
+
+// Een edelsteen (SVG), kleur per niveau
+function steenVorm(k){
+  var c = STEENKLEUR[k % STEENKLEUR.length];
+  return '<path d="M-8 -3 L-4.5 -8 H4.5 L8 -3 L0 8 Z" fill="' + c[0] + '" stroke="rgba(0,0,0,.3)" stroke-width="1"/>'
+    + '<path d="M-8 -3 H8 M-2.5 -8 L-3.5 -3 L0 8 L3.5 -3 L2.5 -8" fill="none" stroke="' + c[1] + '" stroke-width="1"/>'
+    + '<path d="M-4.5 -8 L-8 -3 H-3.5 L-2.5 -8 Z" fill="' + c[1] + '" opacity=".8"/>';
+}
+function steen(k){ return '<svg viewBox="-9 -9 18 18" aria-hidden="true"><g>' + steenVorm(k) + "</g></svg>"; }
+
+/* ---------- vragen maken ---------- */
+function maakVraag(soort){
+  var s = SOORTEN[soort], p = kies(s.paren).split(" ");
+  var trap = TRAPPEN[p[0]];
+  if (s.alleen) trap = trap.filter(function(v){ return s.alleen.indexOf(v.n) >= 0; });
+  function vind(n){ for (var i=0;i<trap.length;i++) if (trap[i].n === n) return i; }
+  var a = vind(p[1]), b = vind(p[2]);
+  if (Math.random() < .5){ var t = a; a = b; b = t; }          // ook terug omhoog
+  var eGroot = Math.max(trap[a].e, trap[b].e), eKlein = Math.min(trap[a].e, trap[b].e), d = eGroot - eKlein, N, m, dec;
+  if (!s.komma){
+    // hele getallen: een heel aantal van de grote maat
+    var lim = d === 1 ? [2, 60] : (d === 2 ? [1, 25] : [1, 12]);
+    do { m = tussen(lim[0], lim[1]); } while (d === 1 && m % 10 === 0 && Math.random() < .7);
+    N = m * macht(eGroot);
+  } else {
+    // met komma: de grote maat heeft één of twee cijfers achter de komma, de kleine maat is heel
+    do {
+      var r = Math.random();
+      if (r < .5){ do { m = tussen(11, 99); } while (m % 10 === 0); }
+      else if (r < .75){ do { m = tussen(101, 499); } while (m % 10 === 0); }
+      else m = tussen(1, 9);
+      dec = Math.min(d, m >= 100 ? 2 : tussen(1, 2));
+      N = m * macht(eGroot - dec);
+    } while (toon(N, eKlein).length > 5 || toon(N, eGroot).indexOf(",") < 0);
+  }
+  return {soort:soort, trap:trap, van:a, naar:b, N:N, waarde:toon(N, trap[a].e), antwoord:toon(N, trap[b].e)};
+}
+function maakRonde(){
+  var n = NIVEAUS[data.niveau], soorten = [];
+  var vorige = VOLGORDE.slice(0, VOLGORDE.indexOf(n.soort));
+  var herhaal = vorige.length ? 3 : 0;
+  for (var i=0;i<RONDE-herhaal;i++) soorten.push(n.soort);
+  for (var h=0;h<herhaal;h++) soorten.push(vorige[tussen(0, vorige.length-1)]);
+  schud(soorten);
+  var j = soorten.indexOf(n.soort), t = soorten[0]; soorten[0] = soorten[j]; soorten[j] = t;   // de eerste is nieuw
+  var gezien = {}, vragen = [], vorigPaar = "";
+  soorten.forEach(function(s){
+    var v, k = 0;
+    do { v = maakVraag(s); k++; } while ((gezien[sleutel(v)] || paar(v) === vorigPaar) && k < 40);
+    gezien[sleutel(v)] = 1; vorigPaar = paar(v);
+    vragen.push(v);
+  });
+  return vragen;
+}
+function paar(v){ return v.trap[v.van].n + ">" + v.trap[v.naar].n; }
+function sleutel(v){ return paar(v) + v.N; }
+
+/* ---------- toestand ---------- */
+// fase: "lift" (lift naar de goede verdieping), "typen", "uitleg" (de lift laat het zien), "rust"
+var vragen = [], nr = 0, vraag = null, fase = "rust", fout = false, overtypen = false, invoer = "";
+var stenen = 0, balkTimer = null, volgTimer = null, stapTimer = null, uitlegTimer = null, start = 0, uitslagen = [];
+var liftStand = 0, liftDoel = 0;
+var Y0 = 70, HOOGTE = 360, tussenruimte = 60, boven = 70;
+
+function startBalk(wacht){
+  var b = $("balk"), v = $("vulling");
+  b.classList.remove("weg", "klaar", "verdiend");
+  v.style.transition = "none"; v.style.width = "100%";
+  void v.offsetWidth;
+  v.style.transition = "width " + wacht + "ms linear"; v.style.width = "0%";
+  clearTimeout(balkTimer);
+  balkTimer = setTimeout(function(){ $("balk").classList.add("weg"); }, wacht);
+}
+function stopBalk(){
+  clearTimeout(balkTimer);
+  var v = $("vulling"); v.style.width = getComputedStyle(v).width; v.style.transition = "none";
+}
+function tekenTeller(bump){
+  $("stenen").textContent = stenen;
+  if (bump){ var t = $("teller"); t.classList.remove("bump"); void t.offsetWidth; t.classList.add("bump"); }
+}
+
+// De kist: de nieuwste edelstenen liggen erop, het totaal erboven als het er meer zijn
+var KIST_MAX = 24;
+function tekenKist(nieuw){
+  var t = data.stenen.slice(-KIST_MAX), s = "";
+  t.forEach(function(k, i){
+    var rij = Math.floor(i / 6), kol = i % 6;
+    var x = 316 + kol * 14 + (rij % 2 ? 4 : 0), y = 384 - rij * 13;
+    s += '<g transform="translate(' + x + " " + y + ')"><g' + (nieuw && i === t.length-1 ? ' class="nieuw"' : "") + ">" + steenVorm(k) + "</g></g>";
+  });
+  $("kist").innerHTML = s;
+  $("kistaantal").textContent = data.stenen.length > KIST_MAX ? data.stenen.length : "";
+}
+
+/* ---------- de mijn tekenen ---------- */
+function vloerY(i){ return boven + tussenruimte * (i + .5); }
+function tekenSchacht(){
+  var trap = vraag.trap, n = trap.length;
+  tussenruimte = Math.min(62, HOOGTE / n);
+  boven = Y0 + (HOOGTE - n * tussenruimte) / 2;
+  var s = "";
+  trap.forEach(function(v, i){
+    var y = vloerY(i), h = Math.min(40, tussenruimte - 10);
+    s += '<g class="vloer' + (i === vraag.naar ? " doel" : "") + '" data-i="' + i + '">'
+      + '<rect x="0" y="' + (y - tussenruimte / 2) + '" width="252" height="' + tussenruimte + '" fill="transparent"/>'
+      + '<path d="M150 ' + (y + h / 2) + " H22 a10 10 0 0 1 -10 -10 V" + (y - h / 2 + 10) + " a10 10 0 0 1 10 -10 H150 Z" + '" fill="#3A2C23"/>'
+      + '<path d="M14 ' + (y + h / 2 - 2) + ' H150" stroke="#9AA3AD" stroke-width="2"/>'
+      + '<rect class="plank" x="30" y="' + (y - 17) + '" width="96" height="32" rx="5" fill="' + (v.hulp ? "#B98C52" : "#D9A75F") + '" stroke="#6B4422" stroke-width="2"/>'
+      + '<text x="78" y="' + (y + (v.hulp ? 6.5 : 8.5)) + '" text-anchor="middle" class="bordtekst" font-size="' + (v.hulp ? 19 : 25) + '" fill="' + (v.hulp ? "rgba(51,38,28,.7)" : "#33261C") + '">' + v.n + "</text>"
+      + "</g>";
+  });
+  $("verdiepingen").innerHTML = s;
+
+  // de lift met het karretje; het bordje toont de lading
+  var hk = tussenruimte / 2 - 3;
+  $("lift").innerHTML =
+      '<path d="M200 ' + (-hk) + ' V-600" stroke="#C9D1DA" stroke-width="2"/>'
+    + '<rect x="153" y="' + (-hk) + '" width="94" height="' + (2 * hk) + '" rx="3" fill="rgba(255,255,255,.05)" stroke="#A9B2BC" stroke-width="3"/>'
+    + '<path d="M153 ' + (hk - 1) + ' H247" stroke="#A9B2BC" stroke-width="4"/>'
+    + '<path d="M164 4 H236 L230 ' + (hk - 6) + ' H170 Z" fill="#5A626C" stroke="#3A4048" stroke-width="2"/>'
+    + '<rect id="ladingbord" x="154" y="-19" width="92" height="28" rx="5" fill="#FFF6E0" stroke="#6B4422" stroke-width="2"/>'
+    + '<text id="ladingtekst" x="200" y="3.5" text-anchor="middle" class="bordtekst" font-size="21" fill="#33261C"></text>';
+}
+function zetLading(tekst){
+  var t = $("ladingtekst");
+  t.textContent = tekst;
+  // te lang? dan iets kleiner
+  t.setAttribute("font-size", tekst.length > 8 ? 17 : (tekst.length > 6 ? 20 : 23));
+}
+function zetLift(i, hoe){
+  var l = $("lift");
+  l.classList.toggle("vast", hoe === "vast");
+  l.classList.toggle("langzaam", hoe === "langzaam");
+  l.style.transform = "translate(0px," + vloerY(i).toFixed(1) + "px)";
+}
+// ×10 omlaag, :10 omhoog, voor elke verdieping die de lift aflegde
+function tekenPijlen(){
+  var s = "", van = vraag.van, stap = liftStand > van ? 1 : -1;
+  for (var i = van; i !== liftStand; i += stap){
+    var y = (vloerY(i) + vloerY(i + stap)) / 2;
+    s += '<g><rect x="256" y="' + (y - 11) + '" width="44" height="22" rx="6" fill="' + (stap > 0 ? "#FFD34D" : "#9FD3F2") + '" stroke="rgba(0,0,0,.25)"/>'
+      + '<text x="278" y="' + (y + 5.5) + '" text-anchor="middle" class="bordtekst" font-size="15" fill="#33261C">' + (stap > 0 ? "×10" : ":10") + "</text></g>";
+  }
+  $("pijlen").innerHTML = s;
+}
+
+/* ---------- één vraag ---------- */
+function toonVraag(){
+  vraag = vragen[nr];
+  fase = "lift"; fout = false; overtypen = false; invoer = ""; start = Date.now();
+  clearTimeout(stapTimer); stapTimer = null; clearTimeout(uitlegTimer);
+  $("voortgang").textContent = "lading " + (nr+1) + " van " + RONDE;
+  tekenSchacht();
+  liftStand = liftDoel = vraag.van;
+  $("lift").classList.remove("goed", "uitleg");
+  zetLift(liftStand, "vast");
+  zetLading(vraag.waarde + " " + vraag.trap[vraag.van].n);
+  $("pijlen").innerHTML = "";
+  $("regel").innerHTML = "";
+  $("liftknoppen").classList.add("wenk");
+  tekenSom("");
+  zetBediening();
+  startBalk(SOORTEN[vraag.soort].wacht);
+}
+function tekenSom(staat){
+  var leeg = !invoer;
+  $("som").innerHTML = '<span>' + vraag.waarde + '</span><span class="eenheid">' + vraag.trap[vraag.van].n + "</span><span>=</span>"
+    + '<span class="vak' + (leeg ? " leeg" : "") + (fase === "typen" && !staat ? " actief" : "") + (staat ? " " + staat : "") + '">' + (invoer || "?") + "</span>"
+    + '<span class="eenheid">' + vraag.trap[vraag.naar].n + "</span>";
+}
+function zetBediening(){
+  var lift = fase === "lift";
+  $("op").disabled = !lift || liftDoel <= 0;
+  $("neer").disabled = !lift || liftDoel >= vraag.trap.length - 1;
+  $("toetsen").classList.toggle("slaapt", fase !== "typen");
+}
+
+// De lift gaat verdieping voor verdieping naar i
+function liftNaar(i){
+  if (fase !== "lift") return;
+  liftDoel = Math.max(0, Math.min(vraag.trap.length - 1, i));
+  $("liftknoppen").classList.remove("wenk");
+  zetBediening();
+  if (!stapTimer) stap();
+}
+function stap(){
+  if (fase !== "lift"){ stapTimer = null; return; }
+  if (liftStand === liftDoel){
+    stapTimer = null;
+    if (liftStand === vraag.naar){            // stilgezet op de goede verdieping: nu typen
+      fase = "typen";
+      tekenSom(""); zetBediening();
+    }
+    return;
+  }
+  liftStand += liftDoel > liftStand ? 1 : -1;
+  zetLift(liftStand, "glij");
+  tekenPijlen();
+  stapTimer = setTimeout(stap, 260);
+}
+
+function cijfer(k){
+  if (fase !== "typen" || invoer.length >= 7) return;
+  if (invoer === "0") invoer = "";
+  invoer += k;
+  tekenSom("");
+  if (overtypen && netjes(invoer) === vraag.antwoord) goed();
+}
+function komma(){
+  if (fase !== "typen" || invoer.indexOf(",") >= 0 || invoer.length >= 6) return;
+  invoer = (invoer || "0") + ",";
+  tekenSom("");
+}
+function wis(){
+  if (fase !== "typen" || !invoer) return;
+  invoer = invoer.slice(0, -1);
+  tekenSom("");
+}
+function controleer(){
+  if (fase !== "typen" || !invoer) return;
+  if (netjes(invoer) === vraag.antwoord){ goed(); return; }
+  if (overtypen){ invoer = ""; tekenSom("fout"); return; }
+  // fout: de lift laat het zien, verdieping voor verdieping, en het kind typt het goede getal over
+  fout = true; fase = "uitleg";
+  stopBalk(); $("balk").classList.add("weg");
+  tekenSom("fout"); zetBediening();
+  uitlegTimer = setTimeout(uitleg, 700);
+}
+function uitleg(){
+  var stapje = vraag.naar > vraag.van ? 1 : -1;
+  liftStand = vraag.van;
+  zetLift(liftStand, "glij");
+  tekenPijlen();
+  zetLading(vraag.waarde + " " + vraag.trap[vraag.van].n);
+  invoer = ""; tekenSom("");
+  function verder(){
+    if (fase !== "uitleg") return;
+    if (liftStand === vraag.naar){
+      fase = "typen"; overtypen = true;
+      $("lift").classList.add("goed");
+      $("regel").innerHTML = '<span class="juist">' + vraag.antwoord + " " + vraag.trap[vraag.naar].n + "</span>";
+      tekenSom(""); zetBediening();
+      return;
+    }
+    liftStand += stapje;
+    var v = vraag.trap[liftStand];
+    zetLift(liftStand, "langzaam");
+    tekenPijlen();
+    var l = $("lift"); l.classList.remove("uitleg"); void l.getBoundingClientRect(); l.classList.add("uitleg");
+    zetLading(toon(vraag.N, v.e) + " " + v.n);
+    uitlegTimer = setTimeout(verder, 750);
+  }
+  uitlegTimer = setTimeout(verder, 600);
+}
+
+function goed(){
+  fase = "rust";
+  stopBalk();
+  var verdiend = !fout && Date.now() - start <= SOORTEN[vraag.soort].wacht;
+  uitslagen.push({vraag:vraag, steen:verdiend});
+  zetLading(vraag.antwoord + " " + vraag.trap[vraag.naar].n);
+  $("lift").classList.add("goed");
+  tekenSom("goed"); zetBediening();
+  if (verdiend){
+    stenen++;
+    data.stenen.push(data.niveau);
+    if (data.stenen.length > 1000) data.stenen = data.stenen.slice(-1000);
+    bewaar();
+    tekenKist(true);
+    var b = $("balk"); b.classList.remove("verdiend"); void b.offsetWidth; b.classList.add("verdiend");
+  }
+  tekenTeller(verdiend);
+  var lof = verdiend ? ["Goed zo!", "Super!", "Top!", "Knap!", "Een edelsteen!"][tussen(0,4)] : "Goed zo!";
+  $("regel").innerHTML = '<span class="lof">' + lof + "</span>";
+  clearTimeout(volgTimer);
+  volgTimer = setTimeout(volgende, verdiend ? 1500 : 1300);
+}
+function volgende(){
+  nr++;
+  if (nr >= RONDE) klaar(); else toonVraag();
+}
+
+/* ---------- invoer ---------- */
+function tekenToetsen(){
+  var t = $("toetsen");
+  ["1","2","3","4","5","6","7","8","9","0",",","⌫","OK"].forEach(function(k){
+    var b = document.createElement("button");
+    b.type = "button"; b.textContent = k;
+    if (k === "OK") b.className = "ok";
+    if (k === ",") { b.className = "komma"; b.setAttribute("aria-label", "komma"); }
+    if (k === "⌫") b.setAttribute("aria-label", "wissen");
+    b.addEventListener("click", function(){
+      if (k === "⌫") wis(); else if (k === "OK") controleer(); else if (k === ",") komma(); else cijfer(k);
+      b.blur();
+    });
+    t.appendChild(b);
+  });
+}
+function toets(e){
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  if (e.key === "ArrowUp" || e.key === "ArrowDown"){
+    if (fase === "lift"){ e.preventDefault(); liftNaar(liftDoel + (e.key === "ArrowDown" ? 1 : -1)); }
+    return;
+  }
+  if (/^[0-9]$/.test(e.key)){ e.preventDefault(); cijfer(e.key); return; }
+  if (e.key === "," || e.key === "."){ e.preventDefault(); komma(); return; }
+  if (e.key === "Backspace"){ e.preventDefault(); wis(); return; }
+  if (e.key === "Enter"){
+    var a = document.activeElement;
+    if (a && a.tagName === "BUTTON" && !$("toetsen").contains(a)) return;
+    e.preventDefault(); controleer();
+  }
+}
+
+/* ---------- ronde ---------- */
+function startRonde(){
+  clearTimeout(volgTimer); clearTimeout(uitlegTimer); clearTimeout(stapTimer); stapTimer = null;
+  vragen = maakRonde(); nr = 0; stenen = 0; uitslagen = [];
+  $("uitslag").hidden = true;
+  $("knoppen").hidden = false;
+  $("bedien").hidden = false;
+  $("liftknoppen").style.visibility = "";
+  $("terugblik").hidden = true;
+  $("liftvak").style.display = "";
+  $("eind").style.display = "none";
+  tekenTeller(false);
+  toonVraag();
+}
+function klaar(){
+  fase = "rust";
+  stopBalk(); $("balk").classList.add("klaar");
+  $("knoppen").hidden = true;
+  $("bedien").hidden = true;
+  $("liftknoppen").style.visibility = "hidden";
+  $("regel").innerHTML = "";
+  $("som").innerHTML = "";
+  $("voortgang").textContent = "klaar";
+
+  var sterren = 1;
+  if (stenen >= 9) sterren = 2;
+  if (stenen >= RONDE) sterren = 3;
+  var oud = data.records[data.niveau];
+  data.records[data.niveau] = {
+    sterren: Math.max(oud ? oud.sterren : 0, sterren),
+    stenen: Math.max(oud ? oud.stenen : 0, stenen)
+  };
+  bewaar();
+  tekenRecords();
+
+  // terugblik: sterren op een bord in de lege schacht, elke lading als kaartje naast de mijn
+  var st = "", bord = "";
+  for (var k=1;k<=3;k++){
+    st += k <= sterren ? "★" : "<i>★</i>";
+    bord += '<tspan fill="' + (k <= sterren ? "#F2B632" : "#6A5A4E") + '">★</tspan>';
+  }
+  $("verdiepingen").innerHTML = ""; $("pijlen").innerHTML = "";
+  $("liftvak").style.display = "none";
+  $("eind").innerHTML = '<g><rect x="110" y="66" width="180" height="56" rx="10" fill="#33261C" stroke="#6B4422" stroke-width="3"/>'
+    + '<text x="200" y="107" text-anchor="middle" class="bordtekst" font-size="40" letter-spacing="4">' + bord + "</text></g>";
+  $("eind").style.display = "";
+  $("terugblik").innerHTML = uitslagen.map(function(u, i){
+    var q = u.vraag;
+    return '<div class="' + (u.steen ? "" : "zonder") + '" style="animation-delay:' + (i * 0.05).toFixed(2) + 's">' + (u.steen ? steen(data.niveau) : "")
+      + q.waarde + " " + q.trap[q.van].n + " = " + q.antwoord + " " + q.trap[q.naar].n + "</div>";
+  }).join("");
+  $("terugblik").hidden = false;
+
+  var t = '<h3>Klaar! <span class="sterren">' + st + "</span></h3>";
+  t += "<p>Je vond <b>" + stenen + "</b> " + (stenen === 1 ? "edelsteen" : "edelstenen") + ".</p>";
+  if (sterren === 1) t += "<p>Twee sterren haal je met 9 edelstenen, drie sterren met alle " + RONDE + ".</p>";
+  else if (sterren === 2) t += "<p>Twee sterren! Vind alle " + RONDE + " edelstenen voor drie sterren.</p>";
+  else t += "<p>Alle ladingen goed, drie sterren. Wat een mijnwerker!</p>";
+  t += '<button class="hoofd" id="nogeens">Nog een keer</button>';
+  if (sterren >= 2 && NIVEAUS[data.niveau+1]) t += '<button id="verder">Verder: ' + NIVEAUS[data.niveau+1].titel + " →</button>";
+  var u = $("uitslag"); u.innerHTML = t; u.hidden = false;
+  $("nogeens").onclick = startRonde;
+  if ($("verder")) $("verder").onclick = function(){ data.niveau++; bewaar(); tekenNiveaus(); startRonde(); };
+}
+
+function tekenNiveaus(){
+  var box = $("niveaus"); box.innerHTML = "";
+  NIVEAUS.forEach(function(n, i){
+    var b = document.createElement("button");
+    b.type = "button";
+    b.textContent = n.titel;
+    if (i === data.niveau) b.className = "aan";
+    b.onclick = function(){ data.niveau = i; bewaar(); tekenNiveaus(); startRonde(); b.blur(); };
+    box.appendChild(b);
+  });
+}
+function tekenRecords(){
+  $("records").innerHTML = NIVEAUS.map(function(n, i){
+    var r = data.records[i], st = "";
+    for (var k=1;k<=3;k++) st += (r && r.sterren >= k) ? "★" : "<i>★</i>";
+    return '<div class="record"><b>' + n.titel + '</b><span class="sterren">' + st + "</span><br>"
+      + (r ? "beste: " + r.stenen + " " + steen(i) : "nog niet gespeeld") + "</div>";
+  }).join("");
+}
+
+/* ---------- start ---------- */
+laad();
+$("balksteen").innerHTML = steen(4);
+$("tellersteen").innerHTML = steen(1);
+tekenNiveaus();
+tekenRecords();
+tekenToetsen();
+tekenKist(false);
+$("opnieuw").onclick = function(){ startRonde(); this.blur(); };
+$("op").onclick = function(){ liftNaar(liftDoel - 1); this.blur(); };
+$("neer").onclick = function(){ liftNaar(liftDoel + 1); this.blur(); };
+$("verdiepingen").addEventListener("click", function(ev){
+  var g = ev.target.closest ? ev.target.closest(".vloer") : null;
+  if (g) liftNaar(+g.getAttribute("data-i"));
+});
+document.addEventListener("keydown", toets);
+startRonde();
+})();
+</script>
+</html>
