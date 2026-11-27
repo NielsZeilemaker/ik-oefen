@@ -385,8 +385,8 @@ function paar(v){ return v.trap[v.van].n + ">" + v.trap[v.naar].n; }
 function sleutel(v){ return paar(v) + v.N; }
 
 /* ---------- toestand ---------- */
-// fase: "lift" (lift naar de goede verdieping), "typen", "uitleg" (de lift laat het zien), "rust"
-var vragen = [], nr = 0, vraag = null, fase = "rust", fout = false, overtypen = false, invoer = "";
+// fase: "typen" (typen, en de lift mag ook bewegen), "rijden" (na OK naar de goede verdieping), "uitleg" (de lift laat het zien), "rust"
+var vragen = [], nr = 0, vraag = null, fase = "rust", fout = false, overtypen = false, invoer = "", okTijd = 0;
 var stenen = 0, balkTimer = null, volgTimer = null, stapTimer = null, uitlegTimer = null, start = 0, uitslagen = [];
 var liftStand = 0, liftDoel = 0;
 var Y0 = 70, HOOGTE = 360, tussenruimte = 60, boven = 70;
@@ -477,7 +477,7 @@ function tekenPijlen(){
 /* ---------- één vraag ---------- */
 function toonVraag(){
   vraag = vragen[nr];
-  fase = "lift"; fout = false; overtypen = false; invoer = ""; start = Date.now();
+  fase = "typen"; fout = false; overtypen = false; invoer = ""; okTijd = 0; start = Date.now();
   clearTimeout(stapTimer); stapTimer = null; clearTimeout(uitlegTimer);
   $("voortgang").textContent = "lading " + (nr+1) + " van " + RONDE;
   tekenSchacht();
@@ -487,7 +487,6 @@ function toonVraag(){
   zetLading(vraag.waarde + " " + vraag.trap[vraag.van].n);
   $("pijlen").innerHTML = "";
   $("regel").innerHTML = "";
-  $("liftknoppen").classList.add("wenk");
   tekenSom("");
   zetBediening();
   startBalk(SOORTEN[vraag.soort].wacht);
@@ -499,34 +498,34 @@ function tekenSom(staat){
     + '<span class="eenheid">' + vraag.trap[vraag.naar].n + "</span>";
 }
 function zetBediening(){
-  var lift = fase === "lift";
+  var lift = liftVrij();
   $("op").disabled = !lift || liftDoel <= 0;
   $("neer").disabled = !lift || liftDoel >= vraag.trap.length - 1;
   $("toetsen").classList.toggle("slaapt", fase !== "typen");
 }
 
+// De lift mag als hulp bewegen zolang het kind typt (niet bij het overtypen)
+function liftVrij(){ return fase === "typen" && !overtypen; }
 // De lift gaat verdieping voor verdieping naar i
 function liftNaar(i){
-  if (fase !== "lift") return;
+  if (!liftVrij()) return;
   liftDoel = Math.max(0, Math.min(vraag.trap.length - 1, i));
-  $("liftknoppen").classList.remove("wenk");
   zetBediening();
   if (!stapTimer) stap();
 }
 function stap(){
-  if (fase !== "lift"){ stapTimer = null; return; }
+  if (fase !== "typen" && fase !== "rijden"){ stapTimer = null; return; }
   if (liftStand === liftDoel){
     stapTimer = null;
-    if (liftStand === vraag.naar){            // stilgezet op de goede verdieping: nu typen
-      fase = "typen";
-      tekenSom(""); zetBediening();
-    }
+    if (fase === "rijden") goed();            // na OK aangekomen op de goede verdieping
     return;
   }
   liftStand += liftDoel > liftStand ? 1 : -1;
   zetLift(liftStand, "glij");
   tekenPijlen();
-  stapTimer = setTimeout(stap, 260);
+  // na OK laat het bordje de verschuivende komma zien
+  if (fase === "rijden") zetLading(toon(vraag.N, vraag.trap[liftStand].e) + " " + vraag.trap[liftStand].n);
+  stapTimer = setTimeout(stap, fase === "rijden" ? 420 : 260);
 }
 
 function cijfer(k){
@@ -548,10 +547,20 @@ function wis(){
 }
 function controleer(){
   if (fase !== "typen" || !invoer) return;
-  if (netjes(invoer) === vraag.antwoord){ goed(); return; }
+  if (netjes(invoer) === vraag.antwoord){
+    // goed: de lift rijdt eerst naar de goede verdieping; de tijd telt tot OK
+    okTijd = Date.now();
+    if (liftStand === vraag.naar && !stapTimer){ goed(); return; }
+    fase = "rijden"; stopBalk();
+    liftDoel = vraag.naar;
+    tekenSom(""); zetBediening();
+    if (!stapTimer) stap();
+    return;
+  }
   if (overtypen){ invoer = ""; tekenSom("fout"); return; }
   // fout: de lift laat het zien, verdieping voor verdieping, en het kind typt het goede getal over
   fout = true; fase = "uitleg";
+  clearTimeout(stapTimer); stapTimer = null;
   stopBalk(); $("balk").classList.add("weg");
   tekenSom("fout"); zetBediening();
   uitlegTimer = setTimeout(uitleg, 700);
@@ -586,7 +595,7 @@ function uitleg(){
 function goed(){
   fase = "rust";
   stopBalk();
-  var verdiend = !fout && Date.now() - start <= SOORTEN[vraag.soort].wacht;
+  var verdiend = !fout && (okTijd || Date.now()) - start <= SOORTEN[vraag.soort].wacht;
   uitslagen.push({vraag:vraag, steen:verdiend});
   zetLading(vraag.antwoord + " " + vraag.trap[vraag.naar].n);
   $("lift").classList.add("goed");
@@ -629,7 +638,7 @@ function tekenToetsen(){
 function toets(e){
   if (e.metaKey || e.ctrlKey || e.altKey) return;
   if (e.key === "ArrowUp" || e.key === "ArrowDown"){
-    if (fase === "lift"){ e.preventDefault(); liftNaar(liftDoel + (e.key === "ArrowDown" ? 1 : -1)); }
+    if (liftVrij()){ e.preventDefault(); liftNaar(liftDoel + (e.key === "ArrowDown" ? 1 : -1)); }
     return;
   }
   if (/^[0-9]$/.test(e.key)){ e.preventDefault(); cijfer(e.key); return; }
