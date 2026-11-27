@@ -17,12 +17,13 @@ Spelideeën voor Ik oefen. De skill `spelideeen` vult aan, de dagelijkse workflo
 - Beloning: een **lintje met rozet** aan het prijzenbord (kleur per niveau), blijvend.
 - Bronnen: https://staff.fnwi.uva.nl/j.vandecraats/leerlijn_kommagetallen.pdf · https://www.malmberg.nl/malmberg/wig-basis-papier-groep-6-blok-8-s-handleiding.htm
 
-## [ ] maten — De Mijnlift (groep 6–7, rekenen)
+## [x] maten — De Mijnlift (groep 6–7, rekenen)
 - Leerdoel: omrekenen in het metriek stelsel met de "trap": lengte (km, m, dm, cm, mm), gewicht (kg, g) en inhoud (l, dl, cl, ml); vermenigvuldigen of delen met 10, 100, 1000.
 - Spel: Een mijnschacht met verdiepingen, elk met een maat (km bovenaan, mm onderin). Een karretje met een lading, bijv. "3,5 m", staat op een verdieping; de opdracht is "naar cm". Het kind laat de lift naar de juiste verdieping zakken (pijltjes of slepen; per verdieping schuift de komma zichtbaar één plek) en typt dan het getal op het schermtoetsenbord (met komma-toets). Fout: de lift zakt zelf verdieping voor verdieping met de verschuivende komma, het goede getal licht groen op en het kind typt het over.
 - Niveaus: Meter en cm (m ↔ cm, hele getallen) → Hele trap (km t/m mm) → Gewicht (kg ↔ g) → Inhoud (l, dl, cl, ml) → Met komma (2,75 km naar m, 450 g naar kg).
 - Beloning: een **edelsteen** in de stenenkist van de mijn (andere kleur per niveau), blijvend.
 - Bronnen: https://www.fisme.science.uu.nl/publicaties/literatuur/2011_vb_31_ballering_het_metriek_stelsel.pdf · https://panamaconferentie.sites.uu.nl/wp-content/uploads/sites/22/2026/06/4.7-meetonderwijs.pdf
+- Gebouwd: /dev/maten/
 
 ## [ ] werkwoorden — De Drukkerij (groep 7–8, taal)
 - Leerdoel: werkwoordspelling: persoonsvorm tegenwoordige tijd (ik vind, hij vindt, vind jij), verleden tijd ('t kofschip: werkte/woonde), voltooid deelwoord (gewerkt/gewoond, verbrand), en bijvoeglijk gebruikt voltooid deelwoord (de verbrande taart).
