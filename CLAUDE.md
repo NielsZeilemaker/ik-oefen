@@ -125,7 +125,7 @@ Kleine oefenspelletjes voor kinderen (basisschoolleeftijd), live op https://ik-o
 - Niveaus: Persoonsvorm (losse woorden, geen zinsdelen) → Onderwerp → Knippen (tik tussen de woorden waar een nieuw zinsdeel begint) → Gezegde (~4 op 5 een zin met meer werkwoorden) → Lijdend voorwerp. Geen herhaling van eerdere niveaus: alle 12 vragen gaan over het gekozen niveau (een pv-vraag midden in Onderwerp viel niet op en verwarde).
 - Geen Klaar-knop: een goed zinsdeel gaat omhoog (de kraan pakt het), een goede knip wordt een oranje streep; zijn ze allemaal gevonden, dan telt het. Fout: wiebelen, de goede zinsdelen/knipplekken lichten groen op en het kind tikt ze aan. Toetsen: ← → kiezen, Enter tikt aan.
 - Beloning: een **vrachtschip** (geladen met een container per zinsdeel) vaart uit en blijft aan de horizon liggen (nieuwste 14 + totaal), op tijd (pv 10 s, ow/lv 12 s, wg 14 s, knip 16 s) en in één keer goed. 12 zinnen; ★★ 9 schepen, ★★★ alle 12. Einde ronde: sterren op het bordje en elke zin als regel met het antwoord vet (bij knippen strepen).
-- De haven is één SVG (600×170, `overflow:visible` zodat de kade doorloopt), hoogte `min(breedte, clamp(96px, 100svh - 480px, 240px))`; lucht en water zijn de achtergrond van `.haven` (horizon op 58,8%).
+- De haven is één SVG (600×170, `overflow:visible` zodat de kade doorloopt), hoogte `min(breedte, clamp(96px, 100svh - 480px, 240px))`; lucht en water zijn de achtergrond van `.haven` (horizon op 58,8%). Lager dan 760px en minstens 800px breed: `.speelveld` wordt een grid met de haven (balk eronder) links en de kade (hint eronder) rechts, en `.wrap` mag dan 1180px breed.
 
 ## Het Atletiekveld (kommagetallen)
 
