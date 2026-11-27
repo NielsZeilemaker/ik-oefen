@@ -135,6 +135,15 @@
   @media (min-width:600px){
     .kade{--extra:clamp(0px, 100svh - 860px, 300px)}
   }
+  /* laag en breed scherm: de haven (met de balk eronder) links, de kade met de zin rechts */
+  @media (max-height:759px) and (min-width:800px){
+    .wrap{max-width:1180px}
+    .speelveld{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(320px,1fr);grid-template-areas:"haven kade" "balk hint";column-gap:16px;align-items:center}
+    .haven{grid-area:haven;max-height:none}
+    .kade{grid-area:kade;margin-top:0}
+    #hint{grid-area:hint;margin:4px 0 0}
+    #balk{grid-area:balk;width:100%;margin-top:6px}
+  }
   @media (prefers-reduced-motion:reduce){ #schip.vaart,#schip.komt,#lading rect,#vloot .nieuw,.groep.mis,.gat.mis,.groep.juist,.gat.juist,.kade.klaar,.terugblik .regel,#balk.verdiend svg,.teller.bump{animation:none} }
   @keyframes wiebel{25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
   @keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.4) rotate(-10deg)}100%{transform:scale(1)}}
@@ -189,6 +198,7 @@
       </div>
     </div>
 
+    <div class="speelveld">
     <div class="haven">
       <svg viewBox="0 0 600 170" aria-hidden="true">
         <!-- golfjes -->
@@ -238,6 +248,7 @@
 
     <p id="hint"></p>
     <div id="balk"><span id="balkschip"></span><div class="spoor" title="Op tijd en in één keer goed = een schip"><i id="vulling"></i></div></div>
+    </div>
 
     <div class="knoppen" id="knoppen"><button id="opnieuw">Begin opnieuw</button></div>
     <div id="uitslag" hidden></div>
