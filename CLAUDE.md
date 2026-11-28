@@ -19,6 +19,7 @@ Kleine oefenspelletjes voor kinderen (basisschoolleeftijd), live op https://ik-o
 | `zinsdelen/` | De Haven — zinsdelen: persoonsvorm, onderwerp, knippen, gezegde, lijdend voorwerp |
 | `kommagetallen/` | Het Atletiekveld — kommagetallen op de meetlat: halven, tienden, honderdsten, aflezen, afronden |
 | `maten/` | De Mijnlift — maten omrekenen met de trap: lengte, gewicht, inhoud, met komma |
+| `procenten/` | Het Laboratorium — procenten: maatcilinder vullen, schatten, procent van een aantal, breuk = procent |
 | `fonts/` | Zelf gehoste Fredoka (`fredoka.css` + woff2 + `OFL-fredoka.txt`) |
 | `robots.txt`, `sitemap.xml` | Vindbaarheid (`/dev/` staat in robots.txt op Disallow) |
 | `WENSLIJST.md` | Spelideeën (alleen op de dev-branch), bijgehouden door de pijplijn |
@@ -146,6 +147,15 @@ Kleine oefenspelletjes voor kinderen (basisschoolleeftijd), live op https://ik-o
 - Niveaus: Meter en cm (alleen m/dm/cm, heel) → Hele trap (km t/m mm, heel, hooguit 3 verdiepingen) → Gewicht (kg/g, hg/g, kg/hg) → Inhoud (l/dl/cl/ml) → Met komma (de grote maat heeft 1 of 2 cijfers achter de komma: 2,75 km → m, 450 g → kg). Vanaf niveau 2: 9 van het niveau + 3 herhaling, de eerste altijd van het niveau; nooit twee keer hetzelfde paar maten achter elkaar.
 - Beloning: een **edelsteen** (kleur per niveau) in de kist rechtsonder in de mijn (nieuwste 24 + totaal), op tijd (10/12/10/12/14 s, tot OK) en in één keer goed. ★★ 9, ★★★ 12. Einde ronde: sterren op een bord in de lege schacht, de som en toetsen verdwijnen en elke lading staat als kaartje naast (of onder) de mijn.
 - Layout: de mijn (SVG 400×440) is `clamp(230px, 100svh - 596px, 440px)` hoog met de liftknoppen ernaast; bij `(max-height:900px) and (min-width:700px)` staat de mijn links en som + toetsen rechts.
+
+## Het Laboratorium (procenten)
+
+- Eén SVG (viewBox `0 40 420 380`): etiket links, maatcilinder in het midden (0% op y=360, 100% op y=70, `yBij(p)`), rek met drankjes rechts. De vloeistof is een geknipte groep die met `translate` schuift, het paarse greepje rechts van de cilinder schuift mee.
+- Sleep de vloeistof (overal rond de cilinder te pakken) of ↑↓ in stappen van 5%; tijdens slepen volgt hij de vinger, bij loslaten glijdt hij naar 5% en telt het meteen (Enter telt ook). Loslaten op 0% telt niet.
+- Niveaus: Half en kwart (25/50/75%, streepjes op 25/50/75, precies) → Tientallen (10–90%, streepje per 10%, precies) → Schatten (geen streepjes, meestal geen tiental, 5% ernaast mag) → Van een aantal (10/20/25/50/75% van 20–200, typen met het schermtoetsenbord 1–0, ⌫, OK; bovenaan de cilinder staat het getal) → Breuk = procent (etiket 3/4 of 0,7, geen streepjes, 5% ernaast mag). Vanaf Tientallen 9 + 3 herhaling van eerdere sleepniveaus; Van een aantal heeft geen herhaling (dan blijft het toetsenbord de hele ronde staan).
+- Goed: de vloeistof glijdt naar de precieze hoogte, een stippellijn met "30%" (of het antwoord) verschijnt, bubbels stijgen op; bij Breuk = procent komt "= 75%" op het etiket. Fout bij slepen: de cilinder wiebelt, een groene streep toont de goede hoogte en het kind sleept erheen. Fout bij typen: de cilinder vult zich tot het procent met het antwoord erbij, het goede antwoord staat groen onder de som en het kind typt het over.
+- Beloning: een **kleurdrankje** (kolf met kurk, zachtjes bubbelend) in het rek (nieuwste 24 op vier planken + totaal), op tijd (8/10/10/12/12 s) en in één keer goed. Elke dag een eigen palet: de tint schuift met de datum (`dagTint()`), drie kleuren per dag. ★★ 9, ★★★ 12. Einde ronde: schoolbord met sterren in het lab en elke proef als kaartje eronder.
+- Layout: het lab is `clamp(250px, 100svh - 380px, 460px)` breed (met toetsenbord `100svh - 580px`); bij `(max-height:900px) and (min-width:700px)` lab links en de rest rechts.
 
 ## Lessen uit de spellen (ontwerp)
 

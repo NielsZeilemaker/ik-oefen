@@ -1,0 +1,795 @@
+<!doctype html>
+<html lang="nl">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<title>Het Laboratorium — procenten oefenen</title>
+<meta name="description" content="Oefen procenten in Het Laboratorium: vul de maatcilinder tot 25%, 70% of 3/4, schat een percentage en reken uit hoeveel 25% van 40 is. Elk goed antwoord levert een kleurdrankje op. Gratis, zonder cookies, tracking of reclame.">
+<link rel="canonical" href="https://ik-oefen.nl/procenten/">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="nl_NL">
+<meta property="og:site_name" content="Ik oefen">
+<meta property="og:title" content="Het Laboratorium — procenten oefenen">
+<meta property="og:description" content="Oefen procenten in Het Laboratorium: vul de maatcilinder tot 25%, 70% of 3/4, schat een percentage en reken uit hoeveel 25% van 40 is. Elk goed antwoord levert een kleurdrankje op. Gratis, zonder cookies, tracking of reclame.">
+<meta property="og:url" content="https://ik-oefen.nl/procenten/">
+<link rel="stylesheet" href="../fonts/fredoka.css">
+<style>
+  :root{
+    --papier:#EEF3F6;
+    --kaart:#FFFFFF;
+    --kaart2:#E3ECF1;
+    --tekst:#1F2E3A;
+    --zacht:rgba(31,46,58,.62);
+    --lijn:rgba(31,46,58,.16);
+    --paars:#7B4FB8;
+    --munt:#2BA89A;
+    --goed:#2F9E5B;
+    --rood:#D9484F;
+    --geel:#F2B632;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:linear-gradient(#DCE9F0, var(--papier) 40%, #F3EFF8);
+    background-attachment:fixed;
+    color:var(--tekst);
+    font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+    font-size:16px;line-height:1.5;padding:20px 16px 48px;min-height:100vh;
+  }
+  .wrap{max-width:900px;margin:0 auto}
+  header{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:baseline;justify-content:space-between;margin-bottom:22px}
+  .kop{display:grid;grid-template-columns:auto 1fr;column-gap:14px;align-items:start}
+  .kop .terug{margin-top:calc(clamp(28px,6vw,40px) * .75 - 20px)}   /* midden op de regel van de titel */
+  @media (max-height:901px) and (min-width:600px){
+    header{margin-bottom:14px}
+    .koptekst{display:flex;flex-wrap:wrap;align-items:center;column-gap:18px}
+    .koptekst .ondertitel{flex:1 1 260px;max-width:440px;margin:0}
+  }
+  .terug{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;color:var(--tekst);border:1px solid var(--lijn);background:var(--kaart);text-decoration:none;transition:background .15s,border-color .15s}
+  .terug:hover{background:var(--kaart2);border-color:var(--tekst)}
+  h1{font-family:Fredoka,ui-rounded,system-ui,sans-serif;font-weight:600;font-size:clamp(28px,6vw,40px);margin:0}
+  .ondertitel{margin:2px 0 0;font-size:14px;color:var(--zacht)}
+
+  .kaart{background:var(--kaart);border:1px solid var(--lijn);border-radius:16px;padding:18px 18px 20px;box-shadow:0 2px 0 rgba(31,46,58,.06)}
+  .leskop{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin-bottom:10px}
+  .leskop .rechts{display:flex;align-items:center;gap:14px;margin-left:auto;font-size:13px;color:var(--zacht);white-space:nowrap}
+  .teller{font-family:Fredoka,ui-rounded,sans-serif;font-size:18px;font-weight:600;color:var(--tekst)}
+  .teller.bump{animation:pop .45s}
+  .teller svg{width:16px;height:22px;vertical-align:-5px}
+
+  .niveaus{display:contents}   /* knoppen doen mee in de rij van .leskop */
+  .niveaus button{font:inherit;font-size:14px;cursor:pointer;border:1px solid var(--lijn);background:var(--kaart2);color:var(--tekst);border-radius:20px;padding:5px 14px;white-space:nowrap}
+  .niveaus button.aan{background:var(--tekst);color:#fff;border-color:var(--tekst)}
+
+  /* speelveld: het lab, daaronder (of ernaast) de som, de balk en de toetsen */
+  .speelveld{display:flex;flex-direction:column;align-items:center}
+  .lab{width:min(100%, clamp(250px, 100svh - 380px, 460px));aspect-ratio:420/380;border-radius:12px;overflow:hidden;flex:none}
+  .speelveld.typen .lab{width:min(100%, clamp(230px, 100svh - 580px, 460px))}
+  .lab svg{display:block;width:100%;height:100%;touch-action:none;user-select:none;-webkit-user-select:none}
+  .bordtekst{font-family:Fredoka,ui-rounded,sans-serif;font-weight:600}
+  #grijp{cursor:grab}
+  .lab.slepen #grijp{cursor:grabbing}
+  #vloeistof,#greep{transition:transform .25s ease-out}
+  #vloeistof.vast,#greep.vast{transition:none}
+  #vloeistof.traag,#greep.traag{transition:transform .7s ease-in-out}
+  #greep.wenk circle{animation:wenk 1.1s ease-in-out infinite}
+  #cilinder.mis{animation:wiebel2 .25s 2;transform-origin:165px 370px}
+  #doel{animation:gloei 1s ease-in-out infinite}
+  #etiket.goed rect{fill:#DDF5E5;stroke:var(--goed)}
+  #rek .nieuw{animation:popin .6s ease-out}
+  #rek .bel{animation:bel 2.4s ease-in infinite}
+  #eind g{animation:verschijn .3s ease-out both}
+  @keyframes wenk{50%{opacity:.4}}
+  @keyframes wiebel2{25%{transform:rotate(-3deg)}75%{transform:rotate(3deg)}}
+  @keyframes gloei{50%{opacity:.35}}
+  @keyframes bel{0%{transform:translateY(0);opacity:0}25%{opacity:1}100%{transform:translateY(-9px);opacity:0}}
+  @keyframes verschijn{0%{opacity:0}100%{opacity:1}}
+  @keyframes popin{0%{opacity:0;transform:translateY(-14px) scale(.5)}60%{opacity:1;transform:translateY(2px) scale(1.1)}100%{transform:none}}
+
+  .bedien[hidden]{display:none}
+  .bedien{display:flex;flex-direction:column;align-items:center;width:100%;max-width:360px}
+  #som{font-family:Fredoka,ui-rounded,sans-serif;font-weight:600;font-size:clamp(24px,7vw,30px);min-height:52px;display:none;align-items:center;justify-content:center;gap:8px;margin-top:10px;white-space:nowrap}
+  .typen #som{display:flex}
+  #som .vak{display:inline-block;min-width:2.8em;padding:0 8px;text-align:center;border-radius:10px;border:2px dashed var(--lijn);background:#fff;line-height:1.5}
+  #som .vak.leeg{color:rgba(31,46,58,.3)}
+  #som .vak.actief{border:2px solid var(--geel);box-shadow:0 0 0 4px rgba(242,182,50,.25)}
+  #som .vak.goed{border:2px solid var(--goed);background:#DDF5E5;color:#1D6B3C}
+  #som .vak.fout{animation:wiebel .25s 2;border-color:var(--rood);background:#F7DADB}
+  #regel{min-height:34px;margin-top:6px;font-family:Fredoka,ui-rounded,sans-serif;font-weight:600;font-size:20px;text-align:center}
+  #regel .lof{color:var(--goed);display:inline-block;animation:pop2 .4s}
+  #regel .juist{display:inline-block;color:#fff;background:var(--goed);border-radius:8px;padding:0 10px}
+  @keyframes pop2{0%{transform:scale(.8)}50%{transform:scale(1.08)}100%{transform:scale(1)}}
+
+  /* einde ronde: elke vraag als kaartje */
+  #terugblik{display:grid;grid-template-columns:1fr 1fr;gap:6px;width:100%;max-width:440px;margin-top:12px}
+  #terugblik[hidden]{display:none}
+  #terugblik div{font-family:Fredoka,ui-rounded,sans-serif;font-weight:600;font-size:16px;background:#F3EEFA;border:1px solid var(--lijn);border-radius:8px;
+    padding:5px 8px;display:flex;align-items:center;gap:6px;white-space:nowrap;animation:verschijn .3s ease-out both}
+  #terugblik svg{width:14px;height:20px;flex:none}
+  #terugblik .zonder{padding-left:28px}
+
+  /* tijdbalk: op tijd en in één keer goed = een drankje */
+  #balk{display:flex;align-items:center;gap:10px;width:100%;max-width:320px;height:30px}
+  #balk svg{width:18px;height:26px;flex:none;transition:filter .3s,opacity .3s}
+  #balk .spoor{flex:1;height:12px;border-radius:6px;background:var(--kaart2);overflow:hidden;box-shadow:inset 0 1px 2px rgba(0,0,0,.12)}
+  #balk .spoor i{display:block;height:100%;width:100%;border-radius:6px;background:linear-gradient(90deg,#7B4FB8,#2BA89A)}
+  #balk.weg svg{filter:grayscale(1);opacity:.4}
+  #balk.klaar{visibility:hidden}
+  #balk.verdiend svg{animation:pop .5s}
+
+  /* schermtoetsenbord (alleen bij Van een aantal) */
+  .werkvlak{display:none;justify-content:center;width:100%;margin-top:8px}
+  .typen .werkvlak{display:flex}
+  #toetsen{--toets:clamp(44px, (100svh - 700px) / 3, 58px);
+    display:grid;grid-template-columns:repeat(5,1fr);gap:8px;width:min(calc(var(--toets) * 6.6),100%);transition:opacity .2s}
+  #toetsen.slaapt{opacity:.4}
+  #toetsen button{font-family:Fredoka,ui-rounded,sans-serif;font-size:24px;font-weight:500;height:var(--toets);border-radius:12px;
+    background:var(--kaart2);color:var(--tekst);border:1px solid var(--lijn);border-bottom:4px solid rgba(0,0,0,.2);
+    padding:0;cursor:pointer;touch-action:manipulation}
+  #toetsen button:hover{background:#D5E2EA}
+  #toetsen button:active{transform:translateY(2px);border-bottom-width:2px}
+  #toetsen .wis{grid-column:span 2}
+  #toetsen .ok{background:var(--geel);border-color:transparent;border-bottom-color:#B9861A;grid-column:span 3}
+
+  /* te laag om onder elkaar te passen? dan het lab links en de rest rechts */
+  @media (max-height:900px) and (min-width:700px){
+    .speelveld{flex-direction:row;justify-content:center;align-items:center;gap:28px}
+    .lab,.speelveld.typen .lab{width:clamp(280px, 100svh - 250px, 460px)}
+    .bedien{width:330px}
+    #toetsen{--toets:clamp(44px, (100svh - 330px) / 3.6, 60px)}
+    #terugblik{width:420px;margin-top:0}
+  }
+
+  @media (prefers-reduced-motion:reduce){ #greep.wenk circle,#cilinder.mis,#doel,#rek .nieuw,#rek .bel,#eind g,#terugblik div,#som .vak.fout,#regel .lof,#balk.verdiend svg,.teller.bump{animation:none} }
+  @keyframes wiebel{25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+  @keyframes pop{0%{transform:scale(1)}40%{transform:scale(1.4) rotate(-10deg)}100%{transform:scale(1)}}
+
+  .knoppen[hidden]{display:none}
+  .knoppen{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:14px}
+  .knoppen button{font:inherit;font-size:14px;cursor:pointer;border:1px solid var(--tekst);background:var(--tekst);color:#fff;border-radius:8px;padding:7px 14px}
+  :focus-visible{outline:3px solid #5B8DEF;outline-offset:2px}
+
+  #uitslag{margin-top:16px;border-top:1px solid var(--lijn);padding-top:14px}
+  #uitslag h3{font-family:Fredoka,ui-rounded,sans-serif;font-weight:500;font-size:20px;margin:0 0 8px}
+  #uitslag p{margin:0 0 10px;font-size:15px}
+  #uitslag .sterren{color:var(--geel);font-size:26px;letter-spacing:3px}
+  #uitslag .sterren i{font-style:normal;color:var(--lijn)}
+  #uitslag button{font:inherit;font-size:15px;cursor:pointer;border-radius:8px;padding:7px 14px;margin:4px 8px 0 0;border:1px solid var(--tekst);background:var(--kaart);color:var(--tekst)}
+  #uitslag button.hoofd{background:var(--tekst);color:#fff}
+
+  h2.recordkop{font-family:Fredoka,ui-rounded,sans-serif;font-weight:500;font-size:20px;margin:30px 0 8px}
+  #records{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+  .record{background:var(--kaart);border:1px solid var(--lijn);border-radius:12px;padding:10px 12px;font-size:14px}
+  .record b{display:block;font-family:Fredoka,ui-rounded,sans-serif;font-size:17px;font-weight:600}
+  .record .sterren{color:var(--geel);font-size:18px;letter-spacing:2px}
+  .record .sterren i{font-style:normal;color:var(--lijn)}
+  .record svg{width:12px;height:17px;vertical-align:-3px}
+
+  footer{margin-top:28px;font-size:13px;color:var(--zacht)}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="kop">
+      <a class="terug" href="../" aria-label="Terug naar alle spellen">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+      </a>
+      <div class="koptekst">
+        <h1>Het Laboratorium</h1>
+        <p class="ondertitel">Vul de maatcilinder tot het procent op het etiket. Elk goed antwoord levert een kleurdrankje op.</p>
+      </div>
+    </div>
+  </header>
+
+  <div class="kaart">
+    <div class="leskop">
+      <div class="niveaus" id="niveaus"></div>
+      <div class="rechts">
+        <span class="teller" id="teller" title="drankjes deze ronde"><span id="tellerfles"></span> <b id="drankjes">0</b></span>
+        <span id="voortgang">proef 1 van 12</span>
+      </div>
+    </div>
+
+    <div class="speelveld" id="speelveld">
+      <div class="lab" id="lab">
+        <svg id="tekening" viewBox="0 40 420 380" aria-hidden="true">
+          <defs>
+            <clipPath id="binnen"><rect x="122" y="40" width="86" height="320"/></clipPath>
+          </defs>
+          <!-- muur met tegeltjes, een lamp en de labtafel -->
+          <rect x="0" y="0" width="420" height="420" fill="#E4EEF3"/>
+          <path d="M0 50 H420 M0 100 H420 M0 150 H420 M0 200 H420 M0 250 H420 M0 300 H420 M0 350 H420" stroke="rgba(31,46,58,.06)" stroke-width="2"/>
+          <!-- het rek voor de drankjes -->
+          <g id="rekvak">
+            <path d="M256 70 V380 M410 70 V380" stroke="#9C6A3D" stroke-width="6" stroke-linecap="round"/>
+            <path d="M252 125 H414 M252 195 H414 M252 265 H414 M252 335 H414" stroke="#B98A4E" stroke-width="7" stroke-linecap="round"/>
+            <g id="rek"></g>
+            <text id="rekaantal" x="333" y="62" text-anchor="middle" class="bordtekst" font-size="20" fill="#5A3A1C"></text>
+          </g>
+          <rect x="0" y="378" width="420" height="42" fill="#B98A4E"/>
+          <rect x="0" y="378" width="420" height="6" fill="#D2A66A"/>
+
+          <g id="spel">
+            <!-- het etiket -->
+            <g id="etiket">
+              <path d="M58 118 V150" stroke="#8A939C" stroke-width="2"/>
+              <circle cx="58" cy="116" r="4" fill="#8A939C"/>
+              <rect x="12" y="150" width="92" height="100" rx="10" fill="#FFFDF5" stroke="#C9B48A" stroke-width="3"/>
+              <g id="etikettekst"></g>
+            </g>
+            <!-- de maatcilinder -->
+            <g id="cilinder">
+              <rect x="110" y="360" width="110" height="18" rx="5" fill="#9AA7B2"/>
+              <g clip-path="url(#binnen)">
+                <rect x="122" y="62" width="86" height="298" fill="rgba(255,255,255,.55)"/>
+                <g id="vloeistof" class="vast">
+                  <rect id="vloeirect" x="122" y="70" width="86" height="320" fill="#3FB8AF"/>
+                  <ellipse id="vloeitop" cx="165" cy="70" rx="43" ry="5" fill="#fff" opacity=".35"/>
+                </g>
+                <g id="bellen"></g>
+              </g>
+              <g id="streepjes"></g>
+              <g id="doelvak"></g>
+              <path d="M120 64 V360 M210 64 V360" stroke="#7A8C99" stroke-width="3"/>
+              <path d="M114 62 H216" stroke="#7A8C99" stroke-width="4" stroke-linecap="round"/>
+              <path d="M132 80 V340" stroke="rgba(255,255,255,.7)" stroke-width="5" stroke-linecap="round"/>
+              <g id="label"></g>
+              <g id="greep" class="vast">
+                <circle cx="226" cy="360" r="13" fill="#7B4FB8" stroke="#fff" stroke-width="2.5"/>
+                <path d="M226 352 l-4 5 h8 Z M226 368 l-4 -5 h8 Z" fill="#fff"/>
+              </g>
+            </g>
+            <rect id="grijp" x="100" y="30" width="146" height="350" fill="transparent"/>
+          </g>
+          <g id="eind" style="display:none"></g>
+        </svg>
+      </div>
+
+      <div class="bedien" id="bedien">
+        <div id="som"></div>
+        <div id="regel"></div>
+        <div id="balk"><span id="balkfles"></span><div class="spoor" title="Op tijd en in één keer goed = een drankje"><i id="vulling"></i></div></div>
+        <div class="werkvlak"><div id="toetsen"></div></div>
+      </div>
+      <div id="terugblik" hidden></div>
+    </div>
+
+    <div class="knoppen" id="knoppen"><button id="opnieuw">Begin opnieuw</button></div>
+    <div id="uitslag" hidden></div>
+  </div>
+
+  <h2 class="recordkop">Jouw records</h2>
+  <div id="records"></div>
+
+  <footer>Voortgang wordt op dit apparaat bewaard. Het etiket zegt hoe vol de maatcilinder moet: sleep de vloeistof omhoog of omlaag en laat los (of gebruik de pijltjes ↑ ↓ en Enter). Bij Half en kwart en bij Tientallen helpen streepjes; bij Schatten en Breuk = procent mag je er 5% naast zitten. Bij Van een aantal reken je uit hoeveel het procent van het getal is en typ je het antwoord. Op tijd en in één keer goed? Dan krijg je een kleurdrankje voor in het rek. Elke dag zijn er andere kleuren.</footer>
+</div>
+
+<script>
+(function(){
+"use strict";
+
+var BEWAAR = "laboratorium-v1";
+var RONDE = 12;
+var BODEM = 360, HOOG = 290;      // 0% ligt in de tekening op y=360, 100% op y=70
+var STAP = 5;                     // de vloeistof glijdt naar stappen van 5%
+
+// Vraagsoorten: marge = hoeveel procent je ernaast mag zitten, wacht = tijd voor een drankje
+var SOORTEN = {
+  helften:   {wacht:8000,  marge:0},
+  tientallen:{wacht:10000, marge:0},
+  schatten:  {wacht:10000, marge:5},
+  aantal:    {wacht:12000},
+  breuk:     {wacht:12000, marge:5}
+};
+var NIVEAUS = [
+  {titel:"Half en kwart",   soort:"helften"},
+  {titel:"Tientallen",         soort:"tientallen"},
+  {titel:"Schatten",           soort:"schatten"},
+  {titel:"Van een aantal",     soort:"aantal"},
+  {titel:"Breuk = procent",    soort:"breuk"}
+];
+// herhaling: alleen soorten waarbij je de vloeistof sleept
+var HERHAAL = {helften:[], tientallen:["helften"], schatten:["helften","tientallen"], aantal:[], breuk:["helften","tientallen","schatten"]};
+var KLEUREN = ["#3FB8AF","#E8566C","#7B5BB6","#F2A93B","#4F86E0","#5DBB63","#E0699E"];
+
+var data = {records:{}, niveau:0, drankjes:[]};
+function laad(){
+  try{ var s = localStorage.getItem(BEWAAR); if (s) data = JSON.parse(s); }catch(e){}
+  if (!data || typeof data !== "object") data = {};
+  if (!data.records || typeof data.records !== "object") data.records = {};
+  if (!Array.isArray(data.drankjes)) data.drankjes = [];
+  if (typeof data.niveau !== "number" || !NIVEAUS[data.niveau]) data.niveau = 0;
+}
+function bewaar(){ try{ localStorage.setItem(BEWAAR, JSON.stringify(data)); }catch(e){} }
+
+function tussen(a, b){ return a + Math.floor(Math.random()*(b-a+1)); }
+function kies(a){ return a[Math.floor(Math.random()*a.length)]; }
+function schud(a){ for (var i=a.length-1;i>0;i--){ var j=Math.floor(Math.random()*(i+1)), t=a[i]; a[i]=a[j]; a[j]=t; } return a; }
+function $(id){ return document.getElementById(id); }
+function yBij(p){ return BODEM - p / 100 * HOOG; }
+
+// Elke dag nieuwe kleuren: de tint schuift met de datum mee
+function dagTint(){
+  var d = new Date();
+  var dag = Math.floor((d.getTime() - d.getTimezoneOffset() * 60000) / 864e5);
+  return (dag * 67) % 360;
+}
+
+/* ---------- het kleurdrankje (SVG) ---------- */
+function flesVorm(tint, bellen){
+  var kl = "hsl(" + tint + ",72%,52%)", licht = "hsl(" + tint + ",80%,72%)";
+  var s = '<rect x="-4" y="-38" width="8" height="15" fill="rgba(255,255,255,.7)" stroke="#7A8C99" stroke-width="1.5"/>'
+    + '<rect x="-5.5" y="-43" width="11" height="6" rx="1.5" fill="#B98A4E"/>'
+    + '<circle cy="-12" r="12" fill="rgba(255,255,255,.65)" stroke="#7A8C99" stroke-width="1.5"/>'
+    + '<path d="M-10.8 -14 A10.8 10.8 0 1 0 10.8 -14 Z" fill="' + kl + '"/>'
+    + '<ellipse cy="-14" rx="10.8" ry="2.4" fill="' + licht + '"/>'
+    + '<path d="M-6 -18 A7 7 0 0 1 -2 -21" stroke="#fff" stroke-width="2" fill="none" stroke-linecap="round" opacity=".8"/>';
+  if (bellen) s += '<circle class="bel" cx="-3" cy="-6" r="1.8" fill="' + licht + '" style="animation-delay:' + bellen[0] + 's"/>'
+    + '<circle class="bel" cx="4" cy="-4" r="1.4" fill="' + licht + '" style="animation-delay:' + bellen[1] + 's"/>';
+  return s;
+}
+function fles(tint){
+  return '<svg viewBox="-14 -46 28 48" aria-hidden="true"><g>' + flesVorm(tint, null) + "</g></svg>";
+}
+
+/* ---------- vragen maken ---------- */
+var BREUKEN = [[1,2],[1,4],[3,4],[1,5],[2,5],[3,5],[4,5],[1,10],[3,10],[7,10],[9,10]];
+var KOMMAS = [10,20,30,40,60,70,80,90,25,75];
+function maakVraag(soort){
+  var v = {soort:soort};
+  if (soort === "helften"){
+    v.antwoord = kies([25,50,75]);
+    v.etiket = {procent:v.antwoord};
+  } else if (soort === "tientallen"){
+    v.antwoord = kies([10,20,30,40,60,70,80,90,10,20,30,40,60,70,80,90,50]);
+    v.etiket = {procent:v.antwoord};
+  } else if (soort === "schatten"){
+    // vooral getallen die niet op een streepje vielen
+    v.antwoord = Math.random() < .75 ? kies([15,35,45,55,65,85,95,5]) : kies([20,30,40,60,70,80]);
+    v.etiket = {procent:v.antwoord};
+  } else if (soort === "aantal"){
+    var p = kies([10,25,50,75,10,25,50,75,20]), n;
+    if (p === 10 || p === 20) n = 10 * tussen(2, 20);
+    else if (p === 50) n = Math.random() < .6 ? 10 * tussen(2, 20) : 2 * tussen(10, 49);
+    else n = Math.random() < .6 ? 20 * tussen(1, 10) : 4 * tussen(5, 30);
+    v.procent = p; v.totaal = n; v.antwoord = n * p / 100;
+    v.etiket = {procent:p};
+  } else if (soort === "breuk"){
+    if (Math.random() < .55){
+      var b = kies(BREUKEN);
+      v.etiket = {teller:b[0], noemer:b[1]};
+      v.antwoord = b[0] * 100 / b[1];
+    } else {
+      var k = kies(KOMMAS);
+      v.etiket = {komma:k};
+      v.antwoord = k;
+    }
+  }
+  return v;
+}
+function etiketTekst(e){
+  if (e.teller) return e.teller + "/" + e.noemer;
+  if (e.komma) return "0," + (e.komma % 10 ? e.komma : e.komma / 10);
+  return e.procent + "%";
+}
+function sleutel(v){ return v.soort + etiketTekst(v.etiket) + (v.totaal || ""); }
+function maakRonde(){
+  var n = NIVEAUS[data.niveau], soorten = [];
+  var vorige = HERHAAL[n.soort], herhaal = vorige.length ? 3 : 0;
+  for (var i=0;i<RONDE-herhaal;i++) soorten.push(n.soort);
+  for (var h=0;h<herhaal;h++) soorten.push(kies(vorige));
+  schud(soorten);
+  var j = soorten.indexOf(n.soort), t = soorten[0]; soorten[0] = soorten[j]; soorten[j] = t;   // de eerste is nieuw
+  var vragen = [], gezien = {}, vorigeA = -1;
+  soorten.forEach(function(s){
+    var v, k = 0;
+    do { v = maakVraag(s); k++; }
+    while ((v.antwoord === vorigeA || (gezien[sleutel(v)] || 0) >= (s === "helften" ? 4 : 1)) && k < 60);
+    gezien[sleutel(v)] = (gezien[sleutel(v)] || 0) + 1;
+    vorigeA = v.antwoord;
+    vragen.push(v);
+  });
+  return vragen;
+}
+
+/* ---------- toestand ---------- */
+var vragen = [], nr = 0, vraag = null, fase = "rust", fout = false, overtypen = false, invoer = "", okTijd = 0;
+var drankjes = 0, balkTimer = null, volgTimer = null, start = 0, uitslagen = [];
+var stand = 0;     // hoe vol de cilinder is (procent)
+
+function startBalk(wacht){
+  var b = $("balk"), v = $("vulling");
+  b.classList.remove("weg", "klaar", "verdiend");
+  v.style.transition = "none"; v.style.width = "100%";
+  void v.offsetWidth;
+  v.style.transition = "width " + wacht + "ms linear"; v.style.width = "0%";
+  clearTimeout(balkTimer);
+  balkTimer = setTimeout(function(){ $("balk").classList.add("weg"); }, wacht);
+}
+function stopBalk(){
+  clearTimeout(balkTimer);
+  var v = $("vulling"); v.style.width = getComputedStyle(v).width; v.style.transition = "none";
+}
+function tekenTeller(bump){
+  $("drankjes").textContent = drankjes;
+  if (bump){ var t = $("teller"); t.classList.remove("bump"); void t.offsetWidth; t.classList.add("bump"); }
+}
+
+// Het rek: de nieuwste 24 drankjes op vier planken, met het totaal erboven
+var REK_MAX = 24;
+function tekenRek(nieuw){
+  var t = data.drankjes.slice(-REK_MAX), s = "";
+  var planken = [335, 265, 195, 125];
+  t.forEach(function(tint, i){
+    var x = 270 + (i % 6) * 26, y = planken[Math.floor(i / 6)];
+    s += '<g transform="translate(' + x + " " + (y - 4) + ')"><g' + (nieuw && i === t.length-1 ? ' class="nieuw"' : "") + ">"
+      + flesVorm(tint, [((i * 0.37) % 2.4).toFixed(2), ((i * 0.37 + 1.1) % 2.4).toFixed(2)]) + "</g></g>";
+  });
+  $("rek").innerHTML = s;
+  $("rekaantal").textContent = data.drankjes.length > REK_MAX ? data.drankjes.length : "";
+}
+
+/* ---------- de tekening ---------- */
+function zetStand(p, hoe){
+  // hoe: "vast" (meteen), "glij" (kort) of "traag" (langzaam, bij uitleg)
+  var dy = (yBij(p) - 70).toFixed(1);
+  ["vloeistof", "greep"].forEach(function(id){
+    var g = $(id);
+    g.classList.toggle("vast", hoe === "vast");
+    g.classList.toggle("traag", hoe === "traag");
+    g.style.transform = "translate(0px," + (id === "greep" ? (yBij(p) - 360).toFixed(1) : dy) + "px)";
+  });
+}
+function standOpY(y){
+  var p = Math.max(0, Math.min(100, (BODEM - y) / HOOG * 100));
+  ["vloeistof", "greep"].forEach(function(id){ $(id).classList.add("vast"); $(id).classList.remove("traag"); });
+  $("vloeistof").style.transform = "translate(0px," + (yBij(p) - 70).toFixed(1) + "px)";
+  $("greep").style.transform = "translate(0px," + (yBij(p) - 360).toFixed(1) + "px)";
+  return p;
+}
+function tekenEtiket(e, onder){
+  var s;
+  if (e.teller){
+    s = '<text x="58" y="190" text-anchor="middle" class="bordtekst" font-size="32" fill="#1F2E3A">' + e.teller + "</text>"
+      + '<path d="M36 200 H80" stroke="#1F2E3A" stroke-width="3.5" stroke-linecap="round"/>'
+      + '<text x="58" y="234" text-anchor="middle" class="bordtekst" font-size="32" fill="#1F2E3A">' + e.noemer + "</text>";
+  } else {
+    var tekst = etiketTekst(e);
+    s = '<text x="58" y="' + (onder ? 204 : 212) + '" text-anchor="middle" class="bordtekst" font-size="' + (tekst.length > 3 ? 30 : 36) + '" fill="#1F2E3A">' + tekst + "</text>";
+  }
+  if (onder) s += '<text x="58" y="' + (e.teller ? 274 : 236) + '" text-anchor="middle" class="bordtekst" font-size="' + (e.teller ? 24 : 18) + '" fill="' + (e.teller || e.komma ? "#1D6B3C" : "#6A6A6A") + '">' + onder + "</text>";
+  $("etikettekst").innerHTML = s;
+}
+function tekenStreepjes(soort){
+  var s = "", lijst = [];
+  if (soort === "helften") lijst = [25,50,75];
+  if (soort === "tientallen") lijst = [10,20,30,40,50,60,70,80,90];
+  lijst.forEach(function(p){
+    var y = yBij(p).toFixed(1), lang = p === 50 ? 30 : (p % 25 === 0 ? 22 : 14);
+    s += '<path d="M120 ' + y + " h" + lang + '" stroke="#3A4650" stroke-width="' + (p === 50 ? 3 : 2) + '" stroke-linecap="round"/>';
+  });
+  if (soort === "aantal"){
+    // het getal hoort bij de volle cilinder
+    s += '<path d="M112 70 H130 M112 360 H126" stroke="#3A4650" stroke-width="3" stroke-linecap="round"/>'
+      + '<text x="108" y="77" text-anchor="end" class="bordtekst" font-size="22" fill="#1F2E3A">' + vraag.totaal + "</text>"
+      + '<text x="108" y="367" text-anchor="end" class="bordtekst" font-size="18" fill="#5A6670">0</text>';
+  }
+  $("streepjes").innerHTML = s;
+}
+// Een lijntje met de goede hoogte en het antwoord erbij
+function tekenLabel(p, tekst){
+  var y = yBij(p), ty = p > 82 ? y + 28 : y - 9, kl = p > 82 ? "#fff" : "#1F2E3A";
+  $("label").innerHTML = '<path d="M122 ' + y.toFixed(1) + ' H208" stroke="#fff" stroke-width="2.5" stroke-dasharray="6 4"/>'
+    + '<text x="165" y="' + ty.toFixed(1) + '" text-anchor="middle" class="bordtekst" font-size="24" fill="' + kl + '"'
+    + (p > 82 ? "" : ' stroke="#E4EEF3" stroke-width="4" paint-order="stroke"') + ">" + tekst + "</text>";
+}
+function toonDoel(p){
+  var y = yBij(p).toFixed(1);
+  $("doelvak").innerHTML = '<g id="doel"><path d="M110 ' + y + ' H220" stroke="#2F9E5B" stroke-width="7" stroke-linecap="round"/></g>';
+}
+// bubbels in de cilinder
+function bubbel(){
+  if (window.matchMedia && matchMedia("(prefers-reduced-motion:reduce)").matches) return;
+  var top = yBij(stand), s = "", ns = "http://www.w3.org/2000/svg", box = $("bellen");
+  box.innerHTML = "";
+  for (var i=0;i<10;i++){
+    var c = document.createElementNS(ns, "circle");
+    var x = tussen(132, 198), r = tussen(2, 5);
+    c.setAttribute("cx", x); c.setAttribute("cy", BODEM - 4); c.setAttribute("r", r);
+    c.setAttribute("fill", "rgba(255,255,255,.75)");
+    box.appendChild(c);
+    if (c.animate) c.animate([{transform:"translate(0px,0px)", opacity:0}, {opacity:1, offset:.2}, {transform:"translate(0px," + (top - BODEM + 6) + "px)", opacity:.2}],
+      {duration:900 + tussen(0, 500), delay:i * 90, easing:"ease-in", fill:"both"});
+  }
+  setTimeout(function(){ box.innerHTML = ""; }, 2400);
+}
+
+/* ---------- één vraag ---------- */
+function slepen(){ return fase === "slepen"; }
+function toonVraag(){
+  vraag = vragen[nr];
+  fout = false; overtypen = false; invoer = ""; okTijd = 0; start = Date.now();
+  var typen = vraag.soort === "aantal";
+  fase = typen ? "typen" : "slepen";
+  $("speelveld").classList.toggle("typen", typen);
+  $("voortgang").textContent = "proef " + (nr+1) + " van " + RONDE;
+  $("vloeirect").setAttribute("fill", KLEUREN[nr % KLEUREN.length]);
+  $("cilinder").classList.remove("mis");
+  $("etiket").classList.remove("goed");
+  $("doelvak").innerHTML = ""; $("label").innerHTML = ""; $("bellen").innerHTML = "";
+  stand = 0; zetStand(0, "vast");
+  tekenEtiket(vraag.etiket, typen ? "van " + vraag.totaal : "");
+  tekenStreepjes(vraag.soort);
+  $("greep").style.display = typen ? "none" : "";
+  $("greep").classList.toggle("wenk", !typen);
+  $("regel").innerHTML = "";
+  tekenSom("");
+  startBalk(SOORTEN[vraag.soort].wacht);
+}
+
+// De vloeistof staat stil: klopt het?
+function controleerStand(){
+  if (!slepen()) return;
+  if (stand === 0 && !fout) return;              // niets gedaan: nog geen antwoord
+  if (Math.abs(stand - vraag.antwoord) <= (fout ? 5 : SOORTEN[vraag.soort].marge)){ goed(); return; }
+  if (stand === 0) return;
+  // fout: de cilinder wiebelt, de goede hoogte licht groen op en het kind sleept erheen
+  if (!fout){ fout = true; stopBalk(); $("balk").classList.add("weg"); }
+  var c = $("cilinder"); c.classList.remove("mis"); void c.getBoundingClientRect(); c.classList.add("mis");
+  setTimeout(function(){ c.classList.remove("mis"); }, 520);
+  toonDoel(vraag.antwoord);
+}
+
+/* ---------- typen (Van een aantal) ---------- */
+function tekenSom(staat){
+  if (!vraag || vraag.soort !== "aantal"){ $("som").innerHTML = ""; $("toetsen").classList.remove("slaapt"); return; }
+  var leeg = !invoer;
+  $("som").innerHTML = "<span>" + vraag.procent + "% van " + vraag.totaal + "</span><span>=</span>"
+    + '<span class="vak' + (leeg ? " leeg" : "") + (fase === "typen" && !staat ? " actief" : "") + (staat ? " " + staat : "") + '">' + (invoer || "?") + "</span>";
+  $("toetsen").classList.toggle("slaapt", fase !== "typen");
+}
+function cijfer(k){
+  if (fase !== "typen" || invoer.length >= 3) return;
+  if (invoer === "0") invoer = "";
+  invoer += k;
+  tekenSom("");
+  if (overtypen && +invoer === vraag.antwoord) goed();
+}
+function wis(){
+  if (fase !== "typen" || !invoer) return;
+  invoer = invoer.slice(0, -1);
+  tekenSom("");
+}
+function controleerSom(){
+  if (fase !== "typen" || !invoer) return;
+  if (+invoer === vraag.antwoord){ okTijd = Date.now(); goed(); return; }
+  if (overtypen){ invoer = ""; tekenSom("fout"); return; }
+  // fout: de cilinder vult zich tot het procent en laat het antwoord zien; het kind typt het over
+  fout = true; fase = "uitleg";
+  stopBalk(); $("balk").classList.add("weg");
+  tekenSom("fout");
+  setTimeout(function(){
+    if (fase !== "uitleg") return;
+    stand = vraag.procent; zetStand(stand, "traag");
+    setTimeout(function(){
+      if (fase !== "uitleg") return;
+      tekenLabel(vraag.procent, vraag.antwoord);
+      fase = "typen"; overtypen = true; invoer = "";
+      $("regel").innerHTML = '<span class="juist">' + vraag.procent + "% van " + vraag.totaal + " = " + vraag.antwoord + "</span>";
+      tekenSom("");
+    }, 750);
+  }, 600);
+}
+
+function goed(){
+  var typen = vraag.soort === "aantal";
+  fase = "rust";
+  stopBalk();
+  var verdiend = !fout && (okTijd || Date.now()) - start <= SOORTEN[vraag.soort].wacht;
+  // elke dag een eigen palet van drie kleuren
+  var tint = (dagTint() + tussen(0, 2) * 45 + tussen(-10, 10) + 360) % 360;
+  uitslagen.push({vraag:vraag, fles:verdiend, tint:tint});
+  $("doelvak").innerHTML = "";
+  $("greep").classList.remove("wenk");
+  var p = typen ? vraag.procent : vraag.antwoord;
+  stand = p; zetStand(p, typen && !overtypen ? "traag" : "glij");
+  tekenLabel(p, typen ? vraag.antwoord : p + "%");
+  $("etiket").classList.add("goed");
+  if (vraag.soort === "breuk") tekenEtiket(vraag.etiket, "= " + vraag.antwoord + "%");
+  tekenSom("goed");
+  setTimeout(bubbel, typen ? 500 : 200);
+  if (verdiend){
+    drankjes++;
+    data.drankjes.push(tint);
+    if (data.drankjes.length > 1000) data.drankjes = data.drankjes.slice(-1000);
+    bewaar();
+    setTimeout(function(){ tekenRek(true); }, 600);
+    var b = $("balk"); b.classList.remove("verdiend"); void b.offsetWidth; b.classList.add("verdiend");
+  }
+  tekenTeller(verdiend);
+  var lof = verdiend ? ["Goed zo!", "Super!", "Top!", "Knap!", "Een drankje!"][tussen(0,4)] : "Goed zo!";
+  $("regel").innerHTML = '<span class="lof">' + lof + "</span>";
+  clearTimeout(volgTimer);
+  volgTimer = setTimeout(volgende, verdiend ? 1700 : 1500);
+}
+function volgende(){
+  nr++;
+  if (nr >= RONDE) klaar(); else toonVraag();
+}
+
+/* ---------- slepen ---------- */
+var vinger = null;   // alleen de eerste vinger telt
+function svgY(ev){
+  var svg = $("tekening"), pt = svg.createSVGPoint();
+  pt.x = ev.clientX; pt.y = ev.clientY;
+  return pt.matrixTransform(svg.getScreenCTM().inverse()).y;
+}
+function pakVast(ev){
+  if (!slepen() || vinger !== null) return;
+  vinger = ev.pointerId;
+  $("lab").classList.add("slepen");
+  $("greep").classList.remove("wenk");
+  try{ $("grijp").setPointerCapture(ev.pointerId); }catch(e){}
+  ev.preventDefault();
+  standOpY(svgY(ev));
+}
+function beweeg(ev){
+  if (ev.pointerId !== vinger || !slepen()) return;
+  standOpY(svgY(ev));
+}
+function laatLos(ev){
+  if (ev.pointerId !== vinger) return;
+  vinger = null;
+  $("lab").classList.remove("slepen");
+  if (!slepen()) return;
+  stand = Math.round(standOpY(svgY(ev)) / STAP) * STAP;
+  zetStand(stand, "glij");        // glijdt naar de dichtstbijzijnde stap
+  controleerStand();
+}
+
+function toets(e){
+  if (e.metaKey || e.ctrlKey || e.altKey) return;
+  var opKnop = e.target && e.target.tagName === "BUTTON" && !$("toetsen").contains(e.target);
+  if (slepen()){
+    if (e.key === "ArrowUp" || e.key === "ArrowDown"){
+      e.preventDefault();
+      stand = Math.max(0, Math.min(100, stand + (e.key === "ArrowUp" ? STAP : -STAP)));
+      $("greep").classList.remove("wenk");
+      zetStand(stand, "glij");
+    } else if ((e.key === "Enter" || e.key === " ") && !opKnop){
+      e.preventDefault();
+      controleerStand();
+    }
+    return;
+  }
+  if (!vraag || vraag.soort !== "aantal") return;
+  if (/^[0-9]$/.test(e.key)){ e.preventDefault(); cijfer(e.key); return; }
+  if (e.key === "Backspace"){ e.preventDefault(); wis(); return; }
+  if (e.key === "Enter" && !opKnop){ e.preventDefault(); controleerSom(); }
+}
+function tekenToetsen(){
+  var t = $("toetsen");
+  ["1","2","3","4","5","6","7","8","9","0","⌫","OK"].forEach(function(k){
+    var b = document.createElement("button");
+    b.type = "button"; b.textContent = k;
+    if (k === "OK") b.className = "ok";
+    if (k === "⌫"){ b.className = "wis"; b.setAttribute("aria-label", "wissen"); }
+    b.addEventListener("click", function(){
+      if (k === "⌫") wis(); else if (k === "OK") controleerSom(); else cijfer(k);
+      b.blur();
+    });
+    t.appendChild(b);
+  });
+}
+
+/* ---------- ronde ---------- */
+function startRonde(){
+  clearTimeout(volgTimer);
+  vragen = maakRonde(); nr = 0; drankjes = 0; uitslagen = [];
+  $("uitslag").hidden = true;
+  $("knoppen").hidden = false;
+  $("bedien").hidden = false;
+  $("terugblik").hidden = true;
+  $("spel").style.display = "";
+  $("eind").style.display = "none";
+  tekenTeller(false);
+  toonVraag();
+}
+function klaar(){
+  fase = "rust"; vraag = null;
+  stopBalk(); $("balk").classList.add("klaar");
+  $("knoppen").hidden = true;
+  $("bedien").hidden = true;
+  $("speelveld").classList.remove("typen");
+  $("regel").innerHTML = ""; $("som").innerHTML = "";
+  $("voortgang").textContent = "klaar";
+
+  var sterren = 1;
+  if (drankjes >= 9) sterren = 2;
+  if (drankjes >= RONDE) sterren = 3;
+  var oud = data.records[data.niveau];
+  data.records[data.niveau] = {
+    sterren: Math.max(oud ? oud.sterren : 0, sterren),
+    drankjes: Math.max(oud ? oud.drankjes : 0, drankjes)
+  };
+  bewaar();
+  tekenRecords();
+
+  // terugblik: een schoolbord met sterren in het lab, en elke proef als kaartje
+  var st = "", bord = "";
+  for (var k=1;k<=3;k++){
+    st += k <= sterren ? "★" : "<i>★</i>";
+    bord += '<tspan fill="' + (k <= sterren ? "#F2B632" : "#56616B") + '">★</tspan>';
+  }
+  $("spel").style.display = "none";
+  $("eind").innerHTML = '<g><path d="M60 96 L60 80 M180 96 L180 80" stroke="#8A939C" stroke-width="3"/>'
+    + '<rect x="16" y="96" width="220" height="150" rx="10" fill="#2E3D36" stroke="#9C6A3D" stroke-width="6"/>'
+    + '<text x="126" y="168" text-anchor="middle" class="bordtekst" font-size="46" letter-spacing="4">' + bord + "</text>"
+    + '<text x="126" y="214" text-anchor="middle" class="bordtekst" font-size="24" fill="#E8F0EA">' + drankjes + (drankjes === 1 ? " drankje" : " drankjes") + "</text></g>";
+  $("eind").style.display = "";
+  $("terugblik").innerHTML = uitslagen.map(function(u, i){
+    var q = u.vraag, tekst;
+    if (q.soort === "aantal") tekst = q.procent + "% van " + q.totaal + " = " + q.antwoord;
+    else if (q.soort === "breuk") tekst = etiketTekst(q.etiket) + " = " + q.antwoord + "%";
+    else tekst = q.antwoord + "%";
+    return '<div class="' + (u.fles ? "" : "zonder") + '" style="animation-delay:' + (i * 0.05).toFixed(2) + 's">' + (u.fles ? fles(u.tint) : "") + tekst + "</div>";
+  }).join("");
+  $("terugblik").hidden = false;
+
+  var t = '<h3>Klaar! <span class="sterren">' + st + "</span></h3>";
+  t += "<p>Je maakte <b>" + drankjes + "</b> " + (drankjes === 1 ? "drankje" : "drankjes") + ".</p>";
+  if (sterren === 1) t += "<p>Twee sterren haal je met 9 drankjes, drie sterren met alle " + RONDE + ".</p>";
+  else if (sterren === 2) t += "<p>Twee sterren! Maak alle " + RONDE + " drankjes voor drie sterren.</p>";
+  else t += "<p>Alle proeven goed, drie sterren. Wat een uitvinder!</p>";
+  t += '<button class="hoofd" id="nogeens">Nog een keer</button>';
+  if (sterren >= 2 && NIVEAUS[data.niveau+1]) t += '<button id="verder">Verder: ' + NIVEAUS[data.niveau+1].titel + " →</button>";
+  var u = $("uitslag"); u.innerHTML = t; u.hidden = false;
+  $("nogeens").onclick = startRonde;
+  if ($("verder")) $("verder").onclick = function(){ data.niveau++; bewaar(); tekenNiveaus(); startRonde(); };
+}
+
+function tekenNiveaus(){
+  var box = $("niveaus"); box.innerHTML = "";
+  NIVEAUS.forEach(function(n, i){
+    var b = document.createElement("button");
+    b.type = "button";
+    b.textContent = n.titel;
+    if (i === data.niveau) b.className = "aan";
+    b.onclick = function(){ data.niveau = i; bewaar(); tekenNiveaus(); startRonde(); };
+    box.appendChild(b);
+  });
+}
+function tekenRecords(){
+  var tint = dagTint();
+  $("records").innerHTML = NIVEAUS.map(function(n, i){
+    var r = data.records[i], st = "";
+    for (var k=1;k<=3;k++) st += (r && r.sterren >= k) ? "★" : "<i>★</i>";
+    return '<div class="record"><b>' + n.titel + '</b><span class="sterren">' + st + "</span><br>"
+      + (r ? "beste: " + r.drankjes + " " + fles((tint + i * 50) % 360) : "nog niet gespeeld") + "</div>";
+  }).join("");
+}
+
+/* ---------- start ---------- */
+laad();
+$("balkfles").innerHTML = fles(dagTint());
+$("tellerfles").innerHTML = fles((dagTint() + 120) % 360);
+tekenNiveaus();
+tekenRecords();
+tekenToetsen();
+tekenRek(false);
+$("opnieuw").onclick = function(){ startRonde(); this.blur(); };
+var grijp = $("grijp");
+grijp.addEventListener("pointerdown", pakVast);
+grijp.addEventListener("pointermove", beweeg);
+grijp.addEventListener("pointerup", laatLos);
+grijp.addEventListener("pointercancel", function(ev){ if (ev.pointerId === vinger){ vinger = null; $("lab").classList.remove("slepen"); zetStand(stand, "glij"); } });
+// Safari negeert touch-action soms op een <svg>: blokkeer scrollen zelf zolang je mag slepen
+function geenScroll(ev){ if (slepen() || vinger !== null) ev.preventDefault(); }
+grijp.addEventListener("touchstart", geenScroll, {passive:false});
+grijp.addEventListener("touchmove", geenScroll, {passive:false});
+document.addEventListener("keydown", toets);
+startRonde();
+})();
+</script>
+</html>

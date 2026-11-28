@@ -40,12 +40,13 @@ Spelideeën voor Ik oefen. De skill `spelideeen` vult aan, de dagelijkse workflo
 - Bronnen: https://www.slo.nl/publish/pages/19757/lijdend_voorwerp_woordgroepen_gr_7-8.pdf · https://maken.wikiwijs.nl/35813/leerlijn_zinsontleding
 - Gebouwd: /dev/zinsdelen/
 
-## [ ] procenten — Het Laboratorium (groep 7–8, rekenen)
+## [x] procenten — Het Laboratorium (groep 7–8, rekenen)
 - Leerdoel: procenten als deel van 100: een percentage schatten en tonen als vulling, de bekende verbanden (50% = 1/2, 25% = 1/4, 10% = 1/10, 75%), en een percentage van een aantal berekenen (25% van 40).
 - Spel: Een reageerbuis of maatcilinder zonder streepjes (behalve bij de eerste niveaus). Het etiket zegt "30%": het kind sleept het vloeistofniveau omhoog (pijltjes ↑↓ in stappen van 5%) en laat los; binnen een kleine marge telt het meteen goed, de buis gaat dan bubbelen. Bij "Van een aantal" staan er bijv. 40 korrels in een schaaltje en typt het kind het antwoord op het schermtoetsenbord. Fout: de goede hoogte licht groen op als streepje en het kind sleept erheen.
 - Niveaus: Helften en kwarten (50/25/75%, met streepjes) → Tientallen (10–90%, minder streepjes) → Schatten (geen streepjes, op 5% nauwkeurig) → Van een aantal (10/25/50/75% van 20–200) → Breuk = procent (etiket 3/4 of 0,2: vul de buis tot dezelfde hoogte).
 - Beloning: een **kleurdrankje** dat in het rek blijft staan en zachtjes bubbelt; elke dag nieuwe kleuren, blijvend.
 - Bronnen: https://www.slo.nl/publish/pages/6443/tussendoelen-domein-verhoudingen-alle-leerjaren-en-1s.pdf · https://lowan.nl/wp-content/uploads/2025/03/Rekenen-A4-Print-leerlijnen-groep-7-8-LOWAN.pdf
+- Gebouwd: /dev/procenten/
 
 ## [ ] schatkaart — De Schatkaart (groep 5–6, aardrijkskunde)
 - Leerdoel: plaatsbepalen op een kaart: rastervakjes met letter en cijfer (C4), de windrichtingen (noord, oost, zuid, west, en noordoost enz.) en een route volgen.
